@@ -28,6 +28,7 @@ The table below compares this repository's **v0.4.0** with the older **Ounce Cor
 | **Graphics** | Earlier software and host-GPU research implementation | Additional compute/DMA backend, texture-decoding, and shader-cache code; these additions do not establish commercial-game compatibility |
 | **Mac input & diagnostics** | Earlier host controller integration | Apple GameController integration, scripted input, and additional tracing |
 | **Safe-code boundary** | Root crate forbids unsafe Rust; native recompiler has its own boundary | Controlled unsafe code also exists inside `src`, including native execution, memory, and Mac controller bindings; the original safe-core guarantee does not carry over |
+| **Repository licence** | MIT | GPL-3.0-or-later as declared here; third-party notices and provenance still require their own checks |
 | **Distribution** | Original project and its release history | Separate repository and Linux, macOS, and Windows archives; v0.4.0 also fixes cross-platform audio-module gating and portable memory bounds |
 
 Ounce Core has continued evolving separately. Later work there, including its separate `ounce-nce` crate and homebrew first-frame oracle programme, must be assessed in that project's own [documentation](https://github.com/hffgzktbcc-blip/ounce-core#readme) and CI. Those results are not inherited by this repository, and no equivalent head-to-head compatibility or performance comparison has been established here.
