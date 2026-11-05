@@ -29,7 +29,9 @@ struct GcState {
 unsafe extern "C" {
     fn ounce_gc_start();
     fn ounce_gc_poll(s: *mut GcState) -> i32;
+    #[allow(dead_code)]
     fn ounce_gc_synthetic(name: *const c_char);
+    #[allow(dead_code)]
     fn ounce_gc_synthetic_set(pressed: u32, lx: f32, ly: f32, rx: f32, ry: f32);
 }
 
@@ -213,6 +215,7 @@ impl Default for GcPads {
 
 /// Connects a synthetic GameController pad (`Some(name)`) or disconnects it (`None`), through GameController's own
 /// connect / disconnect notifications.
+#[allow(dead_code)]
 pub fn synthetic(name: Option<&str>) {
     let c = name.map(|n| CString::new(n).unwrap_or_default());
     // SAFETY: the string outlives the call.
@@ -220,6 +223,7 @@ pub fn synthetic(name: Option<&str>) {
 }
 
 /// Sets the synthetic pad's elements: `pressed` is a mask of [`ELEMENTS`] bits; sticks -1..1, y up.
+#[allow(dead_code)]
 pub fn synthetic_set(pressed: u32, l: (f32, f32), r: (f32, f32)) {
     // SAFETY: plain C call.
     unsafe { ounce_gc_synthetic_set(pressed, l.0, l.1, r.0, r.1) }
@@ -227,6 +231,7 @@ pub fn synthetic_set(pressed: u32, l: (f32, f32), r: (f32, f32)) {
 
 /// A synthetic pad line: elements joined by `+` (`east`, `south+l1`), sticks as DM_CTL has them (`LUp`, `L0.5/1`),
 /// `~<hold seconds>` (0.15 s by default). Returns (pressed mask, left, right, hold).
+#[allow(dead_code)]
 pub fn parse_synthetic_line(line: &str) -> Option<(u32, (f32, f32), (f32, f32), f64)> {
     let line = line.trim();
     if line.is_empty() || line.starts_with('#') || line.contains(' ') {

@@ -5,6 +5,8 @@
 //! `L<x>/<y>` / `R<x>/<y>` (a stick tilted part way, each -1..1, y up). Any other line (`shot <path>`, `dump`, ...) is
 //! not input: the host acts on it.
 
+#![allow(dead_code)]
+
 /// One key line: the controller state to hold, and for how long.
 #[derive(Debug, Clone, PartialEq)]
 pub struct KeyStep {

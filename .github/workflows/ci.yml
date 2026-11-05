@@ -9,6 +9,27 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
+  cleanliness:
+    name: Cleanliness check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify repository cleanliness (No retail keys, firmware, or copyright assets)
+        run: |
+          echo "Checking for prohibited key or container extensions..."
+          if git ls-files | grep -iE '\.(keys|nca|nsp|xci)$'; then
+            echo "ERROR: Found prohibited binary/container files tracked in repository!"
+            exit 1
+          fi
+          echo "Checking for forbidden key keywords in tracked source files..."
+          if git ls-files | grep -v '\.gitignore' | xargs grep -lniE 'prod\.keys|title\.keys'; then
+            echo "ERROR: Found forbidden key references in tracked files!"
+            exit 1
+          fi
+          echo "Cleanliness check passed."
+
   test:
     name: Test (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
