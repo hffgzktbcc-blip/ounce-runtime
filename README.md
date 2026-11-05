@@ -2,7 +2,7 @@
 
 ![ounce-runtime — systems research, built in Rust](docs/assets/banner.svg)
 
-**An experimental AArch64 research runtime for synthetic workloads and open-source homebrew.**
+**A standalone derivative of [Ounce Core](https://github.com/hffgzktbcc-blip/ounce-core), for AArch64 research, synthetic workloads, and homebrew.**
 
 [![Release](https://img.shields.io/github/v/release/hffgzktbcc-blip/ounce-runtime?color=28bca4&label=release)](https://github.com/hffgzktbcc-blip/ounce-runtime/releases/latest)
 [![CI](https://github.com/hffgzktbcc-blip/ounce-runtime/actions/workflows/ci.yml/badge.svg)](https://github.com/hffgzktbcc-blip/ounce-runtime/actions/workflows/ci.yml)
@@ -13,6 +13,27 @@
 </div>
 
 ---
+
+## How this differs from Ounce Core
+
+[Ounce Core](https://github.com/hffgzktbcc-blip/ounce-core) is the original project. **ounce-runtime shares its research-core lineage** and packages a later variant of that code as a separate public release. It includes later Rust-core work also present in Ounce NX2, but excludes NX2's app/library layer and `nxnative` engine integration. It is not the working NX2 game-running application, and its publication does not establish a compatibility improvement over Ounce Core.
+
+The table below compares this repository's **v0.4.0** with the older **Ounce Core v0.3.2 checkout at [`bebfd72`](https://github.com/hffgzktbcc-blip/ounce-core/tree/bebfd72803a05e5d250701255b4c2dca7b39bc98)**. It is a snapshot comparison, not a description of everything on Ounce Core's current `main`.
+
+| Area | Original Ounce Core snapshot | ounce-runtime v0.4.0 |
+| :--- | :--- | :--- |
+| **Shared foundation** | AArch64 interpreter and tiered execution, Horizon-style services, graphics, audio, input, loaders, and synthetic harness | Retains that foundation; this is a derivative, not an independently built replacement |
+| **Default build** | Native JIT and GPU presentation opt-in | `native-jit` and `gpu-present` enabled by default |
+| **CPU & memory** | Interpreter and tiered recompiler with the earlier memory implementation | Later CPU/recompiler changes, an in-tree AArch64 native-execution engine, and a sparse fast-memory arena |
+| **Graphics** | Earlier software and host-GPU research implementation | Additional compute/DMA backend, texture-decoding, and shader-cache code; these additions do not establish commercial-game compatibility |
+| **Mac input & diagnostics** | Earlier host controller integration | Apple GameController integration, scripted input, and additional tracing |
+| **Safe-code boundary** | Root crate forbids unsafe Rust; native recompiler has its own boundary | Controlled unsafe code also exists inside `src`, including native execution, memory, and Mac controller bindings; the original safe-core guarantee does not carry over |
+| **Repository licence** | MIT | GPL-3.0-or-later as declared here; third-party notices and provenance still require their own checks |
+| **Distribution** | Original project and its release history | Separate repository and Linux, macOS, and Windows archives; v0.4.0 also fixes cross-platform audio-module gating and portable memory bounds |
+
+Ounce Core has continued evolving separately. Later work there, including its separate `ounce-nce` crate and homebrew first-frame oracle programme, must be assessed in that project's own [documentation](https://github.com/hffgzktbcc-blip/ounce-core#readme) and CI. Those results are not inherited by this repository, and no equivalent head-to-head compatibility or performance comparison has been established here.
+
+**What is verified here:** the v0.4.0 release passed the nine Linux/macOS/Windows standard, GPU-presentation, and native-JIT CI jobs, repository cleanliness checks, and an external homebrew execution probe. Local Apple Silicon verification passed 466 tests (2 ignored), all 27 synthetic harness checks across 25 stages, the native-JIT self-test, and a Metal graphics demo. An execution probe is not a first-frame compatibility oracle. These results do not constitute a legal or provenance audit; the open checks remain in [PROVENANCE.md](docs/PROVENANCE.md).
 
 ## Architecture you can explore
 
