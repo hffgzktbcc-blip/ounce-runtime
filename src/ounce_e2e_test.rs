@@ -222,9 +222,13 @@ fn test_switch2_ounce_e2e_full_stack() {
     assert_eq!(mmu.read_u32(atomic_cell_va).unwrap(), 75, "Atomic cell must be 50 + 25 = 75");
     assert_eq!(cpu.regs.x[1], 12 * 1024 * 1024 * 1024, "TotalMemoryAvailable must be 12 GB");
 
-    // Verify NCE engine initializes on Apple Silicon host
+    // NCE is available on AArch64 hosts; other architectures use the portable tiers.
     let nce = NceEngine::new();
-    assert!(nce.unavailable.is_none(), "NCE engine must be available on macOS AArch64");
+    assert_eq!(
+        nce.unavailable.is_none(),
+        cfg!(target_arch = "aarch64"),
+        "NCE availability must match the host architecture",
+    );
 
     // 6. Test Switch 2 Horizon Services: `set:sys`, `acc:u0`, `vi:m`, and `hid` optical mouse
     let tls_addr = 0x8900_0000u64;
