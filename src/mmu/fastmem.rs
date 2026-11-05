@@ -82,6 +82,10 @@ impl FastmemArena {
 
     /// Reserves a sparse `FastmemArena` of `capacity` bytes (rounded up to OS page size).
     pub fn with_capacity(capacity: usize) -> Option<Arc<Self>> {
+        // The heap fallback must report the actual allocation size before computing
+        // direct/slab offsets; otherwise a high-VA page can lie beyond the buffer.
+        #[cfg(not(unix))]
+        let capacity = capacity.min(64 << 20);
         let host_page_size = host_os_page_size().max(PAGE_SIZE);
         let min_cap = host_page_size * 16;
         let capacity = capacity.max(min_cap).next_multiple_of(host_page_size);
@@ -236,8 +240,7 @@ fn reserve_sparse_region(capacity: usize) -> Option<(NonNull<u8>, bool)> {
 #[cfg(not(unix))]
 fn reserve_sparse_region(capacity: usize) -> Option<(NonNull<u8>, bool)> {
     // Portable fallback for non-Unix targets: cap reservation to a modest heap slab.
-    let capped = capacity.min(64 << 20);
-    let mut vec = vec![0u8; capped].into_boxed_slice();
+    let mut vec = vec![0u8; capacity].into_boxed_slice();
     let ptr = vec.as_mut_ptr();
     std::mem::forget(vec);
     NonNull::new(ptr).map(|nn| (nn, false))
@@ -276,10 +279,9 @@ fn release_sparse_region(base: NonNull<u8>, capacity: usize, is_mmap: bool) {
 
 #[cfg(not(unix))]
 fn release_sparse_region(base: NonNull<u8>, capacity: usize, _is_mmap: bool) {
-    let capped = capacity.min(64 << 20);
     // SAFETY: reconstructs the boxed slice allocated in `reserve_sparse_region`.
     unsafe {
-        let slice = std::ptr::slice_from_raw_parts_mut(base.as_ptr(), capped);
+        let slice = std::ptr::slice_from_raw_parts_mut(base.as_ptr(), capacity);
         drop(Box::from_raw(slice));
     }
 }
@@ -287,6 +289,21 @@ fn release_sparse_region(base: NonNull<u8>, capacity: usize, _is_mmap: bool) {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[cfg(not(unix))]
+    #[test]
+    fn heap_fallback_bounds_large_reservations_to_the_actual_allocation() {
+        let arena = FastmemArena::with_capacity(256 << 20).expect("heap arena");
+        assert_eq!(arena.capacity, 64 << 20);
+        let high = arena.alloc_guest_page(0x8000_0000 >> 12).expect("high-VA slot");
+        assert!(high >= arena.direct_limit());
+        assert!(high + PAGE_SIZE <= arena.capacity);
+        // A guest address above the real direct region must also use the slab.
+        let above = arena.alloc_guest_page((128 << 20) >> 12).expect("slab slot");
+        assert!(above >= arena.direct_limit());
+        assert!(above + PAGE_SIZE <= arena.capacity);
+        assert_ne!(high, above);
+    }
 
     #[test]
     fn fastmem_arena_reserves_and_commits_direct_and_high_va_pages() {

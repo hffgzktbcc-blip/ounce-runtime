@@ -2,10 +2,6 @@
 name: Rust security checks
 
 on:
-  workflow_dispatch:
-      - '**/Cargo.toml'
-      - 'Cargo.lock'
-      - '.github/workflows/rust-security.yml'
   schedule:
     # New RustSec advisories may arrive without a code change.
     - cron: '23 6 * * 1'
