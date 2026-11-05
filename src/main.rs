@@ -2,7 +2,6 @@
 // Allows controlled host-OS primitives (Apple Silicon fastmem `mmap`, JIT/NCE, Metal) in `ounce-nx2`.
 #![deny(unsafe_op_in_unsafe_fn)]
 
-#[cfg(target_os = "macos")]
 mod audio;
 mod cpu;
 mod crypto;
