@@ -1,0 +1,28 @@
+/target
+/cache/
+**/*.rs.bk
+.DS_Store
+
+# Never commit user-supplied keys, firmware, game containers, dumps, or trace logs
+/dumps/
+/keys/
+/saves/
+/sdmc/
+*.keys
+prod.keys
+title.keys
+*.nsp
+*.nsz
+*.xci
+*.xcz
+*.nca
+*.nro
+*.nso
+*.npdm
+*.romfs
+*.istorage
+*.trace.json
+ns2jb*
+# Keep committed synthetic NRO test fixtures tracked
+!tests/fixtures/nro/**/*.nro
+OunceCore.app/

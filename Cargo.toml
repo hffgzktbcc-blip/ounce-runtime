@@ -1,0 +1,40 @@
+[package]
+name = "ounce-runtime"
+version = "0.4.0"
+edition = "2024"
+description = "AArch64 / Horizon-style research runtime: CPU tiers, service models, software graphics, and tests"
+license = "GPL-3.0-or-later"
+
+[workspace]
+members = [".", "crates/ounce-recompiler"]
+default-members = ["."]
+
+[features]
+default = ["native-jit", "gpu-present"]
+# Tier-4 native recompiler + fastmem/NCE foundation.
+native-jit = ["dep:ounce-recompiler"]
+# Host GPU presentation & GA10F hardware backend (Metal on macOS, Vulkan/DX12 on Linux/Windows) via wgpu.
+gpu-present = ["dep:wgpu", "dep:winit", "dep:pollster"]
+
+[dependencies]
+byteorder = "1.5.0"
+cpal = "0.18.2"
+gilrs = "0.11.2"
+lz4_flex = { version = "0.11", default-features = false, features = ["safe-decode", "safe-encode"] }
+minifb = "0.29.0"
+serde_json = "1.0.154"
+ounce-recompiler = { path = "crates/ounce-recompiler", optional = true }
+pollster = { version = "0.4", optional = true }
+thiserror = "2.0.21"
+wgpu = { version = "30.0.1", optional = true }
+winit = { version = "0.30", optional = true }
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2.191"
+
+[build-dependencies]
+cc = "1"
+
+[dev-dependencies]
+# Validates the WGSL emitted by src/gpu/sass in tests. Same version wgpu 30 pulls in.
+naga = { version = "30.0.1", features = ["wgsl-in"] }
