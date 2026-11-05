@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="360" viewBox="0 0 1280 360">
+<defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#091522"/><stop offset="1" stop-color="#16364a"/></linearGradient><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#72d9db" stroke-opacity=".08"/></pattern></defs>
+<rect width="1280" height="360" rx="20" fill="url(#bg)"/><rect width="1280" height="360" fill="url(#grid)"/>
+<g transform="translate(995 100)" fill="none" stroke="#64e4d0" stroke-width="3"><rect width="150" height="150" rx="28"/><rect x="30" y="30" width="90" height="90" rx="14"/><path d="M50 -24V0M100 -24V0M50 150V174M100 150V174M-24 50H0M-24 100H0M150 50H174M150 100H174"/><path d="m55 75 15 15 28-32" stroke-width="6"/></g>
+<text x="76" y="87" fill="#64e4d0" font-family="Arial,sans-serif" font-size="16" letter-spacing="5">SYSTEMS RESEARCH · BUILT IN RUST</text>
+<text x="72" y="183" fill="#f0f7fb" font-family="Arial,sans-serif" font-size="76" font-weight="700" letter-spacing="-3">ounce-runtime</text>
+<text x="76" y="238" fill="#b4cbd7" font-family="Arial,sans-serif" font-size="25">Explore the architecture. Understand the runtime.</text>
+<text x="76" y="298" fill="#7cabbc" font-family="Arial,sans-serif" font-size="16" letter-spacing="2">AARCH64 / HORIZON-STYLE SERVICES / GRAPHICS / AUDIO</text></svg>
