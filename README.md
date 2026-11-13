@@ -16,6 +16,10 @@
 
 ## The Growing Family
 
+<p align="center">
+  <img src="docs/assets/family-banner.jpg" alt="The Ounce Project Family: Ounce-Core, Ounce-HB, Ounce-Runtime, and DeckStream" width="100%">
+</p>
+
 > *Built by curiosity. Tested by evidence. Powered by community.*
 
 ounce-runtime is one of four independent, open-source projects sharing an evidence-first philosophy and a community:
