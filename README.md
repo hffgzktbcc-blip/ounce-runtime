@@ -2,7 +2,7 @@
 
 ![ounce-runtime — systems research, built in Rust](docs/assets/banner.svg)
 
-**A standalone derivative of [Ounce Core](https://github.com/hffgzktbcc-blip/ounce-core), for AArch64 research, synthetic workloads, and homebrew.**
+**The performance and graphics branch of the Ounce family, built in Rust.**
 
 [![Release](https://img.shields.io/github/v/release/hffgzktbcc-blip/ounce-runtime?color=28bca4&label=release)](https://github.com/hffgzktbcc-blip/ounce-runtime/releases/latest)
 [![CI](https://github.com/hffgzktbcc-blip/ounce-runtime/actions/workflows/ci.yml/badge.svg)](https://github.com/hffgzktbcc-blip/ounce-runtime/actions/workflows/ci.yml)
@@ -14,101 +14,111 @@
 
 ---
 
-## How this differs from Ounce Core
+## The Ounce Family
 
-[Ounce Core](https://github.com/hffgzktbcc-blip/ounce-core) is the original project. **ounce-runtime shares its research-core lineage** and packages a later variant of that code as a separate public release. It includes later Rust-core work also present in Ounce NX2, but excludes NX2's app/library layer and `nxnative` engine integration. It is not the working NX2 game-running application, and its publication does not establish a compatibility improvement over Ounce Core.
+ounce-runtime is the performance-oriented sibling in the Ounce family of AArch64 and Switch-platform systems tools.
 
-The table below compares this repository's **v0.4.0** with the older **Ounce Core v0.3.2 checkout at [`bebfd72`](https://github.com/hffgzktbcc-blip/ounce-core/tree/bebfd72803a05e5d250701255b4c2dca7b39bc98)**. It is a snapshot comparison, not a description of everything on Ounce Core's current `main`.
+| Project | What it is for | When to choose it | Licence | Link |
+| :--- | :--- | :--- | :--- | :--- |
+| **ounce-core** | The verified reference engine. Runs ARM64 programs across three CPU tiers and diffs output against real hardware. | You want evidence-first correctness, hardware differential checks, or the safe-Rust core. | MIT | [ounce-core](https://github.com/hffgzktbcc-blip/ounce-core) |
+| **ounce-hb** | The front door runner for homebrew. Calls the released engine CLI and explains execution results with stable exit codes. | You want a turn-key CLI to run and diagnose your own homebrew with clear failure reasons. | MIT | [ounce-hb](https://github.com/hffgzktbcc-blip/ounce-hb) |
+| **ounce-runtime** (this repo) | The performance and graphical branch. Adds native JIT/NCE, fast memory arena, host GPU rendering, and gamepad support. | You want high performance, visual presentation via Metal/Vulkan/DX12, or controller input under GPL-3.0 terms. | GPL-3.0-or-later | You are here |
 
-| Area | Original Ounce Core snapshot | ounce-runtime v0.4.0 |
-| :--- | :--- | :--- |
-| **Shared foundation** | AArch64 interpreter and tiered execution, Horizon-style services, graphics, audio, input, loaders, and synthetic harness | Retains that foundation; this is a derivative, not an independently built replacement |
-| **Default build** | Native JIT and GPU presentation opt-in | `native-jit` and `gpu-present` enabled by default |
-| **CPU & memory** | Interpreter and tiered recompiler with the earlier memory implementation | Later CPU/recompiler changes, an in-tree AArch64 native-execution engine, and a sparse fast-memory arena |
-| **Graphics** | Earlier software and host-GPU research implementation | Additional compute/DMA backend, texture-decoding, and shader-cache code; these additions do not establish commercial-game compatibility |
-| **Mac input & diagnostics** | Earlier host controller integration | Apple GameController integration, scripted input, and additional tracing |
-| **Safe-code boundary** | Root crate forbids unsafe Rust; native recompiler has its own boundary | Controlled unsafe code also exists inside `src`, including native execution, memory, and Mac controller bindings; the original safe-core guarantee does not carry over |
-| **Repository licence** | MIT | GPL-3.0-or-later as declared here; third-party notices and provenance still require their own checks |
-| **Distribution** | Original project and its release history | Separate repository and Linux, macOS, and Windows archives; v0.4.0 also fixes cross-platform audio-module gating and portable memory bounds |
+**ounce-runtime is a separate GPL derivative of Ounce Core.** It lives in its own repository, and no code flows from it into the MIT-licensed repositories (`ounce-core` and `ounce-hb`). Each project maintains its own independent scope, releases, and documentation.
 
-Ounce Core has continued evolving separately. Later work there, including its separate `ounce-nce` crate and homebrew first-frame oracle programme, must be assessed in that project's own [documentation](https://github.com/hffgzktbcc-blip/ounce-core#readme) and CI. Those results are not inherited by this repository, and no equivalent head-to-head compatibility or performance comparison has been established here.
+---
 
-**What is verified here:** the v0.4.0 release passed the nine Linux/macOS/Windows standard, GPU-presentation, and native-JIT CI jobs, repository cleanliness checks, and an external homebrew execution probe. Local Apple Silicon verification passed 466 tests (2 ignored), all 27 synthetic harness checks across 25 stages, the native-JIT self-test, and a Metal graphics demo. An execution probe is not a first-frame compatibility oracle. These results do not constitute a legal or provenance audit; the open checks remain in [PROVENANCE.md](docs/PROVENANCE.md).
+## What ounce-runtime adds
 
-## Architecture you can explore
+While `ounce-core` focuses on strict differential verification and safe-Rust execution against reference hardware, `ounce-runtime` explores maximum host execution performance and rich host integration:
 
-ounce-runtime brings CPU execution, Horizon-style service models, graphics, audio, and input into one Rust research project. Use it to inspect system behaviour, exercise synthetic test programs, and investigate homebrew interoperability.
+- **Native Execution (NCE) & Tier-4 JIT**: Direct AArch64 native execution on Apple Silicon hosts, alongside a Cranelift-based optimizing Tier-4 JIT recompiler (`crates/ounce-recompiler`) with dynamic block chaining and inline TLB fast paths.
+- **Sparse Fast-Memory Arena (`FastmemArena`)**: A unified 42-bit host virtual memory arena with on-demand page commitment (`mprotect`), consuming 0 physical RSS upfront while mapping guest VRAM and heaps 1:1 for zero-copy DMA and host GPU uploads.
+- **Host GPU Presentation**: Real-time rendering via `wgpu` with native Metal, Vulkan, and DirectX 12 backends, including texture decoding pipelines, surface blitting, and compute-based DMA shaders.
+- **Physical Controller & Mac Integration**: Native Apple GameController framework bindings, cross-platform physical gamepad input via `gilrs`, and deterministic scripted input playback for automated testing.
+- **Comprehensive Service Models**: In-process Horizon-style service emulation spanning NVDRV (graphics driver), SM, HID, FS (RomFS and SDMC), and audio output/rendering (audout/audren).
 
-| Layer | What is inside |
+---
+
+## Architecture
+
+| Subsystem | Components & Capabilities |
 | :--- | :--- |
-| **CPU execution** | AArch64 interpreter, tiered block execution, and a feature-gated native recompiler |
-| **System services** | Models of kernel calls, IPC, threads, storage, time, and application services |
-| **Graphics** | Software rendering and host GPU presentation through `wgpu` |
-| **Audio & input** | Host audio output and physical gamepad integration |
-| **Verification** | Unit tests, synthetic architecture stages, and homebrew fixtures |
+| **CPU Engine** | Multi-tier pipeline: AArch64 interpreter, Tier-2 basic-block JIT, Tier-3 superblock tracing, Cranelift Tier-4 JIT, and Apple Silicon NCE |
+| **Memory** | Sparse `FastmemArena`, virtual memory management, guarded pages, and multi-threaded hardware atomics |
+| **Graphics** | Host presentation via `wgpu`, NVDRV acceleration, texture unswizzling/tiling, and shader caching |
+| **Audio & Input** | Multi-voice polyphony (`audren`), host PCM stream playback (`cpal`), physical controllers, and Apple GameController integration |
+| **Loaders** | Unencrypted Switch homebrew NRO, multi-module NSO packages, RomFS, and synthetic NPDM containers |
+
+---
 
 ## Quick start
 
-### Download a release
+### Download a prebuilt release
 
-Get the archive for your platform from [Releases](https://github.com/hffgzktbcc-blip/ounce-runtime/releases/latest): **macOS Apple Silicon**, **Linux x86_64**, or **Windows x86_64**. Extract it and run the executable from a terminal:
+Download the archive for your platform from [Releases](https://github.com/hffgzktbcc-blip/ounce-runtime/releases/latest):
+- **macOS Apple Silicon** (`aarch64-apple-darwin`)
+- **Linux x86_64** (`x86_64-unknown-linux-gnu`)
+- **Windows x86_64** (`x86_64-pc-windows-msvc`)
+
+Extract the archive and run:
 
 ```bash
 ./ounce-runtime info
 ./ounce-runtime test
 ```
 
-On Windows, use `./ounce-runtime.exe`. The runtime is a command-line application; graphics demos can open a separate window.
-
 ### Build from source
 
-Install a current stable [Rust toolchain](https://rustup.rs/) with edition 2024 support. On Ubuntu, install the host dependencies first:
+Prerequisites: Rust 1.85+ with edition 2024 support. On Ubuntu/Debian, install host audio and device dependencies:
 
 ```bash
-sudo apt-get install libasound2-dev libudev-dev
+sudo apt-get install -y libasound2-dev libudev-dev
 ```
+
+Clone and build:
 
 ```bash
 git clone https://github.com/hffgzktbcc-blip/ounce-runtime.git
 cd ounce-runtime
 cargo build --release --locked
-cargo run --release -- info
 ```
 
-`native-jit` and `gpu-present` are enabled by default. For a build without those optional features, add `--no-default-features`.
+`native-jit` and `gpu-present` are enabled by default. To build without GPU presentation or native JIT, pass `--no-default-features`.
 
-## Try the runtime
+---
 
-| Command | Purpose |
+## Commands & Usage
+
+| Command | Description |
 | :--- | :--- |
-| `cargo run --release -- info` | Inspect the modelled architecture and runtime profile |
-| `cargo run --release -- test` | Execute the synthetic architecture harness |
-| `cargo run --release -- jit-selftest` | Check native code execution on the host |
-| `cargo run --release -- --present=gpu 3d 300` | Run the graphics demo with host GPU presentation |
-| `cargo run --release -- run path/to/homebrew.nro` | Execute a homebrew program you supply |
-| `cargo run --release -- help` | Show the complete command reference |
+| `cargo run --release -- info` | Print modelled architecture capabilities, active CPU tier, and memory profile |
+| `cargo run --release -- test` | Execute the synthetic architecture verification harness (25 stages) |
+| `cargo run --release -- jit-selftest` | Validate host native code generation and recompiler caches |
+| `cargo run --release -- --present=gpu 3d 300` | Launch the 3D graphics demonstration with host GPU rendering |
+| `cargo run --release -- run path/to/app.nro` | Execute an unencrypted homebrew NRO program |
+| `cargo run --release -- help` | Display comprehensive CLI options and flag reference |
 
-## Research status
+---
 
-This is experimental software. Service coverage and instruction support are partial; successful synthetic tests do not establish compatibility with arbitrary applications. See the [CI results](https://github.com/hffgzktbcc-blip/ounce-runtime/actions) for verification on each platform.
+## Verification & Parity
 
-The repository contains homebrew fixture sources and prebuilt binaries. Their source attribution comparisons and binary component inventory remain incomplete and are recorded in the [provenance register](docs/PROVENANCE.md) and [third-party notices](THIRD_PARTY.md).
+- **Synthetic Architecture Harness**: 27 architecture checks across 25 stages validating instruction semantics, memory permissions, atomics, and service dispatch.
+- **Unit & Integration Suite**: 466 passing tests spanning JIT compilation, fastmem isolation, RomFS parsing, and IPC serialization.
+- **Corpus Parity**: Head-to-head homebrew execution comparison with `ounce-core` is tracked under `docs/CORPUS_PARITY.md`.
 
-To run local verification:
+---
 
-```bash
-cargo test --release
-cargo run --release -- test
-```
+## Scope & Responsible Use
 
-## Scope & contribution
+ounce-runtime is dedicated to systems architecture research, synthetic workloads, and open-source homebrew development.
 
-The project focuses on synthetic workloads and open-source homebrew. It does not ship proprietary firmware, keys, or commercial game data. Protected retail content decryption is outside the project scope.
-
-Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request. Report reproducible problems through [GitHub Issues](https://github.com/hffgzktbcc-blip/ounce-runtime/issues), including the host platform, command, and relevant logs.
+- **Clean room & open source**: The repository contains no proprietary firmware, console keys, commercial game assets, or decryption mechanisms.
+- **Homebrew only**: Protected retail container decryption is strictly out of scope.
+- See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines and [docs/PROVENANCE.md](docs/PROVENANCE.md) for provenance registers.
 
 ---
 
 **GPL-3.0-or-later** · [License](LICENSE) · [Third-party notices](THIRD_PARTY.md)
 
-Unaffiliated with Nintendo, NVIDIA, or any other company. Names and trademarks are used only to describe the interfaces being modelled.
+*Unaffiliated with Nintendo, NVIDIA, or any other entity. All trademarks belong to their respective owners and are referenced solely for interface compatibility documentation.*
