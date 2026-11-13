@@ -1,0 +1,3 @@
+    Finished `release` profile [optimized] target(s) in 0.25s
+     Running `target/release/ounce-runtime jit-selftest`
+[Tier-4] Native code self-test passed on aarch64: generated function returned 42
