@@ -1,0 +1,400 @@
+============================================================
+  OUNCE-NX2 v0.4.0: NVIDIA Tegra T239 (GA10F) / Horizon OS Runtime
+  Target: ARMv8.5-A AArch64 (PAC + BTI) | Switch 2 & Switch 1 Execution
+============================================================
+
+--- Running Built-in Test Suite ---
+
+[Stage 01/25] AArch64 Arithmetic & Branching Execution (Fibonacci N=10)
+[VM] Starting execution at PC: 0x0000000080000000
+[VM] Stack Pointer: 0x0000007FFFFFE000
+[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] no controller: keyboard and DM_CTL only
+
+[VM] Process exited gracefully (svcExitProcess).
+[VM Summary] Executed 66 instructions in 52.4991ms (0.00 MIPS) | Frames: 0
+  -> Basic-Block JIT Cache: 3 Blocks (11 Insns) | Hits: 63 | Misses: 3
+  -> Memory Buckets (2056 KB): Code=4 KB | VRAM=0 KB | Stack/TLS=2052 KB | Data=0 KB
+  -> Final X0: 55 (0x0000000000000037) | D0: 0.00
+  [Gate] Stage 01 PASS (X0 = 0x37)
+
+[Stage 02/25] Horizon OS Debug Output Subsystem (svcOutputDebugString)
+[VM] Starting execution at PC: 0x0000000080000000
+[VM] Stack Pointer: 0x0000007FFFFFE000
+[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] no controller: keyboard and DM_CTL only
+Hello from Tegra T239 homebrew on Ounce-Core!
+
+[VM] Process exited gracefully (svcExitProcess).
+[VM Summary] Executed 4 instructions in 5.1571ms (0.00 MIPS) | Frames: 0
+  -> Basic-Block JIT Cache: 2 Blocks (4 Insns) | Hits: 2 | Misses: 2
+  -> Memory Buckets (2056 KB): Code=4 KB | VRAM=0 KB | Stack/TLS=2052 KB | Data=0 KB
+  -> Final X0: 0 (0x0000000000000000) | D0: 0.00
+  [Gate] Stage 02 PASS (X0 = 0x0)
+
+[Stage 03/25] Stack Frame & Subroutine Management (STP, LDP, BL, RET)
+[VM] Starting execution at PC: 0x0000000080000000
+[VM] Stack Pointer: 0x0000007FFFFFE000
+[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] no controller: keyboard and DM_CTL only
+
+[VM] Process exited gracefully (svcExitProcess).
+[VM Summary] Executed 9 instructions in 5.0555ms (0.00 MIPS) | Frames: 0
+  -> Basic-Block JIT Cache: 3 Blocks (9 Insns) | Hits: 6 | Misses: 3
+  -> Memory Buckets (2056 KB): Code=4 KB | VRAM=0 KB | Stack/TLS=2052 KB | Data=0 KB
+  -> Final X0: 42 (0x000000000000002A) | D0: 0.00
+  [Gate] Stage 03 PASS (X0 = 0x2A)
+
+[Stage 04/25] Horizon CMIF IPC & IEEE-754 Vector Math (FADD)
+[VM] Starting execution at PC: 0x0000000080000000
+[VM] Stack Pointer: 0x0000007FFFFFE000
+[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] no controller: keyboard and DM_CTL only
+
+[VM] Process exited gracefully (svcExitProcess).
+[VM Summary] Executed 8 instructions in 6.7382ms (0.00 MIPS) | Frames: 0
+  -> GPU Commands: 0 | 3D Draw Calls: 0 | Triangles Rasterized: 0 | HIPC Calls: 1
+  -> Basic-Block JIT Cache: 3 Blocks (8 Insns) | Hits: 5 | Misses: 3
+  -> Memory Buckets (2056 KB): Code=4 KB | VRAM=0 KB | Stack/TLS=2052 KB | Data=0 KB
+  -> Final X0: 65538 (0x0000000000010002) | D0: 42.00
+  [Gate] Stage 04 PASS (X0 = 0x10002)
+  [Gate] Stage 04 PASS (D0 = 42.0)
+
+[Stage 05/25] Virtual Filesystem (RomFS) & Linear PCM Audio (audout:u)
+[VM] Starting execution at PC: 0x0000000080000000
+[VM] Stack Pointer: 0x0000007FFFFFE000
+[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] no controller: keyboard and DM_CTL only
+Ounce-Core Switch 2 Tech Demo (Tegra T239 Ampere)
+[VM] Process exited gracefully (svcExitProcess).
+[VM Summary] Executed 11 instructions in 8.1877ms (0.00 MIPS) | Frames: 0
+  -> RomFS Bytes Read: 49 | Audio Buffers: 1 | PCM Samples: 2 (Peak Amp: 14400)
+  -> Basic-Block JIT Cache: 4 Blocks (11 Insns) | Hits: 7 | Misses: 4
+  -> Memory Buckets (2056 KB): Code=4 KB | VRAM=0 KB | Stack/TLS=2052 KB | Data=0 KB
+  -> Final X0: 14400 (0x0000000000003840) | D0: 0.00
+  [Gate] Stage 05 PASS (X0 = 0x3840)
+
+[Stage 06/25] AES-128-CTR NCA Decryption, SASS Decompiler & Multi-Threading
+  [Crypto/NCA] Decrypted TitleID 0x0100F2C0115B6000 via AES-128-CTR (16 bytes ExeFS 'main')
+[VM] Starting execution at PC: 0x0000000080000000
+[VM] Stack Pointer: 0x0000007FFFFFE000
+[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] no controller: keyboard and DM_CTL only
+
+[VM] Process exited gracefully (svcExitProcess).
+[VM Summary] Executed 16 instructions in 7.7348ms (0.00 MIPS) | Frames: 0
+  -> GPU Commands: 1 | 3D Draw Calls: 0 | Triangles Rasterized: 0 | HIPC Calls: 0
+  -> Multi-Core Scheduler: 1 KThreads Spawned | 1 KThreads Completed
+  -> Ampere SM86 Decompiler: GLSL 450 (19 lines) + Binary SPIR-V 1.5 (68 words, magic 0x07230203)
+  -> Basic-Block JIT Cache: 5 Blocks (16 Insns) | Hits: 11 | Misses: 5
+  -> Memory Buckets (2084 KB): Code=12 KB | VRAM=0 KB | Stack/TLS=2052 KB | Data=20 KB
+  -> Final X0: 7777 (0x0000000000001E61) | D0: 0.00
+  [Gate] Stage 06 PASS (X0 = 0x1E61)
+
+
+[Stage 07/25] Unified NSP Boot, Futex Arbiters & 2D-Textured Rasterization
+  [BootLoader] Format: NSP -> NCA3 (AES-128-CTR) -> ExeFS | TitleID: 0x0100A2B020267000 | Code: 56 bytes
+[VM] Starting execution at PC: 0x0000000080000000
+[VM] Stack Pointer: 0x0000007FFFFFE000
+[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] no controller: keyboard and DM_CTL only
+
+[VM] Process exited gracefully (svcExitProcess).
+[VM Summary] Executed 14 instructions in 5.8391ms (0.00 MIPS) | Frames: 0
+  -> GPU Commands: 5 | 3D Draw Calls: 1 | Triangles Rasterized: 1 | HIPC Calls: 0
+  -> 2D Texture Sampler: 72 Texels | Futex/Mutex Locks: 2 | CondVar Signals: 1
+  -> Basic-Block JIT Cache: 5 Blocks (14 Insns) | Hits: 9 | Misses: 5
+  -> Memory Buckets (2076 KB): Code=4 KB | VRAM=4 KB | Stack/TLS=2052 KB | Data=16 KB
+  -> Final X0: 4282433791 (0x00000000FF40C0FF) | D0: 0.00
+  [Gate] Stage 07 PASS (X0 = 0xFF40C0FF)
+
+
+[Stage 08/25] Horizon crt0 Initialization, Basic-Block JIT & Depth Occlusion
+[VM] Starting execution at PC: 0x0000000080000000
+[VM] Stack Pointer: 0x0000007FFFFFE000
+[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] no controller: keyboard and DM_CTL only
+
+[VM] Process exited gracefully (svcExitProcess).
+[VM Summary] Executed 9 instructions in 6.6585ms (0.00 MIPS) | Frames: 0
+  -> GPU Commands: 6 | 3D Draw Calls: 1 | Triangles Rasterized: 2 | HIPC Calls: 0
+  -> 3D Z-Buffer Depth Test: 72 Passed | 72 Occluded (Rejected)
+  -> Basic-Block JIT Cache: 3 Blocks (9 Insns) | Hits: 6 | Misses: 3
+  -> Memory Buckets (2068 KB): Code=4 KB | VRAM=4 KB | Stack/TLS=2052 KB | Data=8 KB
+  -> Final X0: 4278255615 (0x00000000FF00FFFF) | D0: 0.00
+  [Gate] Stage 08 PASS (X0 = 0xFF00FFFF)
+
+
+[Stage 09/25] 128-bit NEON SIMD, 2x Upscaler Model & SaveData
+[VM] Starting execution at PC: 0x0000000080000000
+[VM] Stack Pointer: 0x0000007FFFFFE000
+[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] no controller: keyboard and DM_CTL only
+
+[VM] Process exited gracefully (svcExitProcess).
+[VM Summary] Executed 20 instructions in 7.0237ms (0.00 MIPS) | Frames: 0
+  -> GPU Commands: 1 | 3D Draw Calls: 0 | Triangles Rasterized: 0 | HIPC Calls: 0
+  -> RomFS Bytes Read: 16 | Audio Buffers: 0 | PCM Samples: 0 (Peak Amp: 0)
+  -> 2x Upscaler Model: 1 Frames (256 Output Pixels) | SaveData Written: 16 Bytes
+  -> Basic-Block JIT Cache: 4 Blocks (20 Insns) | Hits: 16 | Misses: 4
+  -> Memory Buckets (2076 KB): Code=4 KB | VRAM=8 KB | Stack/TLS=2052 KB | Data=12 KB
+  -> Final X0: 16 (0x0000000000000010) | D0: 8796095182848.00
+  [Gate] Stage 09 PASS (X0 = 0x10)
+
+
+[Stage 10/25] Native FS Payload Execution (BTI & Horizon SVCs)
+[VM] Starting execution at PC: 0x0000000080000000
+[VM] Stack Pointer: 0x0000007FFFFFE000
+[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] no controller: keyboard and DM_CTL only
+
+[VM] Process exited gracefully (svcExitProcess).
+[VM Summary] Executed 19 instructions in 5.9634ms (0.00 MIPS) | Frames: 0
+  -> Basic-Block JIT Cache: 5 Blocks (19 Insns) | Hits: 14 | Misses: 5
+  -> Memory Buckets (2060 KB): Code=4 KB | VRAM=0 KB | Stack/TLS=2052 KB | Data=4 KB
+  -> Final X0: 6318592 (0x0000000000606A00) | D0: 0.00
+  [Gate] Stage 10 PASS (X0 = 0x606A00)
+
+
+[Stage 11/25] Horizon Dynamic Linker (RO NSO0) & TIPC Handshake
+  [BootLoader] Format: NSO0 (Nintendo Shared Object) | ProgramID: 0x0400000000000037 | .text: 84 bytes
+[VM] Starting execution at PC: 0x0000000080000000
+[VM] Stack Pointer: 0x0000007FFFFFE000
+[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] no controller: keyboard and DM_CTL only
+
+[VM] Process exited gracefully (svcExitProcess).
+[VM Summary] Executed 21 instructions in 7.0407ms (0.00 MIPS) | Frames: 0
+  -> Basic-Block JIT Cache: 1 Blocks (21 Insns) | Hits: 20 | Misses: 1
+  -> Memory Buckets (2056 KB): Code=4 KB | VRAM=0 KB | Stack/TLS=2052 KB | Data=0 KB
+  -> Final X0: 0 (0x0000000000000000) | D0: 0.00
+  [Gate] Stage 11 PASS (X0 = 0x0)
+
+
+[Stage 12/25] Synthetic Thread-Affinity Wrapper (BL + AND X0, X0, #7)
+[VM] Starting execution at PC: 0x0000000080007010
+[VM] Stack Pointer: 0x0000007FFFFFE000
+[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] no controller: keyboard and DM_CTL only
+
+[VM] Process exited gracefully (svcExitProcess).
+[VM Summary] Executed 9 instructions in 6.8346ms (0.00 MIPS) | Frames: 0
+  -> Basic-Block JIT Cache: 4 Blocks (9 Insns) | Hits: 5 | Misses: 4
+  -> Memory Buckets (2056 KB): Code=4 KB | VRAM=0 KB | Stack/TLS=2052 KB | Data=0 KB
+  -> Final X0: 7 (0x0000000000000007) | D0: 0.00
+  [Gate] Stage 12 PASS (X0 = 0x7)
+
+
+[Stage 13/25] Timing, Event Management & Thread Arbitration
+[VM] Starting execution at PC: 0x0000000080000000
+[VM] Stack Pointer: 0x0000007FFFFFE000
+[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] no controller: keyboard and DM_CTL only
+
+[VM] Process exited gracefully (svcExitProcess).
+[VM Summary] Executed 20 instructions in 6.0631ms (0.00 MIPS) | Frames: 0
+  -> Basic-Block JIT Cache: 7 Blocks (20 Insns) | Hits: 13 | Misses: 7
+  -> Memory Buckets (2180 KB): Code=64 KB | VRAM=0 KB | Stack/TLS=2052 KB | Data=64 KB
+  -> Final X0: 19200001 (0x000000000124F801) | D0: 0.00
+  [Gate] Stage 13 PASS (X0 = 0x124F801)
+
+
+[Stage 14/25] High-Speed GameCard (.XCI) Boot (HFS0 -> NCA3 -> NSO0)
+  [BootLoader] Format: XCI (GameCard HEAD) -> HFS0 (secure) -> NCA3 -> ExeFS | ProgramID: 0x0400000000000037 | .text: 84 bytes
+[VM] Starting execution at PC: 0x0000000080000000
+[VM] Stack Pointer: 0x0000007FFFFFE000
+[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] no controller: keyboard and DM_CTL only
+
+[VM] Process exited gracefully (svcExitProcess).
+[VM Summary] Executed 21 instructions in 6.9025ms (0.00 MIPS) | Frames: 0
+  -> Basic-Block JIT Cache: 1 Blocks (21 Insns) | Hits: 20 | Misses: 1
+  -> Memory Buckets (2056 KB): Code=4 KB | VRAM=0 KB | Stack/TLS=2052 KB | Data=0 KB
+  -> Final X0: 0 (0x0000000000000000) | D0: 0.00
+  [Gate] Stage 14 PASS (X0 = 0x0)
+
+
+[Stage 15/25] NVN 3D Command Buffer Execution & Multi-Section RomFS Mount
+  [BootLoader] Loaded encrypted NCA3 package: TitleID=0x0100023900002026 Format='NSP -> NCA3 (AES-128-CTR) -> ExeFS'
+  [RomFS] Mounted asset 'romfs:/manifest.json': {"app_name":"NVN 3D Benchmark","target":"T239 Drake"}
+  [RomFS] Mounted asset 'romfs:/shaders/t239_ampere.glsl' (97 bytes)
+[VM] Starting execution at PC: 0x0000000080000000
+[VM] Stack Pointer: 0x0000007FFFFFE000
+[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] no controller: keyboard and DM_CTL only
+
+[VM] Process exited gracefully (svcExitProcess).
+[VM Summary] Executed 7 instructions in 5.8753ms (0.00 MIPS) | Frames: 0
+  -> GPU Commands: 5 | 3D Draw Calls: 1 | Triangles Rasterized: 0 | HIPC Calls: 0
+  -> Basic-Block JIT Cache: 2 Blocks (7 Insns) | Hits: 5 | Misses: 2
+  -> Memory Buckets (5660 KB): Code=4 KB | VRAM=3600 KB | Stack/TLS=2052 KB | Data=4 KB
+  -> Final X0: 569 (0x0000000000000239) | D0: 0.00
+  [Gate] Stage 15 PASS (X0 = 0x239)
+  [NVN Driver] Fast-path command buffer executed via SVC #0x105 & rendered into VRAM 0x90000000
+
+
+[Stage 16/25] audren:u DSP Voice Mixing, NVN Memory Pools & SPIR-V Pipeline
+  [Tier-2 JIT] Executed 65 insns (11 chained block jumps) -> Exit: Svc { svc_id: 7 }
+  [NVN VRAM Pool] Created Pool #1 (16MB) -> UBO at 0x98000000 | VBO at 0x98000200
+  [Vulkan HAL] Loaded SPIR-V 1.5 (60 words) -> Pipeline PSOs: 1 | Draws: 1 | Presented: 1
+  [audren:u DSP] Rendered tick: 480 stereo samples mixed | Peak Amp: 9600 | RingBuffer: 480 samples
+  [SaveData Persistence] Synchronized 20 bytes to 'save:/slot0.sav'
+  [Gate] Stage 16 PASS (Tier-2 guest Fib(10) = 55 via svcExitProcess)
+  [Gate] Stage 16 PASS (SaveData wrote 20 bytes)
+
+
+[Stage 17/25] Horizon Big 5 Services Handshake (synthetic) & Controller Polling
+  [set:sys] Firmware Version Query (Cmd 4) -> 23.0.1 (res=0)
+  [am:appletOE] ApplicationProxy #65539 -> CommonStateGetter #65540 FocusState: 1 (InFocus)
+  [vi:m] DisplayService #65542 -> DisplayID: 0 | StrayLayer: #1 (Producer: 0x100)
+  [hid] AppletResource #65544 -> SharedMem Handle: 0x10008 | Joy-Con 2 Buttons: 0x403 (A+B+Plus) | Stick: (24575, -16383)
+  [fsp-srv] Storage #65547 -> RomFS Level 3 Data Size: 0x40000 (256 KB)
+[VM] Starting execution at PC: 0x0000000080010000
+[VM] Stack Pointer: 0x0000007FFFFFE000
+[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] no controller: keyboard and DM_CTL only
+
+[VM] Process exited gracefully (svcExitProcess).
+[VM Summary] Executed 5 instructions in 5.3298ms (0.00 MIPS) | Frames: 0
+  -> GPU Commands: 0 | 3D Draw Calls: 0 | Triangles Rasterized: 0 | HIPC Calls: 12
+  -> Basic-Block JIT Cache: 2 Blocks (5 Insns) | Hits: 3 | Misses: 2
+  -> Memory Buckets (2064 KB): Code=4 KB | VRAM=0 KB | Stack/TLS=2052 KB | Data=8 KB
+  -> Final X0: 1911 (0x0000000000000777) | D0: 0.00
+  [Gate] Stage 17 PASS (X0 = 0x777)
+  [Synthetic Bootstrap] Handshake completed successfully across all Big 5 services (Exit code: 0x777)
+
+
+[Stage 18/25] ro:1 Dynamic Module Relocation & NVN Texture Descriptor Binding
+  [sm: -> ro:1] Obtained Dynamic Linker service handle: #65538
+  [ro:1 LoadNro] Loaded secondary NRO module at 0x84000000 (res=0)
+  [NVN TexturePool] Registered Descriptor #0: Format=Bc7 (1024x1024, 11 mips) @ VRAM 0x95000000
+  [NVN Driver] Executed 2 commands binding Texture Descriptor #0
+[VM] Starting execution at PC: 0x0000000080010000
+[VM] Stack Pointer: 0x0000007FFFFFE000
+[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] no controller: keyboard and DM_CTL only
+
+[VM] Process exited gracefully (svcExitProcess).
+[VM Summary] Executed 4 instructions in 11.0357ms (0.00 MIPS) | Frames: 0
+  -> GPU Commands: 2 | 3D Draw Calls: 1 | Triangles Rasterized: 0 | HIPC Calls: 3
+  -> Basic-Block JIT Cache: 2 Blocks (4 Insns) | Hits: 2 | Misses: 2
+  -> Memory Buckets (2088 KB): Code=12 KB | VRAM=16 KB | Stack/TLS=2052 KB | Data=8 KB
+  -> Final X0: 2184 (0x0000000000000888) | D0: 0.00
+  [Gate] Stage 18 PASS (X0 = 0x888)
+  [Dynamic Linker Verification] ro:1 LoadNro confirmed in guest AArch64 (Exit code: 0x888)
+
+[Stage 19/25] SDK-style HLE Runtime & crt0 Arena Allocation
+  [nn::init] Initialized StandardAllocator arena at 0x100000000 (16 MB)
+[VM] Starting execution at PC: 0x0000000080020000
+[VM] Stack Pointer: 0x0000007FFFFFE000
+[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] no controller: keyboard and DM_CTL only
+
+[VM] Process exited gracefully (svcExitProcess).
+[VM Summary] Executed 23 instructions in 8.0980ms (0.00 MIPS) | Frames: 0
+  -> Basic-Block JIT Cache: 5 Blocks (23 Insns) | Hits: 18 | Misses: 5
+  -> Memory Buckets (18444 KB): Code=8 KB | VRAM=0 KB | Stack/TLS=2052 KB | Data=16384 KB
+  -> Final X0: 2457 (0x0000000000000999) | D0: 0.00
+  [Gate] Stage 19 PASS (X0 = 0x999)
+  [SDK HLE Verification] StandardAllocator & nn::fs validated in guest AArch64 (Exit code: 0x999)
+
+[Stage 20/25] Tier-3 JIT Super-Block Execution & Multi-Asset Package Pipeline
+  [NCE JIT Engine] Executed 15403 insns (5 NCE blocks compiled, 5101 NCE runs, 15403 NCE / 0 fallback insns) | Exit: Svc { svc_id: 7 }
+  [NCE Throughput] Measured execution performance: 103.15 MIPS
+  [Gate] Stage 20 PASS (Tier-3 guest X0 = 0xAAA)
+  [Tier-3 Verification] Super-Block compilation verified in guest AArch64 (Exit code: 0xAAA)
+
+[Stage 21/25] Loose Package Pipeline (OunceCake Layout), NPDM Parser & Multi-Module Dynamic Linker
+  [Loose Package Bootstrap] Loaded Title: 'Showcase2' (ID: 0x0100023900002026) | Modules: 2 | RomFS Assets: 2
+    -> Module 'main': VMA 0x80040000 (292 bytes)
+    -> Module 'subsdk0': VMA 0x84040000 (264 bytes)
+    -> Relocations: 0 applied | Unresolved imports: none
+  [RomFS Direct Mount] Lazy-streamed loose asset 'romfs:/package.json' (37 bytes, 0 RAM preload)
+[VM] Starting execution at PC: 0x0000000080040000
+[VM] Stack Pointer: 0x0000007FFFFFE000
+[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] no controller: keyboard and DM_CTL only
+
+[VM] Process exited gracefully (svcExitProcess).
+[VM Summary] Executed 9 instructions in 6.3288ms (0.00 MIPS) | Frames: 0
+  -> Basic-Block JIT Cache: 3 Blocks (9 Insns) | Hits: 6 | Misses: 3
+  -> Memory Buckets (2060 KB): Code=8 KB | VRAM=0 KB | Stack/TLS=2052 KB | Data=0 KB
+  -> Final X0: 3003 (0x0000000000000BBB) | D0: 0.00
+  [Gate] Stage 21 PASS (X0 = 0xBBB)
+  [Loose Package Verification] Multi-module execution & loose RomFS verified (Exit code: 0xBBB)
+
+[Stage 22/25] Extended Bootstrap HAL: pl:u Shared Fonts, time:u System Clock & ASTC/BC7 Decompression
+  [pl:u Shared Font] Mapped shared font placeholder at guest VMA 0x18000000 (1 MB)
+  [time:u System Clock] Current Horizon OS epoch timestamp: 1794573835
+  [Texture HAL] Decompressed ASTC 4x4 void-extent block (16 texels decoded, sample: 0xFF0088FF)
+[VM] Starting execution at PC: 0x0000000080050000
+[VM] Stack Pointer: 0x0000007FFFFFE000
+[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] no controller: keyboard and DM_CTL only
+
+[VM] Process exited gracefully (svcExitProcess).
+[VM Summary] Executed 2 instructions in 7.6061ms (0.00 MIPS) | Frames: 0
+  -> GPU Commands: 0 | 3D Draw Calls: 0 | Triangles Rasterized: 0 | HIPC Calls: 5
+  -> Basic-Block JIT Cache: 1 Blocks (2 Insns) | Hits: 1 | Misses: 1
+  -> Memory Buckets (3080 KB): Code=4 KB | VRAM=0 KB | Stack/TLS=2052 KB | Data=1024 KB
+  -> Final X0: 3276 (0x0000000000000CCC) | D0: 0.00
+  [Gate] Stage 22 PASS (X0 = 0xCCC)
+  [Extended HAL Verification] pl:u fonts, time:u clock, and ASTC 4x4 verified (Exit code: 0xCCC)
+
+[Stage 23/25] Extended Applet HAL: ApplicationFunctions, GPU AS/Characteristics & ASTC 8x8 Decompressor
+  [am:appletOE] IApplicationFunctions -> GetDesiredLanguage: code 0 (en-US)
+  [am:appletOE] ISelfController -> CreateManagedDisplaySeparableLayer: Layer #1
+  [NVIDIA Tegra T239] nvdrv characteristics: Arch 0x0170 (Ampere GA10B) | SMs: 12 | Feature: SM 8.7
+  [Texture HAL] Decompressed ASTC 8x8 void-extent block (64 texels decoded, sample: 0xFFFF44CC)
+[VM] Starting execution at PC: 0x0000000080060000
+[VM] Stack Pointer: 0x0000007FFFFFE000
+[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] no controller: keyboard and DM_CTL only
+
+[VM] Process exited gracefully (svcExitProcess).
+[VM Summary] Executed 2 instructions in 6.0702ms (0.00 MIPS) | Frames: 0
+  -> GPU Commands: 0 | 3D Draw Calls: 0 | Triangles Rasterized: 0 | HIPC Calls: 7
+  -> Basic-Block JIT Cache: 1 Blocks (2 Insns) | Hits: 1 | Misses: 1
+  -> Memory Buckets (2060 KB): Code=4 KB | VRAM=0 KB | Stack/TLS=2052 KB | Data=4 KB
+  -> Final X0: 3549 (0x0000000000000DDD) | D0: 0.00
+  [Gate] Stage 23 PASS (X0 = 0xDDD)
+  [Full-Stack Verification] Extended Applet HAL & ASTC 8x8 Verified (Exit code: 0xDDD)
+
+[Stage 24/25] Extended Shader & Dynamic Buffer Pipeline: Ampere FP16 SASS & Dynamic NVN Ring Execution
+  [Ampere SASS Transpiler] Decompiled 7 instructions: 20 GLSL lines | 75 SPIR-V words (Magic: 0x07230203)
+  [NVN Driver] Executed 5 stream commands | Active Backbuffer: #2 | Total Cycles: 3
+[VM] Starting execution at PC: 0x0000000080070000
+[VM] Stack Pointer: 0x0000007FFFFFE000
+[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] no controller: keyboard and DM_CTL only
+
+[VM] Process exited gracefully (svcExitProcess).
+[VM Summary] Executed 2 instructions in 6.9650ms (0.00 MIPS) | Frames: 0
+  -> GPU Commands: 7 | 3D Draw Calls: 0 | Triangles Rasterized: 0 | HIPC Calls: 0
+  -> Basic-Block JIT Cache: 1 Blocks (2 Insns) | Hits: 1 | Misses: 1
+  -> Memory Buckets (2060 KB): Code=4 KB | VRAM=4 KB | Stack/TLS=2052 KB | Data=0 KB
+  -> Final X0: 3822 (0x0000000000000EEE) | D0: 0.00
+  [Gate] Stage 24 PASS (X0 = 0xEEE)
+  [Full-Stack Verification] FP16 SASS & Dynamic NVN Ring Pipeline Verified (Exit code: 0xEEE)
+
+[Stage 25/25] Ampere Tensor Core Pipeline: HMMA Warp-Level FP16 Matrix Multiply-Accumulate
+  [HMMA Decode] HMMA.1688.F32.F16   m16n8k8  | A 4 regs/lane, B 2 regs/lane, C/D 4 f32/lane | PTX: mma.sync.aligned.m16n8k8.row.col.f32.f16.f16.f32
+  [HMMA Decode] HMMA.16816.F32.F16  m16n8k16 | A 8 regs/lane, B 4 regs/lane, C/D 4 f32/lane | PTX: mma.sync.aligned.m16n8k16.row.col.f32.f16.f16.f32
+  [Tensor Core] 3 warp issues | 4096 MACs retired | D(m16n8k8, ones) = 8 | D(m16n8k16, +0.5) = 16.5 | FP32 accumulate = 2049
+  [binary16] 2048.0 -> 0x6800 | 2049.0 round-tripped through binary16 = 2048 (FP32 accumulator keeps 2049)
+[VM] Starting execution at PC: 0x0000000080080000
+[VM] Stack Pointer: 0x0000007FFFFFE000
+[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] no controller: keyboard and DM_CTL only
+
+[VM] Process exited gracefully (svcExitProcess).
+[VM Summary] Executed 17 instructions in 6.5297ms (0.00 MIPS) | Frames: 0
+  -> Basic-Block JIT Cache: 4 Blocks (17 Insns) | Hits: 13 | Misses: 4
+  -> Memory Buckets (2060 KB): Code=4 KB | VRAM=4 KB | Stack/TLS=2052 KB | Data=0 KB
+  -> Final X0: 3822 (0x0000000000000EEE) | D0: 0.00
+  [Gate] Stage 25 PASS (X0 = 0xEEE)
+  [Full-Stack Verification] Complete 25-Stage Architecture Pipeline Verified (Exit code: 0xEEE)
+
+[Harness] All 27 checks passed across 25 stages.
+[Symbol Discovery] Module at 0x80040000: 0 exports
+[Symbol Discovery] Module at 0x84040000: 0 exports
