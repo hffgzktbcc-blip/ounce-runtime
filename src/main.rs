@@ -914,6 +914,12 @@ fn run_vm_internal(
         VmStop::Budget => ("budget_exhausted", 16),
         VmStop::Fault => ("cpu_error", 12),
     };
+    let frames_presented_count = display
+        .as_deref()
+        .map_or(0, |d| d.frames_presented_count());
+    let framebuffer_hash = display
+        .as_deref()
+        .and_then(|d| d.last_framebuffer_hash());
     let report = run_report::RunReport {
         tier: tier_str,
         silent_fallback,
@@ -925,6 +931,8 @@ fn run_vm_internal(
         svc_id: stop_svc_id,
         break_result: stop_break_result,
         insns_executed: instructions_executed as u64,
+        frames_presented: frames_presented_count,
+        framebuffer_hash,
         message: stop_message,
     };
 
@@ -3920,6 +3928,8 @@ mod harness_gate_tests {
                 svc_id: None,
                 break_result: None,
                 insns_executed: 0,
+                frames_presented: 0,
+                framebuffer_hash: None,
                 message: None,
             },
         }

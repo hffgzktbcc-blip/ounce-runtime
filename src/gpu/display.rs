@@ -314,6 +314,20 @@ impl DisplayServer {
         self.backend.as_ref().map_or(false, |b| b.is_open())
     }
 
+    pub fn frames_presented_count(&self) -> u64 {
+        self.backend.as_ref().map_or(0, |b| b.frames_presented())
+    }
+
+    pub fn last_framebuffer_hash(&self) -> Option<String> {
+        if self.frames_presented_count() == 0 {
+            return None;
+        }
+        Some(format!(
+            "fnv1a64:{:016x}",
+            self.swapchain.front_buffer.content_hash()
+        ))
+    }
+
     /// Pumps backend window events (keyboard presses, window close, focus) without
     /// waiting for a guest frame presentation.
     pub fn pump_events(&mut self) -> bool {
