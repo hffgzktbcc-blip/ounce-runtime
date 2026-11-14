@@ -1176,14 +1176,15 @@ impl Tier4JitEngine {
         // one maximum-sized block, then interpret the short tail so VM scheduler
         // quanta and public instruction limits remain exact.
         let mut id = self.lookup_or_compile_fast(cpu.regs.pc, mmu)?;
-        if budget < MAX_BLOCK_INSNS { return None; }
+        let first = self.blocks.get(&cpu.regs.pc)?.ranges[0];
+        if budget < ((first.1 - first.0) / 4) as usize { return None; }
         let r = &mut cpu.regs;
         let mut state = GuestState { x: r.x, sp: r.sp, pc: r.pc, nzcv: r.pstate.to_bits() as u64, v: r.v };
         let mut executed = 0usize;
         let outcome = loop {
             let rec = self.rec.as_mut()?;
             let links_before = rec.links_taken();
-            let exit = if self.linking {
+            let exit = if self.linking && budget - executed >= MAX_BLOCK_INSNS {
                 let left = u32::try_from(budget - executed - (MAX_BLOCK_INSNS - 1)).unwrap_or(u32::MAX);
                 rec.run_linked(id, &mut state, &mut MmuBus { mmu }, left)
             } else {
@@ -1207,7 +1208,7 @@ impl Tier4JitEngine {
                     }
                 },
             }
-            if budget - executed < MAX_BLOCK_INSNS {
+            if executed >= budget || budget - executed < MAX_BLOCK_INSNS {
                 break (None, false);
             }
             // Guest code pages only change through a store, which exits with `CodeWritten`, so the
