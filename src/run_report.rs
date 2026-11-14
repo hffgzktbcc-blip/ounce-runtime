@@ -41,6 +41,8 @@ pub struct RunReport {
     pub svc_id: Option<u32>,
     pub break_result: Option<u32>,
     pub insns_executed: u64,
+    pub frames_presented: u64,
+    pub framebuffer_hash: Option<String>,
     pub message: Option<String>,
 }
 
@@ -63,6 +65,8 @@ pub fn write_if_configured(report: &RunReport) {
         "svc_id": report.svc_id,
         "break_result": report.break_result,
         "insns_executed": report.insns_executed,
+        "frames_presented": report.frames_presented,
+        "framebuffer_hash": report.framebuffer_hash,
         "message": report.message,
     });
     if let Some(parent) = path.parent() {
