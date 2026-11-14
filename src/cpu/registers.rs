@@ -47,6 +47,9 @@ impl Pstate {
     }
 }
 
+/// Sticky Cumulative Saturation flag (`FPSR.QC`, bit 27) in the AArch64 Floating-point Status Register.
+pub const FPSR_QC: u32 = 1 << 27;
+
 #[derive(Debug, Clone)]
 pub struct CpuRegisters {
     /// 31 General Purpose 64-bit registers (X0 to X30).
@@ -59,6 +62,8 @@ pub struct CpuRegisters {
     pub pc: u64,
     /// Processor state flags
     pub pstate: Pstate,
+    /// Floating-point Status Register (`FPSR`, e.g. sticky saturation bit `QC` at bit 27)
+    pub fpsr: u32,
     /// Thread Pointer / ID (EL0) - for Thread-Local Storage (TLS)
     pub tpidr_el0: u64,
     /// Read-Only Thread Pointer (EL0) - Horizon OS TLS / IPC command buffer pointer
@@ -80,6 +85,7 @@ impl CpuRegisters {
             sp: 0,
             pc: 0,
             pstate: Pstate::new(),
+            fpsr: 0,
             tpidr_el0: 0,
             tpidrro_el0: 0,
             v: [0; 32],
@@ -196,6 +202,42 @@ impl CpuRegisters {
         let l2 = (lanes[2].to_bits() as u128) << 64;
         let l3 = (lanes[3].to_bits() as u128) << 96;
         self.v[(reg & 0x1F) as usize] = l0 | l1 | l2 | l3;
+    }
+
+    /// Read low 2 lanes of 32-bit floats from a NEON register (`Vd.2S`).
+    #[inline(always)]
+    pub fn read_v2s(&self, reg: u8) -> [f32; 2] {
+        let raw = self.v[(reg & 0x1F) as usize];
+        [
+            f32::from_bits((raw & 0xFFFF_FFFF) as u32),
+            f32::from_bits(((raw >> 32) & 0xFFFF_FFFF) as u32),
+        ]
+    }
+
+    /// Write 2 lanes of 32-bit floats into a NEON register (`Vd.2S`, clearing upper 64 bits).
+    #[inline(always)]
+    pub fn write_v2s(&mut self, reg: u8, lanes: [f32; 2]) {
+        let l0 = lanes[0].to_bits() as u128;
+        let l1 = (lanes[1].to_bits() as u128) << 32;
+        self.v[(reg & 0x1F) as usize] = l0 | l1;
+    }
+
+    /// Read 128-bit NEON register as 2 lanes of 64-bit floats (`Vd.2D`).
+    #[inline(always)]
+    pub fn read_v2d(&self, reg: u8) -> [f64; 2] {
+        let raw = self.v[(reg & 0x1F) as usize];
+        [
+            f64::from_bits(raw as u64),
+            f64::from_bits((raw >> 64) as u64),
+        ]
+    }
+
+    /// Write 2 lanes of 64-bit floats into a 128-bit NEON register (`Vd.2D`).
+    #[inline(always)]
+    pub fn write_v2d(&mut self, reg: u8, lanes: [f64; 2]) {
+        let l0 = lanes[0].to_bits() as u128;
+        let l1 = (lanes[1].to_bits() as u128) << 64;
+        self.v[(reg & 0x1F) as usize] = l0 | l1;
     }
 
     /// Advance program counter by 4 bytes (standard 32-bit ARM instruction size).

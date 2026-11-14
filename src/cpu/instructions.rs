@@ -642,6 +642,47 @@ pub enum Instruction {
         is_double: bool,
     },
 
+    /// Add / Subtract with Carry (`ADC`, `ADCS`, `SBC`, `SBCS`)
+    AdcSbc {
+        rd: u8,
+        rn: u8,
+        rm: u8,
+        is_sub: bool,
+        set_flags: bool,
+        is_64: bool,
+    },
+
+    /// AdvSIMD Floating-Point Vector (`2S`, `4S` FDIV, and `2D` FADD/FSUB/FMUL/FDIV)
+    SimdFpVec {
+        rd: u8,
+        rn: u8,
+        rm: u8,
+        op: FpOp2,
+        is_double: bool,
+        q: bool,
+    },
+
+    /// ARMv8.4 `FEAT_LRCPC2` unscaled offset load-acquire / store-release (`LDAPUR*`, `STLUR*`)
+    LoadStoreRcpcUnscaled {
+        rt: u8,
+        rn: u8,
+        offset: i64,
+        size_bytes: u8,
+        is_load: bool,
+        is_signed: bool,
+        sign_ext_64: bool,
+    },
+
+    /// ARMv8.2 Cryptographic Extension `FEAT_SHA3` (`EOR3`, `BCAX`, `RAX1`, `XAR`)
+    CryptoSha3 {
+        rd: u8,
+        rn: u8,
+        rm: u8,
+        ra: u8,
+        imm6: u8,
+        op: Sha3Op,
+    },
+
     /// Unimplemented or Unknown instruction (preserves raw 32-bit opcode for debugging)
     Unimplemented {
         raw: u32,
@@ -721,6 +762,10 @@ pub enum SimdOp3 {
     Bif,
     Add,
     Sub,
+    Sqadd,
+    Uqadd,
+    Sqsub,
+    Uqsub,
     Cmeq,
     Cmtst,
     Cmhi,
@@ -808,4 +853,13 @@ pub enum FpHalfOp {
     Scalar2(FpOp2),
     /// Vector `FADD` / `FSUB` / `FMUL Vd.4H|8H, Vn.4H|8H, Vm.4H|8H`
     Vec2 { op: FpOp2, q: bool },
+}
+
+/// ARMv8.2 Cryptographic Extension `FEAT_SHA3` operations.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Sha3Op {
+    Eor3,
+    Bcax,
+    Rax1,
+    Xar,
 }

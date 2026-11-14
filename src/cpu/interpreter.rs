@@ -2,10 +2,12 @@
 
 use super::instructions::{
     BranchRegOp, Condition, DataProc1Op, FpHalfOp, FpOp2, Instruction, LogicalOp, MoveWideOp,
-    PacModifier, PauthOp, ShiftType, SimdImmOp, SimdShiftOp,
+    PacModifier, PauthOp, Sha3Op, ShiftType, SimdImmOp, SimdShiftOp,
 };
 use super::pauth::{self, PointerAuth};
+use super::registers::FPSR_QC;
 use super::simd;
+use std::sync::atomic::{fence, Ordering};
 
 /// Bytes zeroed by `DC ZVA`, as reported by `DCZID_EL0`.
 pub const DC_ZVA_BLOCK: u64 = 64;
@@ -886,6 +888,7 @@ impl Cpu {
                 // 0x5E82 = TPIDR_EL0   (S3_3_C13_C0_2)
                 // 0x5E83 = TPIDRRO_EL0 (S3_3_C13_C0_3) - Horizon TLS Pointer
                 // 0x5A10 = NZCV        (S3_3_C4_C2_0)
+                // 0x5A21 = FPSR        (S3_3_C4_C4_1)
                 // 0x5F00 = CNTFRQ_EL0  (19,200,000 Hz Switch 2 hardware timer frequency)
                 // 0x5F01 = CNTPCT_EL0  (Switch 2 physical timer counter)
                 // 0x5807 = DCZID_EL0   (S3_3_C0_C0_7)
@@ -894,15 +897,16 @@ impl Cpu {
                         0x5E82 => self.regs.tpidr_el0,
                         0x5E83 => self.regs.tpidrro_el0,
                         0x5A10 => self.regs.pstate.to_bits() as u64,
+                        0x5A21 => self.regs.fpsr as u64,
                         0x5F00 => 19_200_000,
                         // DCZID_EL0: DC ZVA permitted, block = 2^4 words = DC_ZVA_BLOCK bytes
                         0x5807 => DC_ZVA_BLOCK.trailing_zeros() as u64 - 2,
                         // ID_AA64PFR0_EL1: FP=1 (FP16), AdvSIMD=1 (FP16) — Cortex-A78C ARMv8.2-A
                         0x4020 => (1u64 << 16) | (1u64 << 20),
-                        // ID_AA64ISAR0_EL1: Atomic=2 (FEAT_LSE), DP=1 (FEAT_DotProd), CRC32=1
-                        0x4030 => (1u64 << 16) | (2u64 << 20) | (1u64 << 44),
-                        // ID_AA64ISAR1_EL1: API = 1, GPI = 1 (PAC), LRCPC = 1 (FEAT_LRCPC)
-                        0x4031 => (1 << 8) | (1 << 20) | (1 << 28),
+                        // ID_AA64ISAR0_EL1: Atomic=2 (FEAT_LSE), DP=1 (FEAT_DotProd), SHA3=1, CRC32=1
+                        0x4030 => (1u64 << 16) | (2u64 << 20) | (1u64 << 32) | (1u64 << 44),
+                        // ID_AA64ISAR1_EL1: API = 1, LRCPC = 2 (FEAT_LRCPC2), GPI = 1 (PAC)
+                        0x4031 => (1 << 8) | (2 << 20) | (1 << 28),
                         // ID_AA64PFR1_EL1: BT = 1 (FEAT_BTI)
                         0x4021 => 1,
                         0x5F01 => self.jit.cache_hits.wrapping_add(self.jit.cache_misses).wrapping_mul(16).wrapping_add(0x0123_4560),
@@ -915,6 +919,7 @@ impl Cpu {
                         0x5E82 => self.regs.tpidr_el0 = val,
                         0x5E83 => self.regs.tpidrro_el0 = val,
                         0x5A10 => self.regs.pstate.from_bits(val as u32),
+                        0x5A21 => self.regs.fpsr = val as u32,
                         _ => {}
                     }
                 }
@@ -932,33 +937,11 @@ impl Cpu {
                 if is_double {
                     let n = self.regs.read_d(rn);
                     let m = self.regs.read_d(rm);
-                    let res = match op {
-                        FpOp2::Fmul => n * m,
-                        FpOp2::Fdiv => n / m,
-                        FpOp2::Fadd => n + m,
-                        FpOp2::Fsub => n - m,
-                        FpOp2::Fmax => n.max(m),
-                        FpOp2::Fmin => n.min(m),
-                        FpOp2::Fmaxnm => if n.is_nan() { m } else if m.is_nan() { n } else { n.max(m) },
-                        FpOp2::Fminnm => if n.is_nan() { m } else if m.is_nan() { n } else { n.min(m) },
-                        FpOp2::Fnmul => -(n * m),
-                    };
-                    self.regs.write_d(rd, res);
+                    self.regs.write_d(rd, fp64_bin(op, n, m));
                 } else {
                     let n = self.regs.read_s(rn);
                     let m = self.regs.read_s(rm);
-                    let res = match op {
-                        FpOp2::Fmul => n * m,
-                        FpOp2::Fdiv => n / m,
-                        FpOp2::Fadd => n + m,
-                        FpOp2::Fsub => n - m,
-                        FpOp2::Fmax => n.max(m),
-                        FpOp2::Fmin => n.min(m),
-                        FpOp2::Fmaxnm => if n.is_nan() { m } else if m.is_nan() { n } else { n.max(m) },
-                        FpOp2::Fminnm => if n.is_nan() { m } else if m.is_nan() { n } else { n.min(m) },
-                        FpOp2::Fnmul => -(n * m),
-                    };
-                    self.regs.write_s(rd, res);
+                    self.regs.write_s(rd, fp32_bin(op, n, m));
                 }
                 self.regs.advance_pc();
                 Ok(StepResult::Continue)
@@ -1323,19 +1306,32 @@ impl Cpu {
                 let b = self.regs.read_v4s(rm);
                 let mut out = [0.0f32; 4];
                 for i in 0..4 {
-                    out[i] = match op {
-                        FpOp2::Fadd => a[i] + b[i],
-                        FpOp2::Fsub => a[i] - b[i],
-                        FpOp2::Fmul => a[i] * b[i],
-                        FpOp2::Fdiv => a[i] / b[i],
-                        FpOp2::Fmax => a[i].max(b[i]),
-                        FpOp2::Fmin => a[i].min(b[i]),
-                        FpOp2::Fmaxnm => if a[i].is_nan() { b[i] } else if b[i].is_nan() { a[i] } else { a[i].max(b[i]) },
-                        FpOp2::Fminnm => if a[i].is_nan() { b[i] } else if b[i].is_nan() { a[i] } else { a[i].min(b[i]) },
-                        FpOp2::Fnmul => -(a[i] * b[i]),
-                    };
+                    out[i] = fp32_bin(op, a[i], b[i]);
                 }
                 self.regs.write_v4s(rd, out);
+                self.regs.advance_pc();
+                Ok(StepResult::Continue)
+            }
+
+            Instruction::SimdFpVec { rd, rn, rm, op, is_double, q } => {
+                if is_double {
+                    let a = self.regs.read_v2d(rn);
+                    let b = self.regs.read_v2d(rm);
+                    self.regs.write_v2d(rd, [fp64_bin(op, a[0], b[0]), fp64_bin(op, a[1], b[1])]);
+                } else if q {
+                    let a = self.regs.read_v4s(rn);
+                    let b = self.regs.read_v4s(rm);
+                    self.regs.write_v4s(rd, [
+                        fp32_bin(op, a[0], b[0]),
+                        fp32_bin(op, a[1], b[1]),
+                        fp32_bin(op, a[2], b[2]),
+                        fp32_bin(op, a[3], b[3]),
+                    ]);
+                } else {
+                    let a = self.regs.read_v2s(rn);
+                    let b = self.regs.read_v2s(rm);
+                    self.regs.write_v2s(rd, [fp32_bin(op, a[0], b[0]), fp32_bin(op, a[1], b[1])]);
+                }
                 self.regs.advance_pc();
                 Ok(StepResult::Continue)
             }
@@ -1624,7 +1620,11 @@ impl Cpu {
 
             Instruction::SimdThreeSame { rd, rn, rm, op, esize, q } => {
                 let (d, n, m) = (self.regs.read_q(rd), self.regs.read_q(rn), self.regs.read_q(rm));
-                self.regs.write_q(rd, simd::three_same(op, d, n, m, esize as u32, q));
+                let (res, qc) = simd::three_same_with_qc(op, d, n, m, esize as u32, q);
+                if qc {
+                    self.regs.fpsr |= FPSR_QC;
+                }
+                self.regs.write_q(rd, res);
                 self.regs.advance_pc();
                 Ok(StepResult::Continue)
             }
@@ -1808,6 +1808,125 @@ impl Cpu {
                 Ok(StepResult::Continue)
             }
 
+            Instruction::AdcSbc {
+                rd,
+                rn,
+                rm,
+                is_sub,
+                set_flags,
+                is_64,
+            } => {
+                let carry_in: u128 = if self.regs.pstate.c { 1 } else { 0 };
+                if is_64 {
+                    let op1 = self.regs.read_x(rn);
+                    let op2_raw = self.regs.read_x(rm);
+                    let op2 = if is_sub { !op2_raw } else { op2_raw };
+                    let usum = (op1 as u128) + (op2 as u128) + carry_in;
+                    let ssum = (op1 as i64 as i128) + (op2 as i64 as i128) + (carry_in as i128);
+                    let res = usum as u64;
+                    self.regs.write_x(rd, res);
+                    if set_flags {
+                        self.regs.pstate.n = (res as i64) < 0;
+                        self.regs.pstate.z = res == 0;
+                        self.regs.pstate.c = (usum >> 64) != 0;
+                        self.regs.pstate.v = (res as i64 as i128) != ssum;
+                    }
+                } else {
+                    let op1 = self.regs.read_w(rn);
+                    let op2_raw = self.regs.read_w(rm);
+                    let op2 = if is_sub { !op2_raw } else { op2_raw };
+                    let usum = (op1 as u64) + (op2 as u64) + (carry_in as u64);
+                    let ssum = (op1 as i32 as i64) + (op2 as i32 as i64) + (carry_in as i64);
+                    let res = usum as u32;
+                    self.regs.write_w(rd, res);
+                    if set_flags {
+                        self.regs.pstate.n = (res as i32) < 0;
+                        self.regs.pstate.z = res == 0;
+                        self.regs.pstate.c = (usum >> 32) != 0;
+                        self.regs.pstate.v = (res as i32 as i64) != ssum;
+                    }
+                }
+                self.regs.advance_pc();
+                Ok(StepResult::Continue)
+            }
+
+            Instruction::LoadStoreRcpcUnscaled {
+                rt,
+                rn,
+                offset,
+                size_bytes,
+                is_load,
+                is_signed,
+                sign_ext_64,
+            } => {
+                let base = self.regs.read_x_or_sp(rn);
+                let addr = (base as i64).wrapping_add(offset) as u64;
+                if is_load {
+                    fence(Ordering::Acquire);
+                    match (size_bytes, is_signed) {
+                        (1, false) => self.regs.write_w(rt, mmu.read_u8(addr)? as u32),
+                        (2, false) => self.regs.write_w(rt, mmu.read_u16(addr)? as u32),
+                        (4, false) => self.regs.write_w(rt, mmu.read_u32(addr)?),
+                        (8, false) => self.regs.write_x(rt, mmu.read_u64(addr)?),
+                        (1, true) => {
+                            let s = mmu.read_u8(addr)? as i8;
+                            if sign_ext_64 {
+                                self.regs.write_x(rt, s as i64 as u64);
+                            } else {
+                                self.regs.write_w(rt, s as i32 as u32);
+                            }
+                        }
+                        (2, true) => {
+                            let s = mmu.read_u16(addr)? as i16;
+                            if sign_ext_64 {
+                                self.regs.write_x(rt, s as i64 as u64);
+                            } else {
+                                self.regs.write_w(rt, s as i32 as u32);
+                            }
+                        }
+                        (4, true) => {
+                            let s = mmu.read_u32(addr)? as i32;
+                            self.regs.write_x(rt, s as i64 as u64);
+                        }
+                        _ => {}
+                    }
+                } else {
+                    fence(Ordering::Release);
+                    match size_bytes {
+                        1 => mmu.write_u8(addr, self.regs.read_w(rt) as u8)?,
+                        2 => mmu.write_u16(addr, self.regs.read_w(rt) as u16)?,
+                        4 => mmu.write_u32(addr, self.regs.read_w(rt))?,
+                        8 => mmu.write_u64(addr, self.regs.read_x(rt))?,
+                        _ => {}
+                    }
+                }
+                self.regs.advance_pc();
+                Ok(StepResult::Continue)
+            }
+
+            Instruction::CryptoSha3 { rd, rn, rm, ra, imm6, op } => {
+                let n = self.regs.read_q(rn);
+                let m = self.regs.read_q(rm);
+                let out = match op {
+                    Sha3Op::Eor3 => n ^ m ^ self.regs.read_q(ra),
+                    Sha3Op::Bcax => n ^ (m & !self.regs.read_q(ra)),
+                    Sha3Op::Rax1 => {
+                        let lo = (n as u64) ^ (m as u64).rotate_left(1);
+                        let hi = ((n >> 64) as u64) ^ ((m >> 64) as u64).rotate_left(1);
+                        (lo as u128) | ((hi as u128) << 64)
+                    }
+                    Sha3Op::Xar => {
+                        let rot = imm6 as u32;
+                        let lo = ((n as u64) ^ (m as u64)).rotate_right(rot);
+                        let hi = (((n >> 64) as u64) ^ ((m >> 64) as u64)).rotate_right(rot);
+                        (lo as u128) | ((hi as u128) << 64)
+                    }
+                };
+                self.regs.write_q(rd, out);
+                self.regs.advance_pc();
+                Ok(StepResult::Continue)
+            }
+
             Instruction::Unimplemented { raw } => {
                 Err(CpuError::UnimplementedInstruction { raw, pc })
             }
@@ -1836,6 +1955,103 @@ impl Cpu {
         }
     }
 }
+
+/// Generates Armv8 IEEE-754 binary FP execution helpers obeying `FPProcessNaNs` (`FPCR.DN == 0`),
+/// number-preferring `FMAXNM`/`FMINNM`, and canonical positive default quiet NaN on invalid ops.
+macro_rules! impl_arm_fp_bin {
+    ($fn_name:ident, $ty:ty, $bits:ty, $qnan_bit:expr, $default_qnan:expr) => {
+        #[inline]
+        fn $fn_name(op: FpOp2, a: $ty, b: $ty) -> $ty {
+            let process_nans = || -> Option<$ty> {
+                let ab = a.to_bits();
+                let bb = b.to_bits();
+                let a_snan = a.is_nan() && (ab & $qnan_bit) == 0;
+                let b_snan = b.is_nan() && (bb & $qnan_bit) == 0;
+                if a_snan {
+                    Some(<$ty>::from_bits(ab | $qnan_bit))
+                } else if b_snan {
+                    Some(<$ty>::from_bits(bb | $qnan_bit))
+                } else if a.is_nan() {
+                    Some(a)
+                } else if b.is_nan() {
+                    Some(b)
+                } else {
+                    None
+                }
+            };
+            match op {
+                FpOp2::Fmaxnm | FpOp2::Fminnm => {
+                    let ab = a.to_bits();
+                    let bb = b.to_bits();
+                    let a_snan = a.is_nan() && (ab & $qnan_bit) == 0;
+                    let b_snan = b.is_nan() && (bb & $qnan_bit) == 0;
+                    if a_snan {
+                        return <$ty>::from_bits(ab | $qnan_bit);
+                    }
+                    if b_snan {
+                        return <$ty>::from_bits(bb | $qnan_bit);
+                    }
+                    if a.is_nan() && b.is_nan() {
+                        return a;
+                    }
+                    if a.is_nan() {
+                        return b;
+                    }
+                    if b.is_nan() {
+                        return a;
+                    }
+                    if a == 0.0 && b == 0.0 {
+                        return if matches!(op, FpOp2::Fmaxnm) {
+                            if ab == 0 { a } else { b }
+                        } else if ab != 0 {
+                            a
+                        } else {
+                            b
+                        };
+                    }
+                    if matches!(op, FpOp2::Fmaxnm) { a.max(b) } else { a.min(b) }
+                }
+                FpOp2::Fmax | FpOp2::Fmin => {
+                    if let Some(nan) = process_nans() {
+                        return nan;
+                    }
+                    if a == 0.0 && b == 0.0 {
+                        let ab = a.to_bits();
+                        return if matches!(op, FpOp2::Fmax) {
+                            if ab == 0 { a } else { b }
+                        } else if ab != 0 {
+                            a
+                        } else {
+                            b
+                        };
+                    }
+                    if matches!(op, FpOp2::Fmax) { a.max(b) } else { a.min(b) }
+                }
+                _ => {
+                    if let Some(nan) = process_nans() {
+                        return nan;
+                    }
+                    let res = match op {
+                        FpOp2::Fmul => a * b,
+                        FpOp2::Fdiv => a / b,
+                        FpOp2::Fadd => a + b,
+                        FpOp2::Fsub => a - b,
+                        FpOp2::Fnmul => -(a * b),
+                        _ => unreachable!(),
+                    };
+                    if res.is_nan() {
+                        <$ty>::from_bits($default_qnan)
+                    } else {
+                        res
+                    }
+                }
+            }
+        }
+    };
+}
+
+impl_arm_fp_bin!(fp64_bin, f64, u64, 1u64 << 51, 0x7FF8_0000_0000_0000u64);
+impl_arm_fp_bin!(fp32_bin, f32, u32, 1u32 << 22, 0x7FC0_0000u32);
 
 #[cfg(test)]
 mod tests {
@@ -2137,5 +2353,129 @@ mod tests {
             c.regs.write_q(2, super::simd::dup(2, 32, true));
         });
         assert_eq!(cpu.regs.read_q(0), super::simd::dup(1, 32, true));
+    }
+
+    #[test]
+    fn feat_lrcpc2_ldapur_and_stlur_variants() {
+        let base = DATA + 0x100;
+        let words = [
+            0x1900_1020, // stlurb w0, [x1, #1]
+            0x591F_E023, // stlurh w3, [x1, #-2]
+            0x9900_4024, // stlur w4, [x1, #4]
+            0xD91F_0025, // stlur x5, [x1, #-16]
+            0x1940_1022, // ldapurb w2, [x1, #1]
+            0x595F_E026, // ldapurh w6, [x1, #-2]
+            0x9940_4027, // ldapur w7, [x1, #4]
+            0xD95F_0028, // ldapur x8, [x1, #-16]
+            0x1980_1029, // ldapursb x9, [x1, #1]
+            0x599F_E02A, // ldapursh x10, [x1, #-2]
+            0x9980_402B, // ldapursw x11, [x1, #4]
+            0x19C0_102C, // ldapursb w12, [x1, #1]
+            0x59DF_E02D, // ldapursh w13, [x1, #-2]
+        ];
+        let (cpu, _) = run(&words, |c, _| {
+            c.regs.write_x(1, base);
+            c.regs.write_w(0, 0x80);
+            c.regs.write_w(3, 0x8001);
+            c.regs.write_w(4, 0x8000_0002);
+            c.regs.write_x(5, 0x1122_3344_5566_7788);
+        });
+        assert_eq!(cpu.regs.read_x(2), 0x80);
+        assert_eq!(cpu.regs.read_x(6), 0x8001);
+        assert_eq!(cpu.regs.read_x(7), 0x8000_0002);
+        assert_eq!(cpu.regs.read_x(8), 0x1122_3344_5566_7788);
+        assert_eq!(cpu.regs.read_x(9), 0xFFFF_FFFF_FFFF_FF80);
+        assert_eq!(cpu.regs.read_x(10), 0xFFFF_FFFF_FFFF_8001);
+        assert_eq!(cpu.regs.read_x(11), 0xFFFF_FFFF_8000_0002);
+        assert_eq!(cpu.regs.read_x(12), 0xFFFF_FF80);
+        assert_eq!(cpu.regs.read_x(13), 0xFFFF_8001);
+    }
+
+    #[test]
+    fn feat_sha3_instructions_match_arm_spec() {
+        let a: u128 = 0x0123_4567_89AB_CDEF_FEDC_BA98_7654_3210;
+        let b: u128 = 0x0F0F_F0F0_AA55_55AA_1357_9BDF_2468_ACE0;
+        let c: u128 = 0xFFFF_0000_FFFF_0000_0000_FFFF_0000_FFFF;
+
+        let (cpu_eor3, _) = run(&[0xCE02_0C20], |cpu, _| {
+            cpu.regs.write_q(1, a);
+            cpu.regs.write_q(2, b);
+            cpu.regs.write_q(3, c);
+        });
+        assert_eq!(cpu_eor3.regs.read_q(0), a ^ b ^ c);
+
+        let (cpu_bcax, _) = run(&[0xCE22_0C20], |cpu, _| {
+            cpu.regs.write_q(1, a);
+            cpu.regs.write_q(2, b);
+            cpu.regs.write_q(3, c);
+        });
+        assert_eq!(cpu_bcax.regs.read_q(0), a ^ (b & !c));
+
+        let (cpu_rax1, _) = run(&[0xCE62_8C20], |cpu, _| {
+            cpu.regs.write_q(1, a);
+            cpu.regs.write_q(2, b);
+        });
+        let rax1_lo = (a as u64) ^ (b as u64).rotate_left(1);
+        let rax1_hi = ((a >> 64) as u64) ^ ((b >> 64) as u64).rotate_left(1);
+        assert_eq!(cpu_rax1.regs.read_q(0), (rax1_lo as u128) | ((rax1_hi as u128) << 64));
+
+        let (cpu_xar, _) = run(&[0xCE82_1C20], |cpu, _| {
+            cpu.regs.write_q(1, a);
+            cpu.regs.write_q(2, b);
+        });
+        let xar_lo = ((a as u64) ^ (b as u64)).rotate_right(7);
+        let xar_hi = (((a >> 64) as u64) ^ ((b >> 64) as u64)).rotate_right(7);
+        assert_eq!(cpu_xar.regs.read_q(0), (xar_lo as u128) | ((xar_hi as u128) << 64));
+    }
+
+    #[test]
+    fn adcs_saturating_qc_and_default_nan_match_arm_spec() {
+        // ADCS X0, X1, X2 with u64::MAX + 0 + C_in(1) -> X0=0, NZCV=0110 (Z=1, C=1)
+        let (cpu, _) = run(&[0xBA02_0020], |c, _| {
+            c.regs.pstate.from_bits(0b0010 << 28);
+            c.regs.write_x(1, u64::MAX);
+            c.regs.write_x(2, 0);
+        });
+        assert_eq!(cpu.regs.read_x(0), 0);
+        assert_eq!(cpu.regs.pstate.to_bits() >> 28, 0b0110);
+
+        // SBCS W0, W1, W2 with 0 - 1 - !C(1) (C=0 -> borrow) -> -2, N=1,Z=0,C=0,V=0
+        let (cpu, _) = run(&[0x7A02_0020], |c, _| {
+            c.regs.pstate.from_bits(0);
+            c.regs.write_w(1, 0);
+            c.regs.write_w(2, 1);
+        });
+        assert_eq!(cpu.regs.read_w(0), (-2i32) as u32);
+        assert!(!cpu.regs.pstate.c && cpu.regs.pstate.n && !cpu.regs.pstate.z && !cpu.regs.pstate.v);
+
+        // SQADD V0.16B saturating sets sticky FPSR.QC and MRS/MSR FPSR reads/clears it
+        let (cpu, _) = run(&[0x4E22_0C20, 0xD53B_442B, 0xD51B_442C], |c, _| {
+            c.regs.fpsr = 0;
+            c.regs.write_x(12, 0);
+            c.regs.write_q(1, 0x7Fu128);
+            c.regs.write_q(2, 0x02u128);
+        });
+        assert_eq!(cpu.regs.read_q(0) & 0xFF, 0x7F);
+        assert_eq!(cpu.regs.read_x(11), FPSR_QC as u64);
+        assert_eq!(cpu.regs.fpsr, 0);
+
+        // Non-saturating UQSUB preserves existing FPSR.QC=0
+        let (cpu, _) = run(&[0x6EE2_2C20], |c, _| {
+            c.regs.fpsr = 0;
+            c.regs.write_q(1, 5);
+            c.regs.write_q(2, 3);
+        });
+        assert_eq!(cpu.regs.read_q(0), 2);
+        assert_eq!(cpu.regs.fpsr, 0);
+
+        // FMUL V0.2D, V1.2D, V2.2D with 0.0 * +inf produces Arm positive default quiet NaN
+        let (cpu, _) = run(&[0x6E62_DC20], |c, _| {
+            c.regs.write_v2d(1, [0.0, 0.0]);
+            c.regs.write_v2d(2, [f64::INFINITY, f64::INFINITY]);
+        });
+        assert_eq!(
+            cpu.regs.read_q(0),
+            (0x7FF8_0000_0000_0000u128) | ((0x7FF8_0000_0000_0000u128) << 64)
+        );
     }
 }

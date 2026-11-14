@@ -66,7 +66,8 @@ pub fn dup(val: u64, esize: u32, q: bool) -> u128 {
 }
 
 /// Three-register same-type operations. `d` is the destination's old value (used by `BSL`/`BIT`/`BIF`).
-pub fn three_same(op: SimdOp3, d: u128, n: u128, m: u128, esize: u32, q: bool) -> u128 {
+/// Also returns whether sticky saturation occurred (`FPSR.QC`).
+pub fn three_same_with_qc(op: SimdOp3, d: u128, n: u128, m: u128, esize: u32, q: bool) -> (u128, bool) {
     let bitwise = match op {
         SimdOp3::And => Some(n & m),
         SimdOp3::Bic => Some(n & !m),
@@ -79,12 +80,13 @@ pub fn three_same(op: SimdOp3, d: u128, n: u128, m: u128, esize: u32, q: bool) -
         _ => None,
     };
     if let Some(v) = bitwise {
-        return v & width_mask(q);
+        return (v & width_mask(q), false);
     }
 
     let count = lanes(esize, q);
     let all = mask(esize);
     let mut out = 0u128;
+    let mut qc = false;
     let pairwise = matches!(op, SimdOp3::Addp | SimdOp3::Uminp | SimdOp3::Umaxp | SimdOp3::Sminp | SimdOp3::Smaxp);
     for i in 0..count {
         let (a, b) = if pairwise {
@@ -98,6 +100,42 @@ pub fn three_same(op: SimdOp3, d: u128, n: u128, m: u128, esize: u32, q: bool) -
         let r = match op {
             SimdOp3::Add | SimdOp3::Addp => a.wrapping_add(b),
             SimdOp3::Sub => a.wrapping_sub(b),
+            SimdOp3::Sqadd | SimdOp3::Sqsub => {
+                let sum = if matches!(op, SimdOp3::Sqsub) {
+                    (sa as i128) - (sb as i128)
+                } else {
+                    (sa as i128) + (sb as i128)
+                };
+                let min_val = -(1i128 << (esize - 1));
+                let max_val = (1i128 << (esize - 1)) - 1;
+                if sum > max_val {
+                    qc = true;
+                    max_val as u64
+                } else if sum < min_val {
+                    qc = true;
+                    min_val as u64
+                } else {
+                    sum as u64
+                }
+            }
+            SimdOp3::Uqadd => {
+                let max_val = (1u128 << esize) - 1;
+                let sum = (a as u128) + (b as u128);
+                if sum > max_val {
+                    qc = true;
+                    max_val as u64
+                } else {
+                    sum as u64
+                }
+            }
+            SimdOp3::Uqsub => {
+                if a < b {
+                    qc = true;
+                    0
+                } else {
+                    a - b
+                }
+            }
             SimdOp3::Cmeq => if a == b { all } else { 0 },
             SimdOp3::Cmtst => if a & b != 0 { all } else { 0 },
             SimdOp3::Cmhi => if a > b { all } else { 0 },
@@ -112,7 +150,12 @@ pub fn three_same(op: SimdOp3, d: u128, n: u128, m: u128, esize: u32, q: bool) -
         };
         set_lane(&mut out, esize, i, r);
     }
-    out
+    (out, qc)
+}
+
+/// Three-register same-type operations. `d` is the destination's old value (used by `BSL`/`BIT`/`BIF`).
+pub fn three_same(op: SimdOp3, d: u128, n: u128, m: u128, esize: u32, q: bool) -> u128 {
+    three_same_with_qc(op, d, n, m, esize, q).0
 }
 
 /// Two-register miscellaneous operations.

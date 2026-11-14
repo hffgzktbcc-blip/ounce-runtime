@@ -103,7 +103,7 @@ cargo build --release --locked
 | `cargo run --release -- test` | Execute the synthetic architecture verification harness (25 stages) |
 | `cargo run --release -- jit-selftest` | Validate host native code generation and recompiler caches |
 | `cargo run --release -- --present=gpu 3d 300` | Launch the 3D graphics demonstration with host GPU rendering |
-| `cargo run --release -- run path/to/app.nro` | Execute an unencrypted homebrew NRO program |
+| `cargo run --release -- run|run-nro path/to/app.nro` | Execute an unencrypted homebrew NRO program |
 | `cargo run --release -- help` | Display comprehensive CLI options and flag reference |
 
 ---
@@ -111,7 +111,8 @@ cargo build --release --locked
 ## Verification & Parity
 
 - **Synthetic Architecture Harness**: 27 architecture checks across 25 stages validating instruction semantics, memory permissions, atomics, and service dispatch.
-- **Unit & Integration Suite**: 466 passing tests spanning JIT compilation, fastmem isolation, RomFS parsing, and IPC serialization.
+- **Unit & Integration Suite**: 495 passing workspace tests (470 runtime unit, 20 recompiler unit, 5 CLI integration) spanning JIT compilation, fastmem isolation, RomFS parsing, and IPC serialization.
+- **ARM64 Hardware Conformance**: 12/12 pass on `conformance/arm64-v0.2.0` (and 1/1 on `arm64-v0.1.0`) across `interp`, `tier3`, `tier4`, and `nce`, including `FPSR.QC` saturation, default quiet NaN propagation, `ADCS`/`SBCS` carry chains, `FEAT_LRCPC2` (`LDAPUR*`/`STLUR*`), and `FEAT_SHA3` (`EOR3`, `BCAX`, `RAX1`, `XAR`).
 - **Corpus Parity**: Head-to-head homebrew execution comparison with `ounce-core` is tracked under `docs/CORPUS_PARITY.md`.
 
 ---
