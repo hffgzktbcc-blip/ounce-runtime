@@ -556,6 +556,13 @@ fn run_vm_internal(
     max_instructions: usize,
     max_frames: usize,
 ) -> VmOutcome {
+    // Some run callers leave backend creation lazy. Resolve it before deciding
+    // whether host devices are needed (and before selecting GPU acceleration).
+    if let Some(disp) = display.as_deref_mut() {
+        if let Err(error) = disp.init_window() {
+            eprintln!("[Display Error] {error}");
+        }
+    }
     let is_gpu = display.as_ref().map_or(false, |d| d.is_gpu_accelerated());
     kernel.nvgpu.set_hardware_acceleration(is_gpu);
 
