@@ -1,0 +1,43 @@
+============================================================
+  OUNCE-NX2 v0.4.0: NVIDIA Tegra T239 (GA10F) / Horizon OS Runtime
+  Target: ARMv8.5-A AArch64 (PAC + BTI) | Switch 2 & Switch 1 Execution
+============================================================
+
+[Loader] Reading package/executable: /Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-gold-parity/tests/fixtures/nro/threads/threads.nro
+[BootLoader] Successfully loaded package:
+  Format      : NRO0
+  Title ID    : 0x0000000000000000
+  Code size   : 0x00005000 (20480 bytes)
+  MOD0 relocs : 0
+[VM] Starting execution at PC: 0x0000000080000000
+[VM] Stack Pointer: 0x0000007FFFFFE000
+[CPU] Engine: NCE
+ounce-threads total=0x00000384
+ounce-threads result=0x00000EEE
+
+[VM] Process exited gracefully (svcExitProcess).
+[CPU] NCE: 193 NCE blocks compiled, 8434 NCE runs, 15491 NCE / 47422 fallback insns
+[VM Summary] Executed 62913 instructions in 47.8901ms (1.31 MIPS) | Frames: 0
+  -> Multi-Core Scheduler: 3 KThreads Spawned | 3 KThreads Completed
+  -> 2D Texture Sampler: 0 Texels | Futex/Mutex Locks: 1170 | CondVar Signals: 2
+  -> Basic-Block JIT Cache: 423 Blocks (2194 Insns) | Hits: 14440 | Misses: 423
+  -> Memory Buckets (38488 KB): Code=28 KB | VRAM=3600 KB | Stack/TLS=2052 KB | Data=32808 KB
+  -> Final X0: 0 (0x0000000000000000) | D0: 0.00
+        0.07 real         0.05 user         0.01 sys
+            59064320  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+                3837  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   0  voluntary context switches
+                  28  involuntary context switches
+           348793156  instructions retired
+           139273216  cycles elapsed
+            49267168  peak memory footprint

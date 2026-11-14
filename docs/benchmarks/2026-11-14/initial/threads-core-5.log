@@ -1,0 +1,41 @@
+============================================================
+  OUNCE-CORE: NVIDIA Tegra T239 / Horizon Research Runtime
+  Target: ARMv8.5-A AArch64 (PAC + BTI) | Horizon OS 64-bit Microkernel
+============================================================
+
+[Loader] Reading package/executable: /Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-gold-parity/tests/fixtures/nro/threads/threads.nro
+[BootLoader] Successfully loaded package:
+  Format      : NRO0
+  Title ID    : 0x0000000000000000
+  Code size   : 0x00005000 (20480 bytes)
+  MOD0 relocs : 0
+[VM] Starting execution at PC: 0x0000000080000000
+[VM] Stack Pointer: 0x0000007FFFFFE000
+ounce-threads total=0x00000384
+ounce-threads result=0x00000EEE
+
+[VM] Process exited gracefully (svcExitProcess).
+[VM Summary] Executed 62912 instructions in 6.8360ms (9.20 MIPS) | Frames: 0
+  -> Multi-Core Scheduler: 3 KThreads Spawned | 3 KThreads Completed
+  -> 2D Texture Sampler: 0 Texels | Futex/Mutex Locks: 1170 | CondVar Signals: 2
+  -> Basic-Block JIT Cache: 466 Blocks (2309 Insns) | Hits: 62446 | Misses: 466
+  -> Memory Buckets (266840 KB): Code=28 KB | VRAM=3600 KB | Stack/TLS=1028 KB | Data=262184 KB
+  -> Final X0: 0 (0x0000000000000000) | D0: 0.00
+        0.08 real         0.03 user         0.03 sys
+           294207488  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               18182  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   0  voluntary context switches
+                  16  involuntary context switches
+           442860481  instructions retired
+           197337864  cycles elapsed
+           285934264  peak memory footprint

@@ -1,0 +1,15 @@
+{
+  "runtime_sha": "b805034b01cea88c2cbc49226e8b7408348db539",
+  "runtime_base_sha": "8f00070b1928f4e56596ee2c28a64f6fa08f1595",
+  "core_sha": "1e9c4d6b1f8905377ffd68f97c9574ac6532820a",
+  "rustc": "rustc 1.98.0 (88d9e12ae 2026-08-18)",
+  "host": "Darwin Nathanaels-MacBook-Air-2.local 25.6.0 Darwin Kernel Version 25.6.0: Fri Jul 31 19:18:29 PDT 2026; root:xnu-12377.161.14~5/RELEASE_ARM64_T8122 arm64",
+  "os": "ProductName:\t\tmacOS\nProductVersion:\t\t26.6.2\nBuildVersion:\t\t25G83",
+  "features": [
+    "native-jit",
+    "gpu-present"
+  ],
+  "core_build": "cargo build --release --locked --manifest-path /Users/nathanaelgovender/orca/ounce-core/Cargo.toml",
+  "runtime_build": "cargo build --release --locked",
+  "note": "Other independent Orca workers were compiling and testing on this host; background load uncontrolled. Results are descriptive, not isolated performance claims."
+}

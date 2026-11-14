@@ -1,0 +1,40 @@
+============================================================
+  OUNCE-CORE: NVIDIA Tegra T239 / Horizon Research Runtime
+  Target: ARMv8.5-A AArch64 (PAC + BTI) | Horizon OS 64-bit Microkernel
+============================================================
+
+[Loader] Reading package/executable: /Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-gold-parity/tests/fixtures/nro/romfs/romfs.nro
+[BootLoader] Successfully loaded package:
+  Format      : NRO0
+  Title ID    : 0x0000000000000000
+  Code size   : 0x0000B000 (45056 bytes)
+  MOD0 relocs : 0
+[VM] Starting execution at PC: 0x0000000080000000
+[VM] Stack Pointer: 0x0000007FFFFFE000
+ounce-romfs result=0x00000EEE
+
+[VM] Process exited gracefully (svcExitProcess).
+[VM Summary] Executed 24916 instructions in 3.9072ms (6.38 MIPS) | Frames: 0
+  -> GPU Commands: 0 | 3D Draw Calls: 0 | Triangles Rasterized: 0 | HIPC Calls: 24
+  -> RomFS Bytes Read: 357 | Audio Buffers: 0 | PCM Samples: 0 (Peak Amp: 0)
+  -> Basic-Block JIT Cache: 763 Blocks (3837 Insns) | Hits: 24153 | Misses: 763
+  -> Memory Buckets (266888 KB): Code=48 KB | VRAM=3600 KB | Stack/TLS=1028 KB | Data=262212 KB
+  -> Final X0: 0 (0x0000000000000000) | D0: 0.00
+        0.11 real         0.04 user         0.05 sys
+           294256640  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               18183  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   0  voluntary context switches
+                 117  involuntary context switches
+           409552262  instructions retired
+           208949540  cycles elapsed
+           285983440  peak memory footprint
