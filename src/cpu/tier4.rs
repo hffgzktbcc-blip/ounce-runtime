@@ -1172,6 +1172,10 @@ impl Tier4JitEngine {
     /// used up. `None` if `cpu.regs.pc` has no translation (yet).
     /// Returns (instructions, exit to report, continue on Tier-3).
     fn run_native(&mut self, cpu: &mut Cpu, mmu: &mut Memory, budget: usize) -> Option<(usize, Option<BlockExit>, bool)> {
+        // Linked native blocks finish the block crossing their soft budget. Reserve
+        // one maximum-sized block, then interpret the short tail so VM scheduler
+        // quanta and public instruction limits remain exact.
+        if budget < MAX_BLOCK_INSNS { return None; }
         let mut id = self.lookup_or_compile_fast(cpu.regs.pc, mmu)?;
         let r = &mut cpu.regs;
         let mut state = GuestState { x: r.x, sp: r.sp, pc: r.pc, nzcv: r.pstate.to_bits() as u64, v: r.v };
@@ -1180,7 +1184,7 @@ impl Tier4JitEngine {
             let rec = self.rec.as_mut()?;
             let links_before = rec.links_taken();
             let exit = if self.linking {
-                let left = u32::try_from(budget - executed).unwrap_or(u32::MAX);
+                let left = u32::try_from(budget - executed - (MAX_BLOCK_INSNS - 1)).unwrap_or(u32::MAX);
                 rec.run_linked(id, &mut state, &mut MmuBus { mmu }, left)
             } else {
                 rec.run(id, &mut state, &mut MmuBus { mmu })
@@ -1203,7 +1207,7 @@ impl Tier4JitEngine {
                     }
                 },
             }
-            if executed >= budget {
+            if budget - executed < MAX_BLOCK_INSNS {
                 break (None, false);
             }
             // Guest code pages only change through a store, which exits with `CodeWritten`, so the

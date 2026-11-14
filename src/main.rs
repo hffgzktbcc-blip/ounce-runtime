@@ -13,7 +13,7 @@ mod loader;
 mod mmu;
 mod ui;
 
-use cpu::{Cpu, StepResult};
+use cpu::Cpu;
 use gpu::nvgpu::{
     NvgpuChannel, SubmissionMode, METHOD_BIND_SHADER_PROGRAM, METHOD_BIND_TEXTURE_2D,
     METHOD_CLEAR_SURFACE, METHOD_DISPATCH_UPSCALE_2X, METHOD_DRAW_ARRAYS,
@@ -53,7 +53,7 @@ fn main() {
         if let Some(value) = arg.strip_prefix("--cpu=") {
             match cpu::CpuTier::parse(value) {
                 Some(tier) => cpu::CpuTier::set_cli_override(tier),
-                None => eprintln!("[CPU] Unknown --cpu value '{value}' (expected tier3, tier4, or nce); ignoring."),
+                None => eprintln!("[CPU] Unknown --cpu value '{value}' (expected interp, tier3, tier4, or nce); ignoring."),
             }
             continue;
         }
@@ -85,6 +85,7 @@ fn main() {
             run_built_in_demo();
         }
         "jit-selftest" => run_jit_selftest(),
+        "fuzz-replay" => std::process::exit(fuzz_replay(&args[2..])),
         "gfx" | "display" => {
             print_banner();
             let max_frames = if args.len() >= 3 {
@@ -339,7 +340,7 @@ fn print_usage() {
     println!("    {}gfx{} [frames]            Launch 2D high-bandwidth VRAM Framebuffer Display Demo (1280x720)", s.green, s.reset);
     println!("    {}--present={}<mode>        Presentation backend: auto, gpu (wgpu Metal/Vulkan), minifb, headless", s.green, s.reset);
     println!("    {}--sdmc={}<dir>            Host folder behind the guest's sdmc:/ (sandboxed; default: in-memory SD card)", s.green, s.reset);
-    println!("    {}--cpu={}<tier>            CPU block engine for Stage 20: tier3 or tier4 (Apple Silicon MAP_JIT native)", s.green, s.reset);
+    println!("    {}--cpu={}<tier>            CPU engine for run and Stage 20: interp, tier3, tier4 or nce", s.green, s.reset);
     println!();
     println!("  {}VERIFICATION & DIAGNOSTICS:{}", s.bold, s.reset);
     println!("    {}test{}                    Execute 25-stage full-stack verification & hardware benchmark suite", s.green, s.reset);
@@ -564,11 +565,14 @@ fn run_vm_internal(
     let start = Instant::now();
     let mut instructions_executed = 0;
     let mut frames_presented = 0;
-    let mut gamepad_mgr = HostGamepadManager::new();
-    if let Some(pad_name) = gamepad_mgr.active_gamepad_name() {
+    let host_devices = display.as_ref().is_some_and(|d| d.backend_name().is_some_and(|name| name != "headless"));
+    let mut gamepad_mgr = host_devices.then(HostGamepadManager::new);
+    let mut engine = cpu::CpuEngine::new(cpu::CpuTier::from_env());
+    println!("[CPU] Engine: {}", engine.name());
+    if let Some(pad_name) = gamepad_mgr.as_mut().and_then(|mgr| mgr.active_gamepad_name()) {
         println!("[HID] Physical gamepad attached: {}", pad_name);
     }
-    let host_audio = HostAudioSink::new();
+    let host_audio = host_devices.then(HostAudioSink::new);
     let mut stop = VmStop::Budget;
     let mut last_event_pump = Instant::now();
     let mut last_frame_present = Instant::now();
@@ -590,7 +594,9 @@ fn run_vm_internal(
                 }
                 if let Some(ref mut h) = hid {
                     h.poll_keyboard(&disp.get_active_keys());
-                    gamepad_mgr.poll(h);
+                    if let Some(mgr) = gamepad_mgr.as_mut() {
+                        mgr.poll(h);
+                    }
                     if kernel.ipc.hid.addr.is_some() {
                         let _ = h.update_shared_memory(&mut mmu);
                         kernel.ipc.hid.input = kernel::hid::NpadInput::from_controller(&h.state);
@@ -611,25 +617,28 @@ fn run_vm_internal(
                     break;
                 }
                 frames_presented += 1;
+                if max_frames > 0 && frames_presented >= max_frames {
+                    stop = VmStop::FrameLimit;
+                    break;
+                }
             }
         }
 
-        match cpu.step(&mut mmu) {
-            Ok(StepResult::Continue) => {
-                instructions_executed += 1;
-                // Time slice: a guest thread that spins without SVCs must not starve the others.
-                if instructions_executed % kernel::scheduler::PREEMPT_INTERVAL == 0 {
-                    kernel.scheduler.preempt(&mut cpu);
-                }
-            }
-            Ok(StepResult::Svc(svc_id)) => {
-                instructions_executed += 1;
+        let quantum = kernel::scheduler::PREEMPT_INTERVAL;
+        let mut budget = quantum - instructions_executed % quantum;
+        if max_instructions > 0 {
+            budget = budget.min(max_instructions - instructions_executed);
+        }
+        let (executed, exit) = engine.run_slice(&mut cpu, &mut mmu, budget);
+        instructions_executed += executed;
+        match exit {
+            cpu::tier2_jit::BlockExit::Svc { svc_id } => {
                 match kernel.dispatch_svc(svc_id, &mut cpu, &mut mmu) {
                     SvcResult::Success => {
                         // libnx audio renderer output plays as it is mixed (homebrew may never present a
                         // frame), and the host device's playback clock paces the guest.
                         if kernel.ipc.audio_renderer.is_some() {
-                            stream_audio_to_host(&mut kernel, &host_audio);
+                            if let Some(sink) = host_audio.as_ref() { stream_audio_to_host(&mut kernel, sink); }
                         }
                     }
                     SvcResult::PresentFrame => {
@@ -641,18 +650,20 @@ fn run_vm_internal(
                                 let active_keys = disp.get_active_keys();
                                 h.poll_keyboard(&active_keys);
                             }
-                            gamepad_mgr.poll(h);
+                            if let Some(mgr) = gamepad_mgr.as_mut() {
+                        mgr.poll(h);
+                    }
                             let _ = h.update_shared_memory(&mut mmu);
                         }
 
                         // 2. Stream audio to host output sink (48 kHz stereo)
                         let audio_samples = kernel.audio.drain_samples();
                         if !audio_samples.is_empty() {
-                            host_audio.push_samples(&audio_samples);
+                            if let Some(sink) = host_audio.as_ref() { sink.push_samples(&audio_samples); }
                         }
                         let audren_samples = kernel.audren.drain_samples();
                         if !audren_samples.is_empty() {
-                            host_audio.push_samples(&audren_samples);
+                            if let Some(sink) = host_audio.as_ref() { sink.push_samples(&audren_samples); }
                         }
 
                         // 3. Present video frame to host window
@@ -677,10 +688,10 @@ fn run_vm_internal(
                     SvcResult::ExitProcess => {
                         println!("\n[VM] Process exited gracefully (svcExitProcess).");
                         if kernel.ipc.audio_renderer.is_some() {
-                            stream_audio_to_host(&mut kernel, &host_audio);
+                            if let Some(sink) = host_audio.as_ref() { stream_audio_to_host(&mut kernel, sink); }
                             // Let the last queued audio play out (bounded) before the process ends.
                             let deadline = Instant::now() + std::time::Duration::from_secs(3);
-                            while host_audio.is_enabled && host_audio.queued_sample_count() > 0 && Instant::now() < deadline {
+                            while host_audio.as_ref().is_some_and(|sink| sink.is_enabled && sink.queued_sample_count() > 0) && Instant::now() < deadline {
                                 std::thread::sleep(std::time::Duration::from_millis(5));
                             }
                         }
@@ -709,19 +720,18 @@ fn run_vm_internal(
                     }
                 }
             }
-            Ok(StepResult::Halt(msg)) => {
-                println!("\n[VM] CPU Halted: {}", msg);
-                stop = VmStop::Halt;
-                break;
-            }
-            Err(e) => {
-                eprintln!("\n[VM Error] {}", e);
-                eprintln!("  Final PC: 0x{:016X}", cpu.regs.pc);
+            cpu::tier2_jit::BlockExit::Fault { pc } => {
+                eprintln!("[VM Error] CPU fault at 0x{pc:016X}");
                 stop = VmStop::Fault;
                 break;
             }
+            _ => {}
+        }
+        if instructions_executed > 0 && instructions_executed % quantum == 0 {
+            kernel.scheduler.preempt(&mut cpu);
         }
     }
+    println!("[CPU] {}: {}", engine.name(), engine.stats());
 
     let elapsed = start.elapsed();
     let ips = if elapsed.as_secs_f64() > 0.0 {
@@ -3826,4 +3836,74 @@ fn run_jit_selftest() {
         eprintln!("[Tier-4] Not available: rebuild with `--features native-jit`.");
         std::process::exit(1);
     }
+}
+
+/// Replay the public register-state trace without claiming unsupported FPSR coverage.
+fn fuzz_replay(args: &[String]) -> i32 {
+    fn replay(args: &[String]) -> Result<(usize, bool), String> {
+        if args.len() != 3 || args[0] != "--engine" {
+            return Err("usage: fuzz-replay --engine <interp|tier3|tier4|nce> <trace>".into());
+        }
+        let tier = cpu::CpuTier::parse(&args[1]).ok_or("unknown engine")?;
+        let raw = std::fs::read_to_string(&args[2]).map_err(|e| e.to_string())?;
+        let f: Vec<_> = raw.split_whitespace().collect();
+        if f.len() != 132 || f[0] != "T" || f[66] != "=>" {
+            return Err("invalid trace shape".into());
+        }
+        let hex = |i: usize| u128::from_str_radix(f[i], 16).map_err(|e| e.to_string());
+        let mut guest = Cpu::new();
+        guest.regs.pc = 0x1000;
+        guest.regs.pstate.from_bits((hex(2)? as u32) << 28);
+        for i in 0..31 {
+            guest.regs.x[i] = hex(3 + i)? as u64;
+        }
+        for i in 0..32 {
+            guest.regs.v[i] = hex(34 + i)?;
+        }
+        let mut mem = Memory::new();
+        mem.map_range(0x1000, 4096, Permission::READ_WRITE_EXECUTE);
+        mem.write_u32(0x1000, hex(1)? as u32)
+            .map_err(|e| e.to_string())?;
+        let mut engine = cpu::CpuEngine::new(tier);
+        let (n, exit) = engine.run_slice(&mut guest, &mut mem, 1);
+        eprintln!(
+            "engine={} executed={n} exit={exit:?} counters={}",
+            engine.name(),
+            engine.stats()
+        );
+        let mut matched = n == 1 && !matches!(exit, cpu::tier2_jit::BlockExit::Fault { .. });
+        matched &= guest.regs.pstate.to_bits() >> 28 == hex(67)? as u32;
+        for i in 0..31 {
+            if i != 18 {
+                matched &= guest.regs.x[i] == hex(69 + i)? as u64;
+            }
+        }
+        for i in 0..32 {
+            matched &= guest.regs.v[i] == hex(100 + i)?;
+        }
+        eprintln!(
+            "partial X/V/NZCV match={matched}; UNSUPPORTED: FPSR/QC is not modeled; full conformance cannot pass"
+        );
+        Ok((n, matched))
+    }
+    let (executed, partial) = match replay(args) {
+        Ok(m) => m,
+        Err(e) => {
+            eprintln!("{e}");
+            (0, false)
+        }
+    };
+    for (label, value) in [
+        ("host executed (not SIGILL)", 1),
+        ("host UNDEFINED (SIGILL)", 0),
+        ("emulator unimplemented", 0),
+        ("emulator other errors", 1),
+        ("emulator executed", executed),
+        ("exact match (X,V,NZCV,QC)", 0),
+        ("MISMATCH", usize::from(!partial)),
+        ("emulator runs a word the host calls UNDEFINED", 0),
+    ] {
+        println!("{label}: {value}");
+    }
+    1
 }

@@ -11,9 +11,10 @@ out = pathlib.Path(a.output); out.mkdir(parents=True, exist_ok=True)
 rows = []
 for fixture in ('hello', 'services', 'romfs', 'threads'):
     nro = pathlib.Path(f'tests/fixtures/nro/{fixture}/{fixture}.nro').resolve()
-    for engine, binary, verb in [('core', a.core, 'run-nro'), ('runtime', a.runtime, 'run')]:
+    for engine, binary, verb in [('core', a.core, 'run-nro')] + [(f'runtime-{tier}', a.runtime, 'run') for tier in ('interp','tier3','tier4','nce')]:
         for trial in range(a.repeats + 1):
             cmd = ['/usr/bin/time', '-l', str(pathlib.Path(binary).resolve()), verb, str(nro), '--present=headless'] + (['fixture'] if fixture == 'hello' else [])
+            if engine.startswith('runtime-'): cmd.append('--cpu=' + engine.removeprefix('runtime-'))
             start = time.perf_counter()
             try:
                 r = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
@@ -31,6 +32,8 @@ for fixture in ('hello', 'services', 'romfs', 'threads'):
             rows.append(dict(fixture=fixture, engine=engine, trial=trial, warmup=trial==0,
                 command=cmd, wall_seconds=elapsed, peak_rss_bytes=int(rss[1]) if rss else None,
                 instructions=int(ins[1]) if ins else None, exit_code=rc, log=name,
+                actual_tier=(re.search(r'\[CPU\] Engine: (.*)', log)[1] if re.search(r'\[CPU\] Engine: (.*)', log) else None),
+                counters=(re.search(r'\[CPU\] (?:Interpreter|Tier-3|Tier-4|NCE): (.*)', log)[1] if re.search(r'\[CPU\] (?:Interpreter|Tier-3|Tier-4|NCE): (.*)', log) else None),
                 guest_pass='result=0x00000EEE' in log, graceful_exit='Process exited gracefully' in log,
                 sha256=hashlib.sha256(nro.read_bytes()).hexdigest()))
             (out / 'measurements.json').write_text(json.dumps(rows, indent=2) + '\n')
