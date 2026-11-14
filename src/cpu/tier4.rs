@@ -642,8 +642,6 @@ impl Lowerer {
                 op,
                 is_double,
             } => {
-                let a = self.b.get(Reg::VLo(rn));
-                let b = self.b.get(Reg::VLo(rm));
                 let fop = match op {
                     FpOp2::Fadd => FpBinOp::Fadd,
                     FpOp2::Fsub => FpBinOp::Fsub,
@@ -651,10 +649,11 @@ impl Lowerer {
                     FpOp2::Fdiv => FpBinOp::Fdiv,
                     FpOp2::Fmax => FpBinOp::Fmax,
                     FpOp2::Fmin => FpBinOp::Fmin,
-                    FpOp2::Fmaxnm => FpBinOp::Fmax,
-                    FpOp2::Fminnm => FpBinOp::Fmin,
+                    FpOp2::Fmaxnm | FpOp2::Fminnm => return Err(()),
                     FpOp2::Fnmul => FpBinOp::Fnmul,
                 };
+                let a = self.b.get(Reg::VLo(rn));
+                let b = self.b.get(Reg::VLo(rm));
                 let w = if is_double { FpWidth::F64 } else { FpWidth::F32 };
                 let res = self.b.push(Op::FpBin(fop, w, a, b));
                 let zero = self.k(0);

@@ -652,6 +652,7 @@ mod aarch64_host {
                 }
 
                 Instruction::LogicalReg { rd, rn, rm, .. }
+                | Instruction::AdcSbc { rd, rn, rm, .. }
                 | Instruction::Extract { rd, rn, rm, .. }
                 | Instruction::ShiftReg { rd, rn, rm, .. }
                 | Instruction::Divide { rd, rn, rm, .. }

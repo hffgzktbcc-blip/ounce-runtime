@@ -2,7 +2,7 @@
 
 use super::instructions::{
     BranchRegOp, Condition, DataProc1Op, FpHalfOp, FpOp2, Instruction, LogicalOp, MoveWideOp,
-    PacKey, PacModifier, PauthOp, ShiftType, SimdAcrossOp, SimdImmOp, SimdOp2, SimdOp3,
+    PacKey, PacModifier, PauthOp, Sha3Op, ShiftType, SimdAcrossOp, SimdImmOp, SimdOp2, SimdOp3,
     SimdPermuteOp, SimdShiftOp,
 };
 use crate::mmu::AtomicRmwOp;
@@ -138,6 +138,25 @@ pub fn decode(raw: u32) -> Instruction {
             shift_amount,
             is_extended,
             extend_option,
+            is_sub,
+            set_flags,
+            is_64,
+        };
+    }
+
+    // 6b. Add / Subtract with Carry: ADC, ADCS, SBC, SBCS
+    // Pattern: sf op S 11010000 Rm 000000 Rn Rd
+    if (raw & 0x1FE0_FC00) == 0x1A00_0000 {
+        let is_64 = (raw & (1 << 31)) != 0;
+        let is_sub = (raw & (1 << 30)) != 0;
+        let set_flags = (raw & (1 << 29)) != 0;
+        let rm = ((raw >> 16) & 0x1F) as u8;
+        let rn = ((raw >> 5) & 0x1F) as u8;
+        let rd = (raw & 0x1F) as u8;
+        return Instruction::AdcSbc {
+            rd,
+            rn,
+            rm,
             is_sub,
             set_flags,
             is_64,
@@ -543,6 +562,35 @@ pub fn decode(raw: u32) -> Instruction {
         }
     }
 
+    // 13b2. ARMv8.4 FEAT_LRCPC2 unscaled load-acquire / store-release (`LDAPUR*` / `STLUR*`):
+    //       size(31:30) 011001 opc(23:22) 0 imm9(20:12) 00 Rn(9:5) Rt(4:0)
+    if (raw & 0x3F20_0C00) == 0x1900_0000 {
+        let size = ((raw >> 30) & 0x3) as u8;
+        let opc = ((raw >> 22) & 0x3) as u8;
+        let imm9 = ((raw >> 12) & 0x1FF) as u64;
+        let offset = sign_extend(imm9, 9);
+        let rn = ((raw >> 5) & 0x1F) as u8;
+        let rt = (raw & 0x1F) as u8;
+        let valid_params = match (opc, size) {
+            (0b00, _) => Some((false, false, false)),
+            (0b01, _) => Some((true, false, false)),
+            (0b10, s) if s < 3 => Some((true, true, true)),
+            (0b11, s) if s < 2 => Some((true, true, false)),
+            _ => None,
+        };
+        if let Some((is_load, is_signed, sign_ext_64)) = valid_params {
+            return Instruction::LoadStoreRcpcUnscaled {
+                rt,
+                rn,
+                offset,
+                size_bytes: 1u8 << size,
+                is_load,
+                is_signed,
+                sign_ext_64,
+            };
+        }
+    }
+
     // 13c0. ARMv8.1 LSE Compare-and-Swap (`CAS`/`CASA`/`CASL`/`CASAL`) and Pair (`CASP*`)
     if (raw & 0x3FA0_7C00) == 0x08A0_7C00 {
         let size = ((raw >> 30) & 0x3) as u8;
@@ -898,22 +946,40 @@ pub fn decode(raw: u32) -> Instruction {
         }
     }
 
-    // 21. 128-bit NEON Vector 4xFloat32 SIMD:
-    //     FADD Vd.4S, Vn.4S, Vm.4S (0x4E20D400)
-    //     FSUB Vd.4S, Vn.4S, Vm.4S (0x4EA0D400)
-    //     FMUL Vd.4S, Vn.4S, Vm.4S (0x6E20DC00)
-    if (raw & 0xFF20FC00) == 0x4E20D400 || (raw & 0xFFE0FC00) == 0x6E20DC00 {
-        let rm = ((raw >> 16) & 0x1F) as u8;
-        let rn = ((raw >> 5) & 0x1F) as u8;
-        let rd = (raw & 0x1F) as u8;
-        let op = if (raw & 0xFFE0FC00) == 0x6E20DC00 {
-            FpOp2::Fmul
-        } else if (raw & (1 << 23)) != 0 {
-            FpOp2::Fsub
-        } else {
-            FpOp2::Fadd
-        };
-        return Instruction::SimdVec4S { rd, rn, rm, op };
+    // 21. AdvSIMD Floating-Point Three-Same Vector (`2S`, `4S`, `2D`):
+    //     FADD  Vd.<T>, Vn.<T>, Vm.<T> (`0 Q 0 01110 0 sz 1 Rm 11010 1 Rn Rd`)
+    //     FSUB  Vd.<T>, Vn.<T>, Vm.<T> (`0 Q 0 01110 1 sz 1 Rm 11010 1 Rn Rd`)
+    //     FMUL  Vd.<T>, Vn.<T>, Vm.<T> (`0 Q 1 01110 0 sz 1 Rm 11011 1 Rn Rd`)
+    //     FDIV  Vd.<T>, Vn.<T>, Vm.<T> (`0 Q 1 01110 0 sz 1 Rm 11111 1 Rn Rd`)
+    if (raw & 0xBF20_FC00) == 0x0E20_D400
+        || (raw & 0xBFA0_FC00) == 0x2E20_DC00
+        || (raw & 0xBFA0_FC00) == 0x2E20_FC00
+    {
+        let q = (raw & (1 << 30)) != 0;
+        let is_double = (raw & (1 << 22)) != 0;
+        if !(is_double && !q) {
+            let rm = ((raw >> 16) & 0x1F) as u8;
+            let rn = ((raw >> 5) & 0x1F) as u8;
+            let rd = (raw & 0x1F) as u8;
+            let op = if (raw & (1 << 29)) == 0 {
+                if (raw & (1 << 23)) != 0 { FpOp2::Fsub } else { FpOp2::Fadd }
+            } else if (raw & 0xFC00) == 0xDC00 {
+                FpOp2::Fmul
+            } else {
+                FpOp2::Fdiv
+            };
+            if q && !is_double && op != FpOp2::Fdiv {
+                return Instruction::SimdVec4S { rd, rn, rm, op };
+            }
+            return Instruction::SimdFpVec {
+                rd,
+                rn,
+                rm,
+                op,
+                is_double,
+                q,
+            };
+        }
     }
 
     decode_extra(raw).unwrap_or(Instruction::Unimplemented { raw })
@@ -1213,8 +1279,12 @@ fn decode_extra(raw: u32) -> Option<Instruction> {
     if (raw & 0x9F20_0400) == 0x0E20_0400 {
         let opcode = (raw >> 11) & 0x1F;
         let op = match (opcode, u) {
+            (0b00001, false) => SimdOp3::Sqadd,
+            (0b00001, true) => SimdOp3::Uqadd,
             (0b00011, false) => [SimdOp3::And, SimdOp3::Bic, SimdOp3::Orr, SimdOp3::Orn][size as usize],
             (0b00011, true) => [SimdOp3::Eor, SimdOp3::Bsl, SimdOp3::Bit, SimdOp3::Bif][size as usize],
+            (0b00101, false) => SimdOp3::Sqsub,
+            (0b00101, true) => SimdOp3::Uqsub,
             (0b10000, false) => SimdOp3::Add,
             (0b10000, true) => SimdOp3::Sub,
             (0b10001, false) => SimdOp3::Cmtst,
@@ -1241,6 +1311,27 @@ fn decode_extra(raw: u32) -> Option<Instruction> {
         }
         let esize = if bitwise { 8 } else { 8u8 << size };
         return Some(Instruction::SimdThreeSame { rd, rn, rm, op, esize, q });
+    }
+
+    // 28a. ARMv8.2 Cryptographic Extension FEAT_SHA3:
+    //      EOR3 Vd.16B, Vn.16B, Vm.16B, Va.16B  (`1100 1110 000 Rm 0 Ra Rn Rd`)
+    //      BCAX Vd.16B, Vn.16B, Vm.16B, Va.16B  (`1100 1110 001 Rm 0 Ra Rn Rd`)
+    //      RAX1 Vd.2D, Vn.2D, Vm.2D             (`1100 1110 011 Rm 1000 11 Rn Rd`)
+    //      XAR  Vd.2D, Vn.2D, Vm.2D, #imm6      (`1100 1110 100 Rm imm6 Rn Rd`)
+    if (raw & 0xFFE0_8000) == 0xCE00_0000 {
+        let ra = ((raw >> 10) & 0x1F) as u8;
+        return Some(Instruction::CryptoSha3 { rd, rn, rm, ra, imm6: 0, op: Sha3Op::Eor3 });
+    }
+    if (raw & 0xFFE0_8000) == 0xCE20_0000 {
+        let ra = ((raw >> 10) & 0x1F) as u8;
+        return Some(Instruction::CryptoSha3 { rd, rn, rm, ra, imm6: 0, op: Sha3Op::Bcax });
+    }
+    if (raw & 0xFFE0_FC00) == 0xCE60_8C00 {
+        return Some(Instruction::CryptoSha3 { rd, rn, rm, ra: 0, imm6: 0, op: Sha3Op::Rax1 });
+    }
+    if (raw & 0xFFE0_0000) == 0xCE80_0000 {
+        let imm6 = ((raw >> 10) & 0x3F) as u8;
+        return Some(Instruction::CryptoSha3 { rd, rn, rm, ra: 0, imm6, op: Sha3Op::Xar });
     }
 
     // 28b. AdvSIMD across lanes: 0 Q U 01110 size 11000 opcode 10 Rn Rd

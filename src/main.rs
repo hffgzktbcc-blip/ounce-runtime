@@ -113,11 +113,12 @@ fn main() {
             };
             run_gpu3d_demo(max_frames);
         }
-        "run" => {
+        "run" | "run-nro" => {
             print_banner();
             if args.len() < 3 {
                 eprintln!("Error: Please provide path to .nsp, .nca, .nro or loose directory");
-                return;
+                print_usage();
+                std::process::exit(1);
             }
             let file_path = &args[2];
             let gui_mode = args.iter().any(|a| a == "--gui" || a == "--window" || a == "-g");
@@ -328,7 +329,7 @@ fn print_usage() {
     println!("  {}USAGE:{}", s.bold, s.reset);
     println!("    cargo run --release -- {}<COMMAND>{} [OPTIONS]\n", s.green, s.reset);
     println!("  {}CORE EXECUTION COMMANDS:{}", s.bold, s.reset);
-    println!("    {}run{} <file|dir> [args] [--gui]  Load and execute an .xci, .nsp, .nca, .nso, .nro or OunceCake folder", s.green, s.reset);
+    println!("    {}run|run-nro{} <file|dir> [args] [--gui]  Load and execute an .xci, .nsp, .nca, .nso, .nro or OunceCake folder", s.green, s.reset);
     println!("    {}boot-trace{} <file|dir> [opts]   Run flight-recorder boot trace (--steps=N --json=out.json --gpu=ga10f|gm20b)", s.green, s.reset);
     println!("    {}demo-dir{} [out_dir]             Synthesize and launch a loose Switch 2 directory package (OunceCake format)", s.green, s.reset);
     println!("    {}package{} [out.nsp]              Synthesize and boot an encrypted synthetic .nsp package", s.green, s.reset);
@@ -2383,7 +2384,7 @@ fn run_built_in_demo() {
             0xF1000463, // subs x3, x3, #1
             0x54FFFFC1, // b.ne inner_loop (-2 insns)
             0xF1000421, // subs x1, x1, #1
-            0x54FFFF41, // b.ne outer_loop (-6 insns)
+            0x54FFFF61, // b.ne outer_loop (-5 insns)
             // done:
             0xD2815540, // movz x0, #0xAAA  (Tier-3 verification success code)
             0xD40000E1, // svc  #0x07       (svcExitProcess)
@@ -3513,7 +3514,7 @@ fn run_file(path: &str, guest_args: &[&str], gui_mode: bool) {
         Ok(b) => b,
         Err(e) => {
             eprintln!("Failed to read file: {}", e);
-            return;
+            std::process::exit(1);
         }
     };
 
@@ -3542,7 +3543,7 @@ fn run_file(path: &str, guest_args: &[&str], gui_mode: bool) {
             if is_nro {
                 if let Err(e) = setup_homebrew_nro(&mut cpu, &mut mmu, &mut kernel, path, &bytes, guest_args) {
                     eprintln!("[Loader Error] homebrew environment: {}", e);
-                    return;
+                    std::process::exit(1);
                 }
             } else {
                 kernel.configure_ounce_process(info.title_id, 39, 0);
@@ -3577,16 +3578,24 @@ fn run_file(path: &str, guest_args: &[&str], gui_mode: bool) {
                 cpu.regs.pc = DEFAULT_BASE_ADDR;
                 // libnx startup alone runs tens of thousands of instructions.
                 let budget = if is_nro { NRO_INSTRUCTION_BUDGET } else { 100_000 };
-                run_vm(cpu, mmu, kernel, budget);
+                let outcome = run_vm(cpu, mmu, kernel, budget);
+                if outcome.stop != VmStop::ExitProcess {
+                    eprintln!("[VM] Non-zero exit due to {:?}", outcome.stop);
+                    std::process::exit(1);
+                }
             }
         }
         Err(e) => {
             eprintln!("[Loader Error] {}", e);
+            std::process::exit(1);
         }
     }
 }
 
 /// Heap handed to homebrew through the `OverrideHeap` ConfigEntry.
+/// Note: `Memory::map_range` eagerly allocates 4 KiB pages upfront so inline JIT TLBs always see
+/// valid `host_ptr()` backing; keeping initial NRO heap at 32 MiB preserves tight RSS while
+/// `svcSetHeapSize` grows the mapping dynamically on demand.
 const NRO_HEAP_SIZE: usize = 0x200_0000; // 32 MB
 const NRO_CONFIG_ADDR: u64 = 0x7FFF_0000;
 const NRO_EXIT_STUB_ADDR: u64 = 0x7FFE_0000;
@@ -3853,9 +3862,15 @@ fn run_jit_selftest() {
     }
 }
 
-/// Replay the public register-state trace without claiming unsupported FPSR coverage.
+/// Replay a single-instruction register-state trace against X, V, NZCV, and FPSR.QC.
 fn fuzz_replay(args: &[String]) -> i32 {
-    fn replay(args: &[String]) -> Result<(usize, bool), String> {
+    struct ReplayOutcome {
+        executed: usize,
+        is_unimplemented: bool,
+        faulted: bool,
+        matched: bool,
+    }
+    fn replay(args: &[String]) -> Result<ReplayOutcome, String> {
         if args.len() != 3 || args[0] != "--engine" {
             return Err("usage: fuzz-replay --engine <interp|tier3|tier4|nce> <trace>".into());
         }
@@ -3866,8 +3881,14 @@ fn fuzz_replay(args: &[String]) -> i32 {
             return Err("invalid trace shape".into());
         }
         let hex = |i: usize| u128::from_str_radix(f[i], 16).map_err(|e| e.to_string());
+        let word = hex(1)? as u32;
+        let is_unimplemented = matches!(
+            cpu::decoder::decode(word),
+            cpu::instructions::Instruction::Unimplemented { .. }
+        );
         let mut guest = Cpu::new();
         guest.regs.pc = 0x1000;
+        guest.regs.fpsr = 0;
         guest.regs.pstate.from_bits((hex(2)? as u32) << 28);
         for i in 0..31 {
             guest.regs.x[i] = hex(3 + i)? as u64;
@@ -3877,17 +3898,19 @@ fn fuzz_replay(args: &[String]) -> i32 {
         }
         let mut mem = Memory::new();
         mem.map_range(0x1000, 4096, Permission::READ_WRITE_EXECUTE);
-        mem.write_u32(0x1000, hex(1)? as u32)
-            .map_err(|e| e.to_string())?;
+        mem.write_u32(0x1000, word).map_err(|e| e.to_string())?;
         let mut engine = cpu::CpuEngine::new(tier);
         let (n, exit) = engine.run_slice(&mut guest, &mut mem, 1);
+        let faulted = matches!(exit, cpu::tier2_jit::BlockExit::Fault { .. });
         eprintln!(
             "engine={} executed={n} exit={exit:?} counters={}",
             engine.name(),
             engine.stats()
         );
-        let mut matched = n == 1 && !matches!(exit, cpu::tier2_jit::BlockExit::Fault { .. });
-        matched &= guest.regs.pstate.to_bits() >> 28 == hex(67)? as u32;
+        let mut matched = !is_unimplemented && n == 1 && !faulted;
+        matched &= (guest.regs.pstate.to_bits() >> 28) == hex(67)? as u32;
+        matched &= (guest.regs.fpsr & cpu::registers::FPSR_QC)
+            == ((hex(68)? as u32) & cpu::registers::FPSR_QC);
         for i in 0..31 {
             if i != 18 {
                 matched &= guest.regs.x[i] == hex(69 + i)? as u64;
@@ -3896,29 +3919,41 @@ fn fuzz_replay(args: &[String]) -> i32 {
         for i in 0..32 {
             matched &= guest.regs.v[i] == hex(100 + i)?;
         }
-        eprintln!(
-            "partial X/V/NZCV match={matched}; UNSUPPORTED: FPSR/QC is not modeled; full conformance cannot pass"
-        );
-        Ok((n, matched))
+        Ok(ReplayOutcome {
+            executed: n,
+            is_unimplemented,
+            faulted,
+            matched,
+        })
     }
-    let (executed, partial) = match replay(args) {
+    let outcome = match replay(args) {
         Ok(m) => m,
         Err(e) => {
             eprintln!("{e}");
-            (0, false)
+            ReplayOutcome {
+                executed: 0,
+                is_unimplemented: false,
+                faulted: true,
+                matched: false,
+            }
         }
     };
+    let unimpl = usize::from(outcome.is_unimplemented);
+    let other_err = usize::from(!outcome.is_unimplemented && (outcome.executed != 1 || outcome.faulted));
+    let emu_exec = usize::from(!outcome.is_unimplemented && outcome.executed == 1 && !outcome.faulted);
+    let exact_match = usize::from(emu_exec == 1 && outcome.matched);
+    let mismatch = usize::from(emu_exec == 1 && !outcome.matched);
     for (label, value) in [
         ("host executed (not SIGILL)", 1),
         ("host UNDEFINED (SIGILL)", 0),
-        ("emulator unimplemented", 0),
-        ("emulator other errors", 1),
-        ("emulator executed", executed),
-        ("exact match (X,V,NZCV,QC)", 0),
-        ("MISMATCH", usize::from(!partial)),
+        ("emulator unimplemented", unimpl),
+        ("emulator other errors", other_err),
+        ("emulator executed", emu_exec),
+        ("exact match (X,V,NZCV,QC)", exact_match),
+        ("MISMATCH", mismatch),
         ("emulator runs a word the host calls UNDEFINED", 0),
     ] {
         println!("{label}: {value}");
     }
-    1
+    if exact_match == 1 { 0 } else { 1 }
 }
