@@ -11,6 +11,7 @@ mod hid;
 mod kernel;
 mod loader;
 mod mmu;
+mod run_report;
 mod ui;
 
 use cpu::Cpu;
@@ -45,7 +46,26 @@ fn main() {
     // `--present=<auto|gpu|minifb|headless>`, `--cpu=<tier3|tier4>`, and `--sdmc=<dir>`
     // may appear anywhere; strip them so the positional arguments of every command stay where they were.
     let mut args: Vec<String> = Vec::new();
-    for arg in env::args() {
+    let mut raw_args = env::args().peekable();
+    while let Some(arg) = raw_args.next() {
+        if let Some(value) = arg.strip_prefix("--report-json=") {
+            run_report::set_report_path(std::path::PathBuf::from(value));
+            continue;
+        }
+        if arg == "--report-json" {
+            if let Some(value) = raw_args.next() {
+                run_report::set_report_path(std::path::PathBuf::from(value));
+            }
+            continue;
+        }
+        if arg == "--audio=null" {
+            run_report::set_audio_null(true);
+            continue;
+        }
+        if arg == "--deterministic" {
+            run_report::set_deterministic(true);
+            continue;
+        }
         if let Some(value) = arg.strip_prefix("--sdmc=") {
             let _ = SDMC_HOST_DIR.set(std::path::PathBuf::from(value));
             continue;
@@ -475,11 +495,12 @@ enum VmStop {
 }
 
 /// Final guest state of a run, used by the verification harness.
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone)]
 struct VmOutcome {
     stop: VmStop,
     x0: u64,
     d0: f64,
+    report: run_report::RunReport,
 }
 
 fn run_vm(
@@ -580,8 +601,12 @@ fn run_vm_internal(
     if let Some(pad_name) = gamepad_mgr.as_mut().and_then(|mgr| mgr.active_gamepad_name()) {
         println!("[HID] Physical gamepad attached: {}", pad_name);
     }
-    let host_audio = host_devices.then(HostAudioSink::new);
+    let host_audio = (host_devices && !run_report::is_audio_null()).then(HostAudioSink::new);
     let mut stop = VmStop::Budget;
+    let mut stop_pc: Option<u64> = None;
+    let mut stop_svc_id: Option<u32> = None;
+    let mut stop_break_result: Option<u32> = None;
+    let mut stop_message: Option<String> = None;
     let mut last_event_pump = Instant::now();
     let mut last_frame_present = Instant::now();
 
@@ -722,15 +747,21 @@ fn run_vm_internal(
                         println!("[VM] Break PC: 0x{:016X}", cpu.regs.pc);
                         if info2 == 4 {
                             match mmu.read_u32(info1) {
-                                Ok(result) => println!("[VM] Break result: 0x{:08X} (module={}, description={})", result, result & 0x1FF, (result >> 9) & 0x1FFF),
+                                Ok(result) => {
+                                    stop_break_result = Some(result);
+                                    println!("[VM] Break result: 0x{:08X} (module={}, description={})", result, result & 0x1FF, (result >> 9) & 0x1FFF);
+                                }
                                 Err(error) => println!("[VM] Break result unreadable: {}", error),
                             }
                         }
+                        stop_pc = Some(cpu.regs.pc);
                         stop = VmStop::Break;
                         break;
                     }
                     SvcResult::Unhandled(id) => {
                         println!("\n[VM] Stopping on unhandled SVC #0x{:02X}.", id);
+                        stop_svc_id = Some(id as u32);
+                        stop_pc = Some(cpu.regs.pc);
                         stop = VmStop::UnhandledSvc;
                         break;
                     }
@@ -738,6 +769,8 @@ fn run_vm_internal(
             }
             cpu::tier2_jit::BlockExit::Fault { pc } => {
                 eprintln!("[VM Error] CPU fault at 0x{pc:016X}");
+                stop_pc = Some(pc);
+                stop_message = Some(format!("CPU fault at 0x{pc:016X}"));
                 stop = VmStop::Fault;
                 break;
             }
@@ -847,10 +880,48 @@ fn run_vm_internal(
         cpu.regs.read_d(0)
     );
 
+    let eng_name = engine.name();
+    let tier_str = if eng_name.contains("NCE") {
+        "nce"
+    } else if eng_name.contains("Tier-4") {
+        "tier4"
+    } else if eng_name.contains("Tier-3") {
+        "tier3"
+    } else {
+        "interpreter"
+    };
+    let requested = cpu::CpuTier::from_env();
+    let silent_fallback = (requested == cpu::CpuTier::Tier4 && tier_str != "tier4")
+        || (requested == cpu::CpuTier::Nce && tier_str != "nce");
+    let (stop_kind, exit_code) = match stop {
+        VmStop::ExitProcess => ("clean_exit", 0),
+        VmStop::WindowClosed => ("window_closed", 0),
+        VmStop::FrameLimit => ("frame_limit", 0),
+        VmStop::Break => ("svc_break", 13),
+        VmStop::UnhandledSvc => ("unhandled_svc", 14),
+        VmStop::Halt => ("cpu_halted", 15),
+        VmStop::Budget => ("budget_exhausted", 16),
+        VmStop::Fault => ("cpu_error", 12),
+    };
+    let report = run_report::RunReport {
+        tier: tier_str,
+        silent_fallback,
+        stop_kind,
+        exit_code,
+        pc: stop_pc,
+        opcode: None,
+        fault_addr: None,
+        svc_id: stop_svc_id,
+        break_result: stop_break_result,
+        insns_executed: instructions_executed as u64,
+        message: stop_message,
+    };
+
     VmOutcome {
         stop,
         x0: cpu.regs.read_x(0),
         d0: cpu.regs.read_d(0),
+        report,
     }
 }
 
@@ -3579,6 +3650,7 @@ fn run_file(path: &str, guest_args: &[&str], gui_mode: bool) {
                 // libnx startup alone runs tens of thousands of instructions.
                 let budget = if is_nro { NRO_INSTRUCTION_BUDGET } else { 100_000 };
                 let outcome = run_vm(cpu, mmu, kernel, budget);
+                run_report::write_if_configured(&outcome.report);
                 if outcome.stop != VmStop::ExitProcess {
                     eprintln!("[VM] Non-zero exit due to {:?}", outcome.stop);
                     std::process::exit(1);
@@ -3822,7 +3894,24 @@ mod harness_gate_tests {
     use super::*;
 
     fn outcome(stop: VmStop, x0: u64) -> VmOutcome {
-        VmOutcome { stop, x0, d0: 0.0 }
+        VmOutcome {
+            stop,
+            x0,
+            d0: 0.0,
+            report: run_report::RunReport {
+                tier: "tier3",
+                silent_fallback: false,
+                stop_kind: "clean_exit",
+                exit_code: 0,
+                pc: None,
+                opcode: None,
+                fault_addr: None,
+                svc_id: None,
+                break_result: None,
+                insns_executed: 0,
+                message: None,
+            },
+        }
     }
 
     #[test]
