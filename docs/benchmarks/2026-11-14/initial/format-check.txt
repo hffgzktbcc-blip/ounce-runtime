@@ -1,0 +1,63 @@
+cargo fmt --check: exit 1; 43208 output lines.
+Baseline main.rs independently fails rustfmt --check --edition 2024 --config skip_children=true (2027 lines).
+First baseline differences:
+Diff in /private/tmp/runtime-main-baseline.rs:13:
+ mod mmu;
+ mod ui;
+ 
++use audio::HostAudioSink;
+ use cpu::{Cpu, StepResult};
+ use gpu::nvgpu::{
+-    NvgpuChannel, SubmissionMode, METHOD_BIND_SHADER_PROGRAM, METHOD_BIND_TEXTURE_2D,
+-    METHOD_CLEAR_SURFACE, METHOD_DISPATCH_UPSCALE_2X, METHOD_DRAW_ARRAYS,
+-    METHOD_DRAW_TEXTURED_ARRAYS, METHOD_SET_CLEAR_COLOR, METHOD_SET_DEPTH_TEST_ENABLE,
+-    METHOD_SET_MVP_MATRIX, METHOD_SET_RENDER_TARGET_ADDR, METHOD_SET_VERTEX_ARRAY_ADDR,
+-    METHOD_SET_VIEWPORT_DIMS,
++    METHOD_BIND_SHADER_PROGRAM, METHOD_BIND_TEXTURE_2D, METHOD_CLEAR_SURFACE,
++    METHOD_DISPATCH_UPSCALE_2X, METHOD_DRAW_ARRAYS, METHOD_DRAW_TEXTURED_ARRAYS,
++    METHOD_SET_CLEAR_COLOR, METHOD_SET_DEPTH_TEST_ENABLE, METHOD_SET_MVP_MATRIX,
++    METHOD_SET_RENDER_TARGET_ADDR, METHOD_SET_VERTEX_ARRAY_ADDR, METHOD_SET_VIEWPORT_DIMS,
++    NvgpuChannel, SubmissionMode,
+ };
+ use gpu::shader::SassOp;
+-use audio::HostAudioSink;
+-use gpu::{DisplayConfig, DisplayServer, DEFAULT_FRAMEBUFFER_ADDR, SCREEN_HEIGHT, SCREEN_WIDTH};
+-use hid::{HidServer, HostGamepadManager, HID_SHARED_MEM_ADDR};
+-use kernel::{HorizonKernel, ServiceType, SvcResult, CMIF_IN_MAGIC, DEFAULT_TLS_ADDR, TLS_SIZE};
++use gpu::{DEFAULT_FRAMEBUFFER_ADDR, DisplayConfig, DisplayServer, SCREEN_HEIGHT, SCREEN_WIDTH};
++use hid::{HID_SHARED_MEM_ADDR, HidServer, HostGamepadManager};
++use kernel::{CMIF_IN_MAGIC, DEFAULT_TLS_ADDR, HorizonKernel, ServiceType, SvcResult, TLS_SIZE};
+ use loader::{BootLoader, NcaImage, Pfs0Archive};
+ use mmu::{Memory, Permission};
+ use std::env;
+Diff in /private/tmp/runtime-main-baseline.rs:53:
+         if let Some(value) = arg.strip_prefix("--cpu=") {
+             match cpu::CpuTier::parse(value) {
+                 Some(tier) => cpu::CpuTier::set_cli_override(tier),
+-                None => eprintln!("[CPU] Unknown --cpu value '{value}' (expected tier3, tier4, or nce); ignoring."),
++                None => eprintln!(
++                    "[CPU] Unknown --cpu value '{value}' (expected tier3, tier4, or nce); ignoring."
++                ),
+             }
+             continue;
+         }
+Diff in /private/tmp/runtime-main-baseline.rs:60:
+         match arg.strip_prefix("--present=") {
+             Some(value) => match gpu::BackendKind::parse(value) {
+                 Some(kind) => gpu::BackendKind::set_cli_override(kind),
+-                None => eprintln!("[Display] Unknown --present value '{value}' (expected auto, gpu, minifb or headless); ignoring."),
++                None => eprintln!(
++                    "[Display] Unknown --present value '{value}' (expected auto, gpu, minifb or headless); ignoring."
++                ),
+             },
+             None => args.push(arg),
+         }
+Diff in /private/tmp/runtime-main-baseline.rs:119:
+                 return;
+             }
+             let file_path = &args[2];
+-            let gui_mode = args.iter().any(|a| a == "--gui" || a == "--window" || a == "-g");
++            let gui_mode = args
++                .iter()
++                .any(|a| a == "--gui" || a == "--window" || a == "-g");
+             // Anything after the path that is not a flag is passed to homebrew as argv[1..].

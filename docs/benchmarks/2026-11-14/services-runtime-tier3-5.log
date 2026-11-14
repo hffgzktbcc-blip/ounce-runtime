@@ -1,0 +1,41 @@
+============================================================
+  OUNCE-NX2 v0.4.0: NVIDIA Tegra T239 (GA10F) / Horizon OS Runtime
+  Target: ARMv8.5-A AArch64 (PAC + BTI) | Switch 2 & Switch 1 Execution
+============================================================
+
+[Loader] Reading package/executable: /Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-gold-parity/tests/fixtures/nro/services/services.nro
+[BootLoader] Successfully loaded package:
+  Format      : NRO0
+  Title ID    : 0x0000000000000000
+  Code size   : 0x00004000 (16384 bytes)
+  MOD0 relocs : 0
+[VM] Starting execution at PC: 0x0000000080000000
+[VM] Stack Pointer: 0x0000007FFFFFE000
+[CPU] Engine: Tier-3
+ounce-services result=0x00000EEE
+
+[VM] Process exited gracefully (svcExitProcess).
+[CPU] Tier-3: 870 Super-Blocks fused
+[VM Summary] Executed 5616 instructions in 982.8750µs (5.71 MIPS) | Frames: 0
+  -> GPU Commands: 0 | 3D Draw Calls: 0 | Triangles Rasterized: 0 | HIPC Calls: 9
+  -> Basic-Block JIT Cache: 349 Blocks (1746 Insns) | Hits: 2983 | Misses: 349
+  -> Memory Buckets (38460 KB): Code=20 KB | VRAM=3600 KB | Stack/TLS=2052 KB | Data=32788 KB
+  -> Final X0: 0 (0x0000000000000000) | D0: 0.00
+        0.02 real         0.01 user         0.00 sys
+            52428800  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+                3424  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   0  voluntary context switches
+                  17  involuntary context switches
+            84782950  instructions retired
+            37876182  cycles elapsed
+            44335584  peak memory footprint

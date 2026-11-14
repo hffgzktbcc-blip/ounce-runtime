@@ -1,0 +1,69 @@
+{
+  "measured_runtime_sha": "b805034b01cea88c2cbc49226e8b7408348db539",
+  "debug_test_runtime_sha": "c9c6bb926cefc1468c529757fecf9d4b25cf1c63",
+  "commands": [
+    {
+      "argv": "cargo test --locked",
+      "exit": 0,
+      "unit_passed": 467,
+      "unit_ignored": 2,
+      "integration_passed": 2
+    },
+    {
+      "argv": "cargo test --locked --features native-jit",
+      "exit": 0,
+      "unit_passed": 467,
+      "unit_ignored": 2,
+      "integration_passed": 2
+    },
+    {
+      "argv": "cargo test --release --locked",
+      "exit": 0,
+      "unit_passed": 467,
+      "unit_ignored": 2,
+      "integration_passed": 2
+    },
+    {
+      "argv": "cargo test --release --locked --features native-jit",
+      "exit": 0,
+      "unit_passed": 467,
+      "unit_ignored": 2,
+      "integration_passed": 2
+    },
+    {
+      "argv": "cargo clippy --locked --all-targets --features native-jit",
+      "exit": 0,
+      "warnings": "229 in bin test, including duplicates"
+    },
+    {
+      "argv": "cargo fmt --check",
+      "exit": 1,
+      "limitation": "Repository-wide baseline formatting drift; main baseline independently fails rustfmt check."
+    },
+    {
+      "argv": "python3 scripts/benchmark_corpus.py --core /Users/nathanaelgovender/orca/ounce-core/target/release/ounce-core --output docs/benchmarks/2026-11-14",
+      "exit": 0,
+      "runs": 120,
+      "passed": 120
+    },
+    {
+      "argv": "python3 scripts/benchmark_tiers.py --core /Users/nathanaelgovender/orca/ounce-core/target/release/ounce-core --output docs/benchmarks/2026-11-14",
+      "exit": 0,
+      "runs": 24,
+      "passed": 24
+    }
+  ],
+  "conformance": {
+    "engines": [
+      "interp",
+      "tier3",
+      "tier4",
+      "nce"
+    ],
+    "cases_per_engine": 12,
+    "full_passes_per_engine": 0,
+    "partial_register_matches_per_engine": 9,
+    "exit": 1,
+    "limitation": "FPSR/QC unsupported; three X/V/NZCV discrepancies retained."
+  }
+}

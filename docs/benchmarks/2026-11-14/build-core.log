@@ -1,0 +1,16 @@
+   Compiling ounce-core v0.8.1 (/Users/nathanaelgovender/orca/ounce-core)
+warning: associated items `DEFAULT` and `with_round` are never used
+  --> src/cpu/softfp.rs:64:15
+   |
+63 | impl Env {
+   | -------- associated items in this implementation
+64 |     pub const DEFAULT: Env = Env { round: Round::Nearest, fz: false, dn: false };
+   |               ^^^^^^^
+...
+76 |     pub fn with_round(self, round: Round) -> Env {
+   |            ^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `ounce-core` (bin "ounce-core") generated 1 warning
+    Finished `release` profile [optimized] target(s) in 31.05s

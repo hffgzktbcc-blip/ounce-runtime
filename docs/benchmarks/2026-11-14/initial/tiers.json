@@ -1,0 +1,482 @@
+[
+  {
+    "engine": "core",
+    "requested_tier": "tier3",
+    "trial": 0,
+    "warmup": true,
+    "command": [
+      "/Users/nathanaelgovender/orca/ounce-core/target/release/ounce-core",
+      "test",
+      "--cpu=tier3",
+      "--present=headless"
+    ],
+    "wall_seconds": 0.054943374999999996,
+    "exit_code": 0,
+    "log": "synthetic-core-tier3-0.log",
+    "actual_tier": "Tier-3",
+    "mips": 66.2,
+    "stage20_instructions": 15304,
+    "counters": "5094 Super-Blocks fused",
+    "stop": "Svc { svc_id: 7 }"
+  },
+  {
+    "engine": "core",
+    "requested_tier": "tier3",
+    "trial": 1,
+    "warmup": false,
+    "command": [
+      "/Users/nathanaelgovender/orca/ounce-core/target/release/ounce-core",
+      "test",
+      "--cpu=tier3",
+      "--present=headless"
+    ],
+    "wall_seconds": 0.09341566600000001,
+    "exit_code": 0,
+    "log": "synthetic-core-tier3-1.log",
+    "actual_tier": "Tier-3",
+    "mips": 52.72,
+    "stage20_instructions": 15304,
+    "counters": "5094 Super-Blocks fused",
+    "stop": "Svc { svc_id: 7 }"
+  },
+  {
+    "engine": "core",
+    "requested_tier": "tier3",
+    "trial": 2,
+    "warmup": false,
+    "command": [
+      "/Users/nathanaelgovender/orca/ounce-core/target/release/ounce-core",
+      "test",
+      "--cpu=tier3",
+      "--present=headless"
+    ],
+    "wall_seconds": 0.06565808299999998,
+    "exit_code": 0,
+    "log": "synthetic-core-tier3-2.log",
+    "actual_tier": "Tier-3",
+    "mips": 65.01,
+    "stage20_instructions": 15304,
+    "counters": "5094 Super-Blocks fused",
+    "stop": "Svc { svc_id: 7 }"
+  },
+  {
+    "engine": "core",
+    "requested_tier": "tier3",
+    "trial": 3,
+    "warmup": false,
+    "command": [
+      "/Users/nathanaelgovender/orca/ounce-core/target/release/ounce-core",
+      "test",
+      "--cpu=tier3",
+      "--present=headless"
+    ],
+    "wall_seconds": 0.13103720800000002,
+    "exit_code": 0,
+    "log": "synthetic-core-tier3-3.log",
+    "actual_tier": "Tier-3",
+    "mips": 56.07,
+    "stage20_instructions": 15304,
+    "counters": "5094 Super-Blocks fused",
+    "stop": "Svc { svc_id: 7 }"
+  },
+  {
+    "engine": "core",
+    "requested_tier": "tier3",
+    "trial": 4,
+    "warmup": false,
+    "command": [
+      "/Users/nathanaelgovender/orca/ounce-core/target/release/ounce-core",
+      "test",
+      "--cpu=tier3",
+      "--present=headless"
+    ],
+    "wall_seconds": 0.05879537500000004,
+    "exit_code": 0,
+    "log": "synthetic-core-tier3-4.log",
+    "actual_tier": "Tier-3",
+    "mips": 63.66,
+    "stage20_instructions": 15304,
+    "counters": "5094 Super-Blocks fused",
+    "stop": "Svc { svc_id: 7 }"
+  },
+  {
+    "engine": "core",
+    "requested_tier": "tier3",
+    "trial": 5,
+    "warmup": false,
+    "command": [
+      "/Users/nathanaelgovender/orca/ounce-core/target/release/ounce-core",
+      "test",
+      "--cpu=tier3",
+      "--present=headless"
+    ],
+    "wall_seconds": 0.03764199999999995,
+    "exit_code": 0,
+    "log": "synthetic-core-tier3-5.log",
+    "actual_tier": "Tier-3",
+    "mips": 56.91,
+    "stage20_instructions": 15304,
+    "counters": "5094 Super-Blocks fused",
+    "stop": "Svc { svc_id: 7 }"
+  },
+  {
+    "engine": "runtime",
+    "requested_tier": "tier3",
+    "trial": 0,
+    "warmup": true,
+    "command": [
+      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-gold-parity/target/release/ounce-runtime",
+      "test",
+      "--cpu=tier3",
+      "--present=headless"
+    ],
+    "wall_seconds": 0.030574791000000046,
+    "exit_code": 0,
+    "log": "synthetic-runtime-tier3-0.log",
+    "actual_tier": "Tier-3",
+    "mips": 68.65,
+    "stage20_instructions": 15403,
+    "counters": "5094 Super-Blocks fused",
+    "stop": "Svc { svc_id: 7 }"
+  },
+  {
+    "engine": "runtime",
+    "requested_tier": "tier3",
+    "trial": 1,
+    "warmup": false,
+    "command": [
+      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-gold-parity/target/release/ounce-runtime",
+      "test",
+      "--cpu=tier3",
+      "--present=headless"
+    ],
+    "wall_seconds": 0.030671333999999995,
+    "exit_code": 0,
+    "log": "synthetic-runtime-tier3-1.log",
+    "actual_tier": "Tier-3",
+    "mips": 61.11,
+    "stage20_instructions": 15403,
+    "counters": "5094 Super-Blocks fused",
+    "stop": "Svc { svc_id: 7 }"
+  },
+  {
+    "engine": "runtime",
+    "requested_tier": "tier3",
+    "trial": 2,
+    "warmup": false,
+    "command": [
+      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-gold-parity/target/release/ounce-runtime",
+      "test",
+      "--cpu=tier3",
+      "--present=headless"
+    ],
+    "wall_seconds": 0.03327595799999994,
+    "exit_code": 0,
+    "log": "synthetic-runtime-tier3-2.log",
+    "actual_tier": "Tier-3",
+    "mips": 62.24,
+    "stage20_instructions": 15403,
+    "counters": "5094 Super-Blocks fused",
+    "stop": "Svc { svc_id: 7 }"
+  },
+  {
+    "engine": "runtime",
+    "requested_tier": "tier3",
+    "trial": 3,
+    "warmup": false,
+    "command": [
+      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-gold-parity/target/release/ounce-runtime",
+      "test",
+      "--cpu=tier3",
+      "--present=headless"
+    ],
+    "wall_seconds": 0.03372558400000003,
+    "exit_code": 0,
+    "log": "synthetic-runtime-tier3-3.log",
+    "actual_tier": "Tier-3",
+    "mips": 50.65,
+    "stage20_instructions": 15403,
+    "counters": "5094 Super-Blocks fused",
+    "stop": "Svc { svc_id: 7 }"
+  },
+  {
+    "engine": "runtime",
+    "requested_tier": "tier3",
+    "trial": 4,
+    "warmup": false,
+    "command": [
+      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-gold-parity/target/release/ounce-runtime",
+      "test",
+      "--cpu=tier3",
+      "--present=headless"
+    ],
+    "wall_seconds": 0.051571542000000026,
+    "exit_code": 0,
+    "log": "synthetic-runtime-tier3-4.log",
+    "actual_tier": "Tier-3",
+    "mips": 68.22,
+    "stage20_instructions": 15403,
+    "counters": "5094 Super-Blocks fused",
+    "stop": "Svc { svc_id: 7 }"
+  },
+  {
+    "engine": "runtime",
+    "requested_tier": "tier3",
+    "trial": 5,
+    "warmup": false,
+    "command": [
+      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-gold-parity/target/release/ounce-runtime",
+      "test",
+      "--cpu=tier3",
+      "--present=headless"
+    ],
+    "wall_seconds": 0.031246999999999914,
+    "exit_code": 0,
+    "log": "synthetic-runtime-tier3-5.log",
+    "actual_tier": "Tier-3",
+    "mips": 64.29,
+    "stage20_instructions": 15403,
+    "counters": "5094 Super-Blocks fused",
+    "stop": "Svc { svc_id: 7 }"
+  },
+  {
+    "engine": "runtime",
+    "requested_tier": "tier4",
+    "trial": 0,
+    "warmup": true,
+    "command": [
+      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-gold-parity/target/release/ounce-runtime",
+      "test",
+      "--cpu=tier4",
+      "--present=headless"
+    ],
+    "wall_seconds": 0.035303040999999924,
+    "exit_code": 0,
+    "log": "synthetic-runtime-tier4-0.log",
+    "actual_tier": "Tier-4",
+    "mips": 17.83,
+    "stage20_instructions": 15403,
+    "counters": "4 native blocks compiled, 5037 native runs, 15207 native / 196 Tier-3 insns",
+    "stop": "Svc { svc_id: 7 }"
+  },
+  {
+    "engine": "runtime",
+    "requested_tier": "tier4",
+    "trial": 1,
+    "warmup": false,
+    "command": [
+      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-gold-parity/target/release/ounce-runtime",
+      "test",
+      "--cpu=tier4",
+      "--present=headless"
+    ],
+    "wall_seconds": 0.05824700000000005,
+    "exit_code": 0,
+    "log": "synthetic-runtime-tier4-1.log",
+    "actual_tier": "Tier-4",
+    "mips": 5.44,
+    "stage20_instructions": 15403,
+    "counters": "4 native blocks compiled, 5037 native runs, 15207 native / 196 Tier-3 insns",
+    "stop": "Svc { svc_id: 7 }"
+  },
+  {
+    "engine": "runtime",
+    "requested_tier": "tier4",
+    "trial": 2,
+    "warmup": false,
+    "command": [
+      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-gold-parity/target/release/ounce-runtime",
+      "test",
+      "--cpu=tier4",
+      "--present=headless"
+    ],
+    "wall_seconds": 0.03491774999999997,
+    "exit_code": 0,
+    "log": "synthetic-runtime-tier4-2.log",
+    "actual_tier": "Tier-4",
+    "mips": 18.83,
+    "stage20_instructions": 15403,
+    "counters": "4 native blocks compiled, 5037 native runs, 15207 native / 196 Tier-3 insns",
+    "stop": "Svc { svc_id: 7 }"
+  },
+  {
+    "engine": "runtime",
+    "requested_tier": "tier4",
+    "trial": 3,
+    "warmup": false,
+    "command": [
+      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-gold-parity/target/release/ounce-runtime",
+      "test",
+      "--cpu=tier4",
+      "--present=headless"
+    ],
+    "wall_seconds": 0.032112791999999946,
+    "exit_code": 0,
+    "log": "synthetic-runtime-tier4-3.log",
+    "actual_tier": "Tier-4",
+    "mips": 18.27,
+    "stage20_instructions": 15403,
+    "counters": "4 native blocks compiled, 5037 native runs, 15207 native / 196 Tier-3 insns",
+    "stop": "Svc { svc_id: 7 }"
+  },
+  {
+    "engine": "runtime",
+    "requested_tier": "tier4",
+    "trial": 4,
+    "warmup": false,
+    "command": [
+      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-gold-parity/target/release/ounce-runtime",
+      "test",
+      "--cpu=tier4",
+      "--present=headless"
+    ],
+    "wall_seconds": 0.034219250000000034,
+    "exit_code": 0,
+    "log": "synthetic-runtime-tier4-4.log",
+    "actual_tier": "Tier-4",
+    "mips": 17.91,
+    "stage20_instructions": 15403,
+    "counters": "4 native blocks compiled, 5037 native runs, 15207 native / 196 Tier-3 insns",
+    "stop": "Svc { svc_id: 7 }"
+  },
+  {
+    "engine": "runtime",
+    "requested_tier": "tier4",
+    "trial": 5,
+    "warmup": false,
+    "command": [
+      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-gold-parity/target/release/ounce-runtime",
+      "test",
+      "--cpu=tier4",
+      "--present=headless"
+    ],
+    "wall_seconds": 0.04096599999999995,
+    "exit_code": 0,
+    "log": "synthetic-runtime-tier4-5.log",
+    "actual_tier": "Tier-4",
+    "mips": 9.91,
+    "stage20_instructions": 15403,
+    "counters": "4 native blocks compiled, 5037 native runs, 15207 native / 196 Tier-3 insns",
+    "stop": "Svc { svc_id: 7 }"
+  },
+  {
+    "engine": "runtime",
+    "requested_tier": "nce",
+    "trial": 0,
+    "warmup": true,
+    "command": [
+      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-gold-parity/target/release/ounce-runtime",
+      "test",
+      "--cpu=nce",
+      "--present=headless"
+    ],
+    "wall_seconds": 0.033147666999999936,
+    "exit_code": 0,
+    "log": "synthetic-runtime-nce-0.log",
+    "actual_tier": "NCE",
+    "mips": 74.86,
+    "stage20_instructions": 15403,
+    "counters": "5 NCE blocks compiled, 5101 NCE runs, 15403 NCE / 0 fallback insns",
+    "stop": "Svc { svc_id: 7 }"
+  },
+  {
+    "engine": "runtime",
+    "requested_tier": "nce",
+    "trial": 1,
+    "warmup": false,
+    "command": [
+      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-gold-parity/target/release/ounce-runtime",
+      "test",
+      "--cpu=nce",
+      "--present=headless"
+    ],
+    "wall_seconds": 0.031048875000000198,
+    "exit_code": 0,
+    "log": "synthetic-runtime-nce-1.log",
+    "actual_tier": "NCE",
+    "mips": 72.99,
+    "stage20_instructions": 15403,
+    "counters": "5 NCE blocks compiled, 5101 NCE runs, 15403 NCE / 0 fallback insns",
+    "stop": "Svc { svc_id: 7 }"
+  },
+  {
+    "engine": "runtime",
+    "requested_tier": "nce",
+    "trial": 2,
+    "warmup": false,
+    "command": [
+      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-gold-parity/target/release/ounce-runtime",
+      "test",
+      "--cpu=nce",
+      "--present=headless"
+    ],
+    "wall_seconds": 0.03793683300000006,
+    "exit_code": 0,
+    "log": "synthetic-runtime-nce-2.log",
+    "actual_tier": "NCE",
+    "mips": 76.1,
+    "stage20_instructions": 15403,
+    "counters": "5 NCE blocks compiled, 5101 NCE runs, 15403 NCE / 0 fallback insns",
+    "stop": "Svc { svc_id: 7 }"
+  },
+  {
+    "engine": "runtime",
+    "requested_tier": "nce",
+    "trial": 3,
+    "warmup": false,
+    "command": [
+      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-gold-parity/target/release/ounce-runtime",
+      "test",
+      "--cpu=nce",
+      "--present=headless"
+    ],
+    "wall_seconds": 0.03874891699999994,
+    "exit_code": 0,
+    "log": "synthetic-runtime-nce-3.log",
+    "actual_tier": "NCE",
+    "mips": 29.79,
+    "stage20_instructions": 15403,
+    "counters": "5 NCE blocks compiled, 5101 NCE runs, 15403 NCE / 0 fallback insns",
+    "stop": "Svc { svc_id: 7 }"
+  },
+  {
+    "engine": "runtime",
+    "requested_tier": "nce",
+    "trial": 4,
+    "warmup": false,
+    "command": [
+      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-gold-parity/target/release/ounce-runtime",
+      "test",
+      "--cpu=nce",
+      "--present=headless"
+    ],
+    "wall_seconds": 0.037607125000000075,
+    "exit_code": 0,
+    "log": "synthetic-runtime-nce-4.log",
+    "actual_tier": "NCE",
+    "mips": 45.5,
+    "stage20_instructions": 15403,
+    "counters": "5 NCE blocks compiled, 5101 NCE runs, 15403 NCE / 0 fallback insns",
+    "stop": "Svc { svc_id: 7 }"
+  },
+  {
+    "engine": "runtime",
+    "requested_tier": "nce",
+    "trial": 5,
+    "warmup": false,
+    "command": [
+      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-gold-parity/target/release/ounce-runtime",
+      "test",
+      "--cpu=nce",
+      "--present=headless"
+    ],
+    "wall_seconds": 0.127541417,
+    "exit_code": 0,
+    "log": "synthetic-runtime-nce-5.log",
+    "actual_tier": "NCE",
+    "mips": 80.96,
+    "stage20_instructions": 15403,
+    "counters": "5 NCE blocks compiled, 5101 NCE runs, 15403 NCE / 0 fallback insns",
+    "stop": "Svc { svc_id: 7 }"
+  }
+]

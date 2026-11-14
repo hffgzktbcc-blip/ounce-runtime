@@ -1,0 +1,15 @@
+   Compiling ounce-runtime v0.4.0 (/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-gold-parity)
+warning: variant `Halt` is never constructed
+   --> src/main.rs:465:5
+    |
+457 | enum VmStop {
+    |      ------ variant in this enum
+...
+465 |     Halt,
+    |     ^^^^
+    |
+    = note: `VmStop` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `ounce-runtime` (bin "ounce-runtime") generated 1 warning
+    Finished `release` profile [optimized] target(s) in 59.31s

@@ -1,5 +1,64 @@
 # Corpus parity and measured performance
 
+## 2026-11-14: Headless devices and homebrew engine selection
+
+`run` now uses `CpuEngine`: `--cpu=interp|tier3|tier4|nce` overrides `OUNCE_CPU`, with Tier-3 as the default. Logs name the actual engine and its counters, including native versus fallback instructions. Unavailable native engines retain their explicit diagnostic and report the actual fallback engine. A display backed by `headless`, or no display, constructs neither the host audio sink nor the host gamepad manager; interactive backends retain both. Slices end at scheduler quantum boundaries and instruction limits. Tier-4's native linking uses a soft block budget, so this adapter reserves a maximum block and executes short tails without linking or through Tier-3 to keep those boundaries exact.
+
+### Method and provenance
+
+Runtime measured implementation: `b80503426cefc1468c529757fecf9d4b25cf1c63` (base main `8f00070b1928f4e56596ee2c28a64f6fa08f1595`); core main: `1e9c4d6b1f8905377ffd68f97c9574ac6532820a`. Both release builds used `--locked`, runtime default features (`native-jit,gpu-present`), and the same bundled redistributable NRO bytes. Core source was unchanged. Host/compiler details and build commands are in [environment.json](benchmarks/2026-11-14/environment.json).
+
+One excluded warmup and five measured fresh processes per fixture/engine; `/usr/bin/time -l` and Python wall timing include loader, guest work and teardown. There are **120/120 successful fixture executions** including warmups, each with `0x00000EEE` and graceful exit. The scripts ran sequentially, but independent Orca workers were compiling/testing on this host: background CPU and memory pressure were uncontrolled. These are noisy descriptive measurements, **not an isolated before/after speedup experiment**. RSS is the macOS reported resident-set peak in bytes, converted to MiB. The previous day's results remain historical below; the first measurement pass is retained under [initial/](benchmarks/2026-11-14/initial/).
+
+### Homebrew release measurements
+
+Each cell is median wall milliseconds (five-sample minimum–maximum); full instruction counts, RSS, actual engine, counters, fixture hashes and exact commands are in [measurements.json](benchmarks/2026-11-14/measurements.json).
+
+| Fixture | Core interpreter | Runtime interp | Runtime tier3 | Runtime tier4 | Runtime nce |
+| :--- | ---: | ---: | ---: | ---: | ---: |
+| hello | 133.67 (109.17–167.17) | 38.79 (35.80–44.99) | 34.65 (30.34–39.95) | 50.29 (45.55–70.62) | 50.61 (38.77–61.81) |
+| services | 125.05 (104.08–273.97) | 31.81 (29.70–33.24) | 34.71 (25.50–109.52) | 32.89 (30.05–38.79) | 34.81 (31.20–37.92) |
+| romfs | 116.77 (113.11–124.80) | 35.78 (30.96–47.87) | 32.56 (30.20–43.62) | 49.64 (47.27–57.96) | 68.83 (65.39–70.76) |
+| threads | 128.63 (120.29–171.53) | 41.17 (33.48–42.19) | 37.99 (35.12–39.62) | 71.92 (69.46–79.17) | 74.23 (69.31–77.35) |
+
+Runtime peak-RSS medians range from 49.55–55.88 MiB; core from 280.44–280.78 MiB. Heap policy still differs (32 versus 256 MiB). Runtime hello/romfs/threads report 9,320/24,901/62,913 instructions in all tiers. Services reports 5,616 or 6,221 across runtime samples; core services reports 5,631 or 6,236. Instruction counts are engine observations rather than identical instruction traces.
+
+All native fixture runs have positive native execution counters, but substantial fallback remains. For example, hello Tier-4 executes 4,292 native / 5,028 fallback instructions; NCE executes 296 native / 9,024 fallback. Threads executes 45,329 native / 17,584 fallback in Tier-4 and 15,491 native / 47,422 fallback in NCE. Selecting a native engine does not imply every instruction runs natively.
+
+### Synthetic tiers
+
+All **24/24** stock architecture runs returned success. Stage 20 still uses different core/runtime programs as explained in the historical section; no identical-workload cross-repo throughput ratio is claimed. Cold compilation is included and caches do not persist between processes. [Raw tier measurements](benchmarks/2026-11-14/tiers.json):
+
+| Engine / tier | Median MIPS | Range | Counters (representative measured run) |
+| :--- | ---: | ---: | :--- |
+| core / tier3 | 49.92 | 46.04–53.93 | 5094 Super-Blocks fused |
+| runtime / tier3 | 52.49 | 2.90–54.19 | 5094 Super-Blocks fused |
+| runtime / tier4 | 12.57 | 5.44–15.05 | 4 native blocks compiled, 5037 native runs, 15207 native / 196 Tier-3 insns |
+| runtime / nce | 51.85 | 41.90–63.15 | 5 NCE blocks compiled, 5101 NCE runs, 15403 NCE / 0 fallback insns |
+
+Interactive device construction and polling paths remain in place for active window backends; physical-controller and audible-output testing were not performed in this headless worker.
+
+### Verification
+
+`cargo test --locked` and `cargo test --locked --features native-jit` each passed **467 unit tests + 2 CLI integration tests**, with 2 ignored unit tests, on implementation `c9c6bb9` before the final lazy-display initialization fix. The final measured commit also passed `cargo test --release --locked` and `cargo test --release --locked --features native-jit`, with identical counts. CLI coverage checks all four fixtures in interp/tier3/tier4/NCE, positive execution counters, environment selection and CLI precedence; unit coverage checks exact slice budgets and SVC instruction counts.
+
+`cargo clippy --locked --all-targets --features native-jit` completed with warnings. `cargo fmt --check` exits 1 due to broad repository formatting drift; the unchanged main-branch `main.rs` independently fails rustfmt as recorded in [format-check.txt](benchmarks/2026-11-14/format-check.txt). No repository-wide formatting rewrite was included. Exact commands, outcomes and logs are retained in [verification.json](benchmarks/2026-11-14/verification.json) and its neighboring log files.
+
+### Conformance: explicitly unsupported, not passing
+
+The new `fuzz-replay --engine <tier> <trace>` adapter reads the versioned single-instruction register-state contract and invokes the requested engine with an exact one-instruction budget. Reports retain actual engine counters: short budgets can legitimately use that engine's interpreter fallback, so these reports do not establish native opcode conformance. The suite directory (not its JSON filename) is the runner's `--suite` argument.
+
+All four engines report **0/12 full passes**, with exit status 1 per case. FPSR/QC is not modeled by runtime and therefore cannot be checked: the adapter explicitly records an unsupported comparison as `emulator other errors: 1` and never claims an exact match. Partial X/V/NZCV comparison matches 9/12 cases; `default-nan-mul2d`, `sqadd-saturate-16b`, and `adcs-carry-wrap` disagree in every engine. These discrepancies remain open; this is not ISA certification. Exact suite hashes, stdout/stderr, counters and case results are retained in [interp](benchmarks/2026-11-14/conformance-interp.json), [tier3](benchmarks/2026-11-14/conformance-tier3.json), [tier4](benchmarks/2026-11-14/conformance-tier4.json) and [nce](benchmarks/2026-11-14/conformance-nce.json).
+
+```sh
+cargo build --release --locked
+cargo build --release --locked --manifest-path /Users/nathanaelgovender/orca/ounce-core/Cargo.toml
+python3 scripts/benchmark_corpus.py --core /Users/nathanaelgovender/orca/ounce-core/target/release/ounce-core --output docs/benchmarks/2026-11-14
+python3 scripts/benchmark_tiers.py --core /Users/nathanaelgovender/orca/ounce-core/target/release/ounce-core --output docs/benchmarks/2026-11-14
+# Repeat for interp, tier3, tier4, nce with a fresh report filename:
+python3 /Users/nathanaelgovender/orca/ounce-core/scripts/run_conformance.py --suite /Users/nathanaelgovender/orca/ounce-core/conformance/arm64-v0.2.0 --report /tmp/runtime-conformance-tier3.json -- target/release/ounce-runtime fuzz-replay --engine tier3
+```
+
 ## 2026-11-13: Apple M3 head-to-head
 
 On this host, ounce-runtime took **2.00–2.22× as long** as ounce-core for four short homebrew fixtures, while using **about 78% less peak RSS**. All four fixtures printed their expected `0x00000EEE` result and exited via `svcExitProcess` in every run. These are end-to-end CLI measurements, including startup, loader, host device initialization, guest execution, and teardown; they are not isolated CPU benchmarks.

@@ -1,0 +1,42 @@
+============================================================
+  OUNCE-NX2 v0.4.0: NVIDIA Tegra T239 (GA10F) / Horizon OS Runtime
+  Target: ARMv8.5-A AArch64 (PAC + BTI) | Switch 2 & Switch 1 Execution
+============================================================
+
+[Loader] Reading package/executable: /Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-gold-parity/tests/fixtures/nro/romfs/romfs.nro
+[BootLoader] Successfully loaded package:
+  Format      : NRO0
+  Title ID    : 0x0000000000000000
+  Code size   : 0x0000B000 (45056 bytes)
+  MOD0 relocs : 0
+[VM] Starting execution at PC: 0x0000000080000000
+[VM] Stack Pointer: 0x0000007FFFFFE000
+[CPU] Engine: Interpreter
+ounce-romfs result=0x00000EEE
+
+[VM] Process exited gracefully (svcExitProcess).
+[CPU] Interpreter: 24901 interpreted instructions
+[VM Summary] Executed 24901 instructions in 1.9430ms (12.82 MIPS) | Frames: 0
+  -> GPU Commands: 0 | 3D Draw Calls: 0 | Triangles Rasterized: 0 | HIPC Calls: 24
+  -> RomFS Bytes Read: 357 | Audio Buffers: 0 | PCM Samples: 0 (Peak Amp: 0)
+  -> Basic-Block JIT Cache: 762 Blocks (3831 Insns) | Hits: 24139 | Misses: 762
+  -> Memory Buckets (38536 KB): Code=48 KB | VRAM=3600 KB | Stack/TLS=2052 KB | Data=32836 KB
+  -> Final X0: 0 (0x0000000000000000) | D0: 0.00
+        0.01 real         0.00 user         0.00 sys
+            52117504  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+                3405  page reclaims
+                   0  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                   0  voluntary context switches
+                   6  involuntary context switches
+            94871278  instructions retired
+            38471519  cycles elapsed
+            43991496  peak memory footprint

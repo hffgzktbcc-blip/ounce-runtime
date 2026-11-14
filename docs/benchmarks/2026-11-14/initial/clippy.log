@@ -1,0 +1,2972 @@
+    Checking ounce-runtime v0.4.0 (/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-gold-parity)
+warning: unnecessary parentheses
+   --> src/cpu/interpreter.rs:198:35
+    |
+198 |                         let v = (!((op1 ^ op2)) & (op1 ^ res) & (1 << 63)) != 0;
+    |                                   ^^^^^^^^^^^^^ help: remove them: `(op1 ^ op2)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#double_parens
+    = note: `#[warn(clippy::double_parens)]` on by default
+
+warning: unnecessary parentheses
+   --> src/cpu/interpreter.rs:221:35
+    |
+221 |                         let v = (!((op1_32 ^ op2_32)) & (op1_32 ^ res) & (1 << 31)) != 0;
+    |                                   ^^^^^^^^^^^^^^^^^^^ help: remove them: `(op1_32 ^ op2_32)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#double_parens
+
+warning: unnecessary parentheses
+   --> src/cpu/interpreter.rs:299:35
+    |
+299 |                         let v = (!((op1 ^ op2)) & (op1 ^ res) & (1 << 63)) != 0;
+    |                                   ^^^^^^^^^^^^^ help: remove them: `(op1 ^ op2)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#double_parens
+
+warning: unnecessary parentheses
+   --> src/cpu/interpreter.rs:325:35
+    |
+325 |                         let v = (!((op1_32 ^ op2_32)) & (op1_32 ^ res) & (1 << 31)) != 0;
+    |                                   ^^^^^^^^^^^^^^^^^^^ help: remove them: `(op1_32 ^ op2_32)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#double_parens
+
+warning: unnecessary parentheses
+   --> src/cpu/interpreter.rs:602:39
+    |
+602 | ...                   let v = (!((op1 ^ op2)) & (op1 ^ r) & (1 << 63)) != 0;
+    |                                 ^^^^^^^^^^^^^ help: remove them: `(op1 ^ op2)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#double_parens
+
+warning: unnecessary parentheses
+   --> src/cpu/interpreter.rs:618:39
+    |
+618 | ...                   let v = (!((op1_32 ^ op2_32)) & (op1_32 ^ r) & (1 << 31)) != 0;
+    |                                 ^^^^^^^^^^^^^^^^^^^ help: remove them: `(op1_32 ^ op2_32)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#double_parens
+
+warning: unnecessary parentheses
+   --> src/cpu/tier2_jit.rs:163:39
+    |
+163 | ...                   let v = (!((op1 ^ imm)) & (op1 ^ res) & (1 << 63)) != 0;
+    |                                 ^^^^^^^^^^^^^ help: remove them: `(op1 ^ imm)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#double_parens
+
+warning: unnecessary parentheses
+   --> src/cpu/tier2_jit.rs:183:39
+    |
+183 | ...                   let v = (!((op1_32 ^ imm_32)) & (op1_32 ^ res) & (1 << 31)) != 0;
+    |                                 ^^^^^^^^^^^^^^^^^^^ help: remove them: `(op1_32 ^ imm_32)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#double_parens
+
+warning: unnecessary parentheses
+   --> src/cpu/tier2_jit.rs:250:39
+    |
+250 | ...                   let v = (!((op1 ^ op2)) & (op1 ^ res) & (1 << 63)) != 0;
+    |                                 ^^^^^^^^^^^^^ help: remove them: `(op1 ^ op2)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#double_parens
+
+warning: unnecessary parentheses
+   --> src/cpu/tier2_jit.rs:268:39
+    |
+268 | ...                   let v = (!((op1_32 ^ op2_32)) & (op1_32 ^ res) & (1 << 31)) != 0;
+    |                                 ^^^^^^^^^^^^^^^^^^^ help: remove them: `(op1_32 ^ op2_32)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#double_parens
+
+warning: empty line after doc comment
+  --> src/gpu/nvgpu.rs:9:1
+   |
+ 9 | / /// used by Horizon OS to feed draw calls, surface clears, and vertex arrays to the GPU.
+10 | |
+   | |_^
+11 |   pub const NVGPU_IOCTL_CHANNEL_SUBMIT_GPFIFO: u32 = 0xC0104808;
+   |   ------------------------------------------- the comment documents this constant item
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#empty_line_after_doc_comments
+   = note: `#[warn(clippy::empty_line_after_doc_comments)]` on by default
+   = help: if the empty line is unintentional, remove it
+
+warning: unnecessary `>= y + 1` or `x - 1 >=`
+   --> src/gpu/nvn.rs:779:43
+    |
+779 |                 NVN_CMD_SET_DEPTH_TEST if idx + 1 <= max_words => {
+    |                                           ^^^^^^^^^^^^^^^^^^^^ help: change it to: `idx < max_words`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#int_plus_one
+    = note: `#[warn(clippy::int_plus_one)]` on by default
+
+warning: unnecessary `>= y + 1` or `x - 1 >=`
+   --> src/gpu/nvn.rs:784:41
+    |
+784 |                 NVN_CMD_BIND_PROGRAM if idx + 1 <= max_words => {
+    |                                         ^^^^^^^^^^^^^^^^^^^^ help: change it to: `idx < max_words`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#int_plus_one
+
+warning: unnecessary `>= y + 1` or `x - 1 >=`
+   --> src/gpu/nvn.rs:796:52
+    |
+796 |                 NVN_CMD_BIND_TEXTURE_DESCRIPTOR if idx + 1 <= max_words => {
+    |                                                    ^^^^^^^^^^^^^^^^^^^^ help: change it to: `idx < max_words`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#int_plus_one
+
+warning: unnecessary `>= y + 1` or `x - 1 >=`
+   --> src/gpu/nvn.rs:801:47
+    |
+801 |                 NVN_CMD_BIND_VERTEX_BUFFER if idx + 1 <= max_words => {
+    |                                               ^^^^^^^^^^^^^^^^^^^^ help: change it to: `idx < max_words`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#int_plus_one
+
+warning: unnecessary `>= y + 1` or `x - 1 >=`
+   --> src/gpu/nvn.rs:806:40
+    |
+806 |                 NVN_CMD_DRAW_ARRAYS if idx + 1 <= max_words => {
+    |                                        ^^^^^^^^^^^^^^^^^^^^ help: change it to: `idx < max_words`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#int_plus_one
+
+warning: unnecessary `>= y + 1` or `x - 1 >=`
+   --> src/gpu/nvn.rs:811:42
+    |
+811 |                 NVN_CMD_DRAW_TEXTURED if idx + 1 <= max_words => {
+    |                                          ^^^^^^^^^^^^^^^^^^^^ help: change it to: `idx < max_words`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#int_plus_one
+
+warning: unnecessary `>= y + 1` or `x - 1 >=`
+   --> src/gpu/nvn.rs:824:41
+    |
+824 |                 NVN_CMD_BUFFER_CYCLE if idx + 1 <= max_words => {
+    |                                         ^^^^^^^^^^^^^^^^^^^^ help: change it to: `idx < max_words`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#int_plus_one
+
+warning: empty line after doc comment
+ --> src/gpu/shader.rs:4:1
+  |
+4 | / /// GLSL 450 Transpiler, & Binary Vulkan SPIR-V 1.5 (`0x07230203`) Bytecode Emitter.
+5 | |
+  | |_^
+6 |   use crate::gpu::tensor::HmmaShape;
+  |   - the comment documents this `use` import
+  |
+  = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#empty_line_after_doc_comments
+  = help: if the empty line is unintentional, remove it
+help: if the comment should document the parent module use an inner doc comment
+  |
+3 ~ //! Nvidia Ampere (`SM86` / Tegra T239 "Drake") SASS Shader Decompiler,
+4 ~ //! GLSL 450 Transpiler, & Binary Vulkan SPIR-V 1.5 (`0x07230203`) Bytecode Emitter.
+  |
+
+warning: digits grouped inconsistently by underscores
+  --> src/gpu/vulkan.rs:22:29
+   |
+22 |             driver_version: 550_00,
+   |                             ^^^^^^ help: consider: `55_000`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#inconsistent_digit_grouping
+   = note: `#[warn(clippy::inconsistent_digit_grouping)]` on by default
+
+warning: digits of hex, binary or octal literal not in groups of equal size
+   --> src/kernel/nvdrv.rs:676:77
+    |
+676 | ...   for (i, (offset, page, pages)) in [(GPU_VA_BASE, 0x1000u32, 0x3FFF_Fu64), (0x10_0000_0000, 0x2_0000, 0x7_FFFF)].iter().enumer...
+    |                                                                   ^^^^^^^^^^^ help: consider: `0x0003_FFFF_u64`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unusual_byte_groupings
+    = note: `#[warn(clippy::unusual_byte_groupings)]` on by default
+
+warning: digits of hex, binary or octal literal not in groups of equal size
+   --> src/mmu/memory.rs:386:29
+    |
+386 |             } else if va >= 0x7FFF_0000_00 {
+    |                             ^^^^^^^^^^^^^^ help: consider: `0x007F_FF00_0000`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unusual_byte_groupings
+
+warning: digits of hex, binary or octal literal not in groups of equal size
+  --> src/ui/trace.rs:16:30
+   |
+16 | const TRACE_STACK_TOP: u64 = 0x7FFF_FFE0_00;
+   |                              ^^^^^^^^^^^^^^ help: consider: `0x007F_FFFF_E000`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unusual_byte_groupings
+
+warning: operator precedence might not be obvious
+    --> src/cpu/tier4.rs:1876:26
+     |
+1876 |                     _ => DATA + (rng.next() % 0x800) & !7,
+     |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider parenthesizing your expression: `(DATA + (rng.next() % 0x800)) & !7`
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#precedence
+     = note: `#[warn(clippy::precedence)]` on by default
+
+warning: operator precedence might not be obvious
+    --> src/cpu/tier4.rs:1960:26
+     |
+1960 |                     _ => DATA + (rng.next() % 0x800) & !7,
+     |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider parenthesizing your expression: `(DATA + (rng.next() % 0x800)) & !7`
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#precedence
+
+warning: digits of hex, binary or octal literal not in groups of equal size
+   --> src/mmu/fastmem.rs:319:47
+    |
+319 |         let high_off = arena.alloc_guest_page(0x7FFF_FFE0_00 >> 12).expect("slab slot");
+    |                                               ^^^^^^^^^^^^^^ help: consider: `0x007F_FFFF_E000`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unusual_byte_groupings
+
+warning: variant `Halt` is never constructed
+   --> src/main.rs:465:5
+    |
+457 | enum VmStop {
+    |      ------ variant in this enum
+...
+465 |     Halt,
+    |     ^^^^
+    |
+    = note: `VmStop` has derived impls for the traits `Clone` and `Debug`, but these are intentionally ignored during dead code analysis
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: manual implementation of `ok`
+  --> src/audio/host.rs:77:22
+   |
+77 |           let stream = match Self::init_stream(
+   |  ______________________^
+78 | |             queue_clone,
+79 | |             underruns_clone,
+80 | |             played_clone,
+...  |
+85 | |             Err(_) => None,
+86 | |         };
+   | |_________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#manual_ok_err
+   = note: `#[warn(clippy::manual_ok_err)]` on by default
+help: replace with
+   |
+77 ~         let stream = Self::init_stream(
+78 +             queue_clone,
+79 +             underruns_clone,
+80 +             played_clone,
+81 +             sample_rate,
+82 +             channels,
+83 ~         ).ok();
+   |
+
+warning: the loop variable `i` is only used to index `out`
+   --> src/audio/host.rs:317:22
+    |
+317 |             for i in 0..to_read {
+    |                      ^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#needless_range_loop
+    = note: `#[warn(clippy::needless_range_loop)]` on by default
+help: consider using an iterator
+    |
+317 -             for i in 0..to_read {
+317 +             for <item> in out.iter_mut().take(to_read) {
+    |
+
+warning: the loop variable `i` is only used to index `out`
+   --> src/audio/host.rs:321:26
+    |
+321 |                 for i in to_read..out.len() {
+    |                          ^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#needless_range_loop
+help: consider using an iterator
+    |
+321 -                 for i in to_read..out.len() {
+321 +                 for <item> in out.iter_mut().skip(to_read) {
+    |
+
+warning: casting integer literal to `u64` is unnecessary
+   --> src/cpu/interpreter.rs:160:38
+    |
+160 |                         let mask = !((0xFFFF as u64) << shift);
+    |                                      ^^^^^^^^^^^^^^^ help: try: `0xFFFF_u64`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unnecessary_cast
+    = note: `#[warn(clippy::unnecessary_cast)]` on by default
+
+warning: casting to the same type is unnecessary (`u32` -> `u32`)
+    --> src/cpu/interpreter.rs:1287:33
+     |
+1287 |                     let shift = (self.regs.read_w(rm) & 31) as u32;
+     |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: try: `(self.regs.read_w(rm) & 31)`
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unnecessary_cast
+
+warning: using `chunks_exact` with a constant chunk size
+   --> src/cpu/pauth.rs:201:26
+    |
+201 |     let mut chunks = msg.chunks_exact(8);
+    |                          ^^^^^^^^^^^^^^^
+    |
+help: consider using `as_chunks::<8>()` instead
+   --> src/cpu/pauth.rs:201:26
+    |
+201 |     let mut chunks = msg.chunks_exact(8);
+    |                          ^^^^^^^^^^^^^^^
+    = note: you can access the chunks using `chunks.0.iter()`, and the remainder using `chunks.1`
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#chunks_exact_to_as_chunks
+    = note: `#[warn(clippy::chunks_exact_to_as_chunks)]` on by default
+
+warning: this `if` statement can be collapsed
+  --> src/cpu/jit_cache.rs:43:9
+   |
+43 | /         if let Some(entry) = self.entries.get(&pc) {
+44 | |             if entry.raw == raw_word {
+45 | |                 self.cache_hits += 1;
+46 | |                 return entry.decoded;
+47 | |             }
+48 | |         }
+   | |_________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+   = note: `#[warn(clippy::collapsible_if)]` on by default
+help: collapse nested if block
+   |
+43 ~         if let Some(entry) = self.entries.get(&pc)
+44 ~             && entry.raw == raw_word {
+45 |                 self.cache_hits += 1;
+46 |                 return entry.decoded;
+47 ~             }
+   |
+
+warning: methods with the following characteristics: (`to_*` and `self` type is `Copy`) usually take `self` by value
+  --> src/cpu/registers.rs:34:20
+   |
+34 |     pub fn to_bits(&self) -> u32 {
+   |                    ^^^^^
+   |
+   = help: consider choosing a less ambiguous name
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#wrong_self_convention
+   = note: `#[warn(clippy::wrong_self_convention)]` on by default
+
+warning: methods called `from_*` usually take no `self`
+  --> src/cpu/registers.rs:42:22
+   |
+42 |     pub fn from_bits(&mut self, val: u32) {
+   |                      ^^^^^^^^^
+   |
+   = help: consider choosing a less ambiguous name
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#wrong_self_convention
+
+warning: this `if` statement can be collapsed
+   --> src/cpu/tier3_jit.rs:155:9
+    |
+155 | /         if *counter >= Self::HOT_THRESHOLD {
+156 | |             if let Some(sb) = SuperBlock::form_trace(pc, mmu, 4) {
+157 | |                 for b in &sb.fused_blocks {
+158 | |                     mmu.mark_code_range(b.start_pc, b.end_pc);
+...   |
+164 | |         }
+    | |_________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+155 ~         if *counter >= Self::HOT_THRESHOLD
+156 ~             && let Some(sb) = SuperBlock::form_trace(pc, mmu, 4) {
+157 |                 for b in &sb.fused_blocks {
+...
+162 |                 return Some(arc_sb);
+163 ~             }
+    |
+
+warning: this `match` can be collapsed into the outer `match`
+   --> src/cpu/tier4.rs:821:17
+    |
+821 | /                 match op {
+822 | |                     SimdOp2::Not => {
+823 | |                         let n_lo = self.b.get(Reg::VLo(rn));
+824 | |                         let n_hi = self.b.get(Reg::VHi(rn));
+...   |
+830 | |                     _ => return Err(()),
+831 | |                 }
+    | |_________________^
+    |
+help: the outer pattern can be modified to include the inner pattern
+   --> src/cpu/tier4.rs:820:48
+    |
+820 |             Instruction::SimdTwoMisc { rd, rn, op, esize: _, q } => {
+    |                                                ^^ replace this binding
+821 |                 match op {
+822 |                     SimdOp2::Not => {
+    |                     ^^^^^^^^^^^^ with this pattern, prefixed by `op: `
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_match
+    = note: `#[warn(clippy::collapsible_match)]` on by default
+
+warning: manual `!RangeInclusive::contains` implementation
+   --> src/cpu/nce.rs:483:12
+    |
+483 |         if offset < -4095 || offset > 0xFFFF {
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: use: `!(-4095..=0xFFFF).contains(&offset)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#manual_range_contains
+    = note: `#[warn(clippy::manual_range_contains)]` on by default
+
+warning: using `chunks_exact_mut` with a constant chunk size
+   --> src/crypto/mod.rs:108:27
+    |
+108 |         for chunk in data.chunks_exact_mut(16) {
+    |                           ^^^^^^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks_mut::<16>().0`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#chunks_exact_to_as_chunks
+
+warning: using `chunks_exact_mut` with a constant chunk size
+   --> src/crypto/mod.rs:117:27
+    |
+117 |         for chunk in data.chunks_exact_mut(16) {
+    |                           ^^^^^^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks_mut::<16>().0`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#chunks_exact_to_as_chunks
+
+warning: this `if` statement can be collapsed
+   --> src/fs/romfs.rs:248:24
+    |
+248 |                   } else if path.is_file() {
+    |  ________________________^
+249 | |                     if let Ok(rel) = path.strip_prefix(root) {
+250 | |                         let rel_str = rel.to_string_lossy().replace('\\', "/");
+251 | |                         let vfs_path = format!("{}:/{}", prefix, rel_str);
+...   |
+257 | |                 }
+    | |_________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+248 ~                 } else if path.is_file()
+249 ~                     && let Ok(rel) = path.strip_prefix(root) {
+250 |                         let rel_str = rel.to_string_lossy().replace('\\', "/");
+...
+255 |                         }
+256 ~                     }
+    |
+
+warning: this `if` statement can be collapsed
+   --> src/fs/romfs.rs:365:9
+    |
+365 | /         if let Ok(Some(p)) = self.host_path(&norm) {
+366 | |             if let Ok(meta) = std::fs::metadata(&p) {
+367 | |                 return Some(if meta.is_dir() { VfsEntryKind::Directory } else { VfsEntryKind::File(meta.len()) });
+368 | |             }
+369 | |         }
+    | |_________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+365 ~         if let Ok(Some(p)) = self.host_path(&norm)
+366 ~             && let Ok(meta) = std::fs::metadata(&p) {
+367 |                 return Some(if meta.is_dir() { VfsEntryKind::Directory } else { VfsEntryKind::File(meta.len()) });
+368 ~             }
+    |
+
+warning: this `if` statement can be collapsed
+   --> src/fs/romfs.rs:501:9
+    |
+501 | /         if let (Some(a), Some(b)) = (host_from, host_to) {
+502 | |             if std::fs::symlink_metadata(&a).is_ok() {
+503 | |                 std::fs::rename(a, b)?;
+504 | |             }
+505 | |         }
+    | |_________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+501 ~         if let (Some(a), Some(b)) = (host_from, host_to)
+502 ~             && std::fs::symlink_metadata(&a).is_ok() {
+503 |                 std::fs::rename(a, b)?;
+504 ~             }
+    |
+
+warning: this `if` statement can be collapsed
+   --> src/fs/romfs.rs:564:9
+    |
+564 | /         if norm.starts_with("romfs:/") && !self.files.contains_key(&norm) && !self.files.contains_key(path) {
+565 | |             if let Some(disk_path) = self.host_path(&norm)? {
+566 | |                 if std::fs::metadata(&disk_path).is_ok_and(|m| m.is_file()) {
+567 | |                     let handle = self.next_handle;
+...   |
+573 | |         }
+    | |_________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+564 ~         if norm.starts_with("romfs:/") && !self.files.contains_key(&norm) && !self.files.contains_key(path)
+565 ~             && let Some(disk_path) = self.host_path(&norm)? {
+566 |                 if std::fs::metadata(&disk_path).is_ok_and(|m| m.is_file()) {
+...
+571 |                 }
+572 ~             }
+    |
+
+warning: this `if` statement can be collapsed
+   --> src/fs/romfs.rs:565:13
+    |
+565 | /             if let Some(disk_path) = self.host_path(&norm)? {
+566 | |                 if std::fs::metadata(&disk_path).is_ok_and(|m| m.is_file()) {
+567 | |                     let handle = self.next_handle;
+568 | |                     self.next_handle += 1;
+...   |
+572 | |             }
+    | |_____________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+565 ~             if let Some(disk_path) = self.host_path(&norm)?
+566 ~                 && std::fs::metadata(&disk_path).is_ok_and(|m| m.is_file()) {
+567 |                     let handle = self.next_handle;
+...
+570 |                     return Ok(handle);
+571 ~                 }
+    |
+
+warning: this `if` statement can be collapsed
+   --> src/fs/romfs.rs:755:9
+    |
+755 | /         if let Ok(Some(disk_dir)) = self.host_path(&norm) {
+756 | |             if disk_dir.is_dir() {
+757 | |                 dir_found = true;
+758 | |                 if let Ok(rd) = std::fs::read_dir(&disk_dir) {
+...   |
+764 | |         }
+    | |_________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+755 ~         if let Ok(Some(disk_dir)) = self.host_path(&norm)
+756 ~             && disk_dir.is_dir() {
+757 |                 dir_found = true;
+...
+762 |                 }
+763 ~             }
+    |
+
+warning: this `if` statement can be collapsed
+   --> src/fs/romfs.rs:807:9
+    |
+807 | /         if let Some(disk_path) = host {
+808 | |             if disk_path.is_file() {
+809 | |                 std::fs::remove_file(&disk_path)?;
+810 | |                 disk_removed = true;
+811 | |             }
+812 | |         }
+    | |_________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+807 ~         if let Some(disk_path) = host
+808 ~             && disk_path.is_file() {
+809 |                 std::fs::remove_file(&disk_path)?;
+810 |                 disk_removed = true;
+811 ~             }
+    |
+
+warning: this `if` statement can be collapsed
+   --> src/fs/romfs.rs:843:9
+    |
+843 | /         if let Some(disk_path) = host {
+844 | |             if disk_path.is_dir() {
+845 | |                 std::fs::remove_dir_all(&disk_path)?;
+846 | |                 disk_removed = true;
+847 | |             }
+848 | |         }
+    | |_________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+843 ~         if let Some(disk_path) = host
+844 ~             && disk_path.is_dir() {
+845 |                 std::fs::remove_dir_all(&disk_path)?;
+846 |                 disk_removed = true;
+847 ~             }
+    |
+
+warning: this `if` statement can be collapsed
+   --> src/gpu/ampere/compute.rs:278:9
+    |
+278 | /         if let Some(accel) = hw {
+279 | |             if accel
+280 | |                 .execute_compute_qmd(class, &qmd, &code, &func, &staged_cbufs, mem)
+281 | |                 .unwrap_or(false)
+...   |
+286 | |         }
+    | |_________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+278 ~         if let Some(accel) = hw
+279 ~             && accel
+280 |                 .execute_compute_qmd(class, &qmd, &code, &func, &staged_cbufs, mem)
+...
+284 |                 self.hardware_dispatches += 1;
+285 ~             }
+    |
+
+warning: this `if` statement can be collapsed
+   --> src/gpu/ampere/compute.rs:378:9
+    |
+378 | /         if let Op::Cbuf { bank, offset } = *op {
+379 | |             if let Some(lo) = cbuf_word(bank, offset) {
+380 | |                 if offset % 8 == 0 {
+381 | |                     if let Some(hi) = cbuf_word(bank, offset + 4) {
+...   |
+392 | |         }
+    | |_________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+378 ~         if let Op::Cbuf { bank, offset } = *op
+379 ~             && let Some(lo) = cbuf_word(bank, offset) {
+380 |                 if offset % 8 == 0 {
+...
+390 |                 }
+391 ~             }
+    |
+
+warning: this `if` statement can be collapsed
+   --> src/gpu/ampere/compute.rs:380:17
+    |
+380 | /                 if offset % 8 == 0 {
+381 | |                     if let Some(hi) = cbuf_word(bank, offset + 4) {
+382 | |                         let va64 = ((hi as u64) << 32) | (lo as u64);
+383 | |                         if va64 != 0 {
+...   |
+387 | |                 }
+    | |_________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+380 ~                 if offset % 8 == 0
+381 ~                     && let Some(hi) = cbuf_word(bank, offset + 4) {
+382 |                         let va64 = ((hi as u64) << 32) | (lo as u64);
+...
+385 |                         }
+386 ~                     }
+    |
+
+warning: this `if` statement can be collapsed
+   --> src/gpu/ampere/compute.rs:469:33
+    |
+469 | / ...                   if let Some(gv) = st.guard {
+470 | | ...                       if vals[gv.0 as usize] == 0 {
+471 | | ...                           continue;
+472 | | ...                       }
+473 | | ...                   }
+    | |_______________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+469 ~                                 if let Some(gv) = st.guard
+470 ~                                     && vals[gv.0 as usize] == 0 {
+471 |                                         continue;
+472 ~                                     }
+    |
+
+warning: this `map_or` can be simplified
+   --> src/gpu/ampere/dma_copy.rs:262:30
+    |
+262 |         let needs_src_read = remap_cfg.map_or(true, |rc| rc.reads_source());
+    |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unnecessary_map_or
+    = note: `#[warn(clippy::unnecessary_map_or)]` on by default
+help: use `is_none_or` instead
+    |
+262 -         let needs_src_read = remap_cfg.map_or(true, |rc| rc.reads_source());
+262 +         let needs_src_read = remap_cfg.is_none_or(|rc| rc.reads_source());
+    |
+
+warning: the loop variable `xb` is used to index `row`
+   --> src/gpu/ampere/dma_copy.rs:293:31
+    |
+293 |                     for xb in 0..src_row_bytes {
+    |                               ^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#needless_range_loop
+help: consider using an iterator and enumerate()
+    |
+293 -                     for xb in 0..src_row_bytes {
+293 +                     for (xb, <item>) in row.iter_mut().enumerate().take(src_row_bytes) {
+    |
+
+warning: this `if` statement can be collapsed
+   --> src/gpu/ampere/engine.rs:583:13
+    |
+583 | /             if let Some(wait) = self.acquire_for(call) {
+584 | |                 if wait.satisfied(mem) == Some(false) {
+585 | |                     self.blocked = Some(wait);
+586 | |                     return;
+587 | |                 }
+588 | |             }
+    | |_____________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+583 ~             if let Some(wait) = self.acquire_for(call)
+584 ~                 && wait.satisfied(mem) == Some(false) {
+585 |                     self.blocked = Some(wait);
+586 |                     return;
+587 ~                 }
+    |
+
+warning: manual implementation of `.is_multiple_of()`
+   --> src/gpu/ampere/engine.rs:722:36
+    |
+722 |             m::CALL_MME_MACRO.. if (method - m::CALL_MME_MACRO) % m::CALL_MME_STRIDE == 0 => {
+    |                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: replace with: `(method - m::CALL_MME_MACRO).is_multiple_of(m::CALL_MME_STRIDE)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#manual_is_multiple_of
+    = note: `#[warn(clippy::manual_is_multiple_of)]` on by default
+
+warning: manual implementation of `.is_multiple_of()`
+   --> src/gpu/ampere/engine.rs:796:20
+    |
+796 |                 && (method - m::BIND_GROUP_CONSTANT_BUFFER) % m::BIND_GROUP_STRIDE == 0 =>
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: replace with: `(method - m::BIND_GROUP_CONSTANT_BUFFER).is_multiple_of(m::BIND_GROUP_STRIDE)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#manual_is_multiple_of
+
+warning: unnecessary closure used with `bool::then`
+    --> src/gpu/ampere/engine.rs:1023:17
+     |
+1023 | /                 (a != 0 && (a >> 6) & 1 == 0).then(|| VertexAttribute {
+1024 | |                     index: i as u8,
+1025 | |                     stream: (a & 0x1f) as u8,
+1026 | |                     offset: (a >> 7) & 0x3fff,
+...    |
+1029 | |                     swap_r_and_b: a >> 31 == 1,
+1030 | |                 })
+     | |__________________^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unnecessary_lazy_evaluations
+     = note: `#[warn(clippy::unnecessary_lazy_evaluations)]` on by default
+help: use `then_some` instead
+     |
+1023 ~                 (a != 0 && (a >> 6) & 1 == 0).then_some(VertexAttribute {
+1024 +                     index: i as u8,
+1025 +                     stream: (a & 0x1f) as u8,
+1026 +                     offset: (a >> 7) & 0x3fff,
+1027 +                     component_bit_widths: (a >> 21) & 0x3f,
+1028 +                     numerical_type: (a >> 27) & 7,
+1029 +                     swap_r_and_b: a >> 31 == 1,
+1030 +                 })
+     |
+
+warning: manual checked division
+   --> src/gpu/ampere/render.rs:964:35
+    |
+964 |                     let step = if stream.frequency == 0 { 0 } else { rec.instance / stream.frequency };
+    |                                   ^^^^^^^^^^^^^^^^^^^^^              ------------------------------- division performed here
+    |                                   |
+    |                                   check performed here
+    |
+    = help: consider using `checked_div`
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#manual_checked_ops
+    = note: `#[warn(clippy::manual_checked_ops)]` on by default
+
+warning: this `if` statement can be collapsed
+    --> src/gpu/ampere/render.rs:1131:29
+     |
+1131 | / ...                   if let Some((min, max)) = bounds_test {
+1132 | | ...                       if !(min..=max).contains(&stored_z) {
+1133 | | ...                           continue;
+1134 | | ...                       }
+1135 | | ...                   }
+     | |_______________________^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+     |
+1131 ~                             if let Some((min, max)) = bounds_test
+1132 ~                                 && !(min..=max).contains(&stored_z) {
+1133 |                                     continue;
+1134 ~                                 }
+     |
+
+warning: this `if` statement can be collapsed
+    --> src/gpu/ampere/render.rs:1175:29
+     |
+1175 | / ...                   if let Some(b) = blend {
+1176 | | ...                       if let Some(dst) = read_color(ct.format, texel) {
+1177 | | ...                           color = b.apply(color, dst, ct.format != ColorFormat::Rf32Gf32Bf32Af32);
+1178 | | ...                       }
+1179 | | ...                   }
+     | |_______________________^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+     |
+1175 ~                             if let Some(b) = blend
+1176 ~                                 && let Some(dst) = read_color(ct.format, texel) {
+1177 |                                     color = b.apply(color, dst, ct.format != ColorFormat::Rf32Gf32Bf32Af32);
+1178 ~                                 }
+     |
+
+warning: manual implementation of `.is_multiple_of()`
+   --> src/gpu/ampere/wgpu_backend.rs:392:12
+    |
+392 |         if width_bytes % 4 != 0 || src_bytes.is_empty() || out_byte_len == 0 {
+    |            ^^^^^^^^^^^^^^^^^^^^ help: replace with: `!width_bytes.is_multiple_of(4)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#manual_is_multiple_of
+
+warning: unnecessary `if let` since only the `Some` variant of the iterator element is used
+   --> src/gpu/ampere/wgpu_backend.rs:804:9
+    |
+804 | /         for opt in &staged_cts {
+805 | |             if let Some((ct, _, _, _)) = opt {
+806 | |                 if matches!(ct.format, ColorFormat::Rf32Gf32Bf32Af32 | ColorFormat::R16G16B16A16) {
+807 | |                     return Ok(false);
+...   |
+810 | |         }
+    | |_________^
+    |
+help: try `.flatten()` and remove the `if let` statement in the for loop
+   --> src/gpu/ampere/wgpu_backend.rs:805:13
+    |
+805 | /             if let Some((ct, _, _, _)) = opt {
+806 | |                 if matches!(ct.format, ColorFormat::Rf32Gf32Bf32Af32 | ColorFormat::R16G16B16A16) {
+807 | |                     return Ok(false);
+808 | |                 }
+809 | |             }
+    | |_____________^
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#manual_flatten
+    = note: `#[warn(clippy::manual_flatten)]` on by default
+help: try
+    |
+804 ~         for (ct, _, _, _) in staged_cts.iter().flatten() {
+805 +             if matches!(ct.format, ColorFormat::Rf32Gf32Bf32Af32 | ColorFormat::R16G16B16A16) {
+806 +                 return Ok(false);
+807 +             }
+808 +         }
+    |
+
+warning: this `if` statement can be collapsed
+   --> src/gpu/ampere/wgpu_backend.rs:805:13
+    |
+805 | /             if let Some((ct, _, _, _)) = opt {
+806 | |                 if matches!(ct.format, ColorFormat::Rf32Gf32Bf32Af32 | ColorFormat::R16G16B16A16) {
+807 | |                     return Ok(false);
+808 | |                 }
+809 | |             }
+    | |_____________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+805 ~             if let Some((ct, _, _, _)) = opt
+806 ~                 && matches!(ct.format, ColorFormat::Rf32Gf32Bf32Af32 | ColorFormat::R16G16B16A16) {
+807 |                     return Ok(false);
+808 ~                 }
+    |
+
+warning: using `chunks_exact` with a constant chunk size
+    --> src/gpu/ampere/wgpu_backend.rs:1574:30
+     |
+1574 |     for (idx, chunk) in code.chunks_exact(16).enumerate() {
+     |                              ^^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<16>().0.iter()`
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#chunks_exact_to_as_chunks
+
+warning: using `chunks_exact_mut` with a constant chunk size
+   --> src/gpu/display.rs:170:37
+    |
+170 |             for pixel in frame.rgba.chunks_exact_mut(4) {
+    |                                     ^^^^^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks_mut::<4>().0`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#chunks_exact_to_as_chunks
+
+warning: using `chunks_exact_mut` with a constant chunk size
+   --> src/gpu/display.rs:207:45
+    |
+207 |                     for pixel in frame.rgba.chunks_exact_mut(4) {
+    |                                             ^^^^^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks_mut::<4>().0`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#chunks_exact_to_as_chunks
+
+warning: using `chunks_exact_mut` with a constant chunk size
+   --> src/gpu/display.rs:215:41
+    |
+215 |                 for pixel in frame.rgba.chunks_exact_mut(4) {
+    |                                         ^^^^^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks_mut::<4>().0`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#chunks_exact_to_as_chunks
+
+warning: this `if` statement can be collapsed
+   --> src/gpu/display.rs:253:9
+    |
+253 | /         if self.backend.is_none() {
+254 | |             if let Err(e) = self.init_window() {
+255 | |                 eprintln!("[Display Error] {}", e);
+256 | |                 return false;
+257 | |             }
+258 | |         }
+    | |_________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+253 ~         if self.backend.is_none()
+254 ~             && let Err(e) = self.init_window() {
+255 |                 eprintln!("[Display Error] {}", e);
+256 |                 return false;
+257 ~             }
+    |
+
+warning: this `map_or` can be simplified
+   --> src/gpu/display.rs:314:9
+    |
+314 |         self.backend.as_ref().map_or(false, |b| b.is_open())
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unnecessary_map_or
+help: use `is_some_and` instead
+    |
+314 -         self.backend.as_ref().map_or(false, |b| b.is_open())
+314 +         self.backend.as_ref().is_some_and(|b| b.is_open())
+    |
+
+warning: this `if` statement can be collapsed
+   --> src/gpu/display.rs:320:9
+    |
+320 | /         if self.backend.is_none() {
+321 | |             if let Err(e) = self.init_window() {
+322 | |                 eprintln!("[Display Error] {}", e);
+323 | |                 return false;
+324 | |             }
+325 | |         }
+    | |_________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+320 ~         if self.backend.is_none()
+321 ~             && let Err(e) = self.init_window() {
+322 |                 eprintln!("[Display Error] {}", e);
+323 |                 return false;
+324 ~             }
+    |
+
+warning: methods with the following characteristics: (`to_*` and `self` type is `Copy`) usually take `self` by value
+  --> src/gpu/nvgpu.rs:92:21
+   |
+92 |     pub fn to_bytes(&self) -> [u8; 32] {
+   |                     ^^^^^
+   |
+   = help: consider choosing a less ambiguous name
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#wrong_self_convention
+
+warning: this `if` can be collapsed into the outer `match`
+   --> src/gpu/nvgpu.rs:724:17
+    |
+724 | /                 if cmd.args.len() >= 4 {
+725 | |                     let src_addr = cmd.args[0] as u64;
+726 | |                     let src_w = cmd.args[1];
+727 | |                     let src_h = cmd.args[2];
+728 | |                     let dst_addr = cmd.args[3] as u64;
+729 | |                     self.upscaler.upscale_2x(mmu, src_addr, src_w, src_h, dst_addr);
+730 | |                 }
+    | |_________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_match
+help: collapse nested if block
+    |
+723 ~             METHOD_DISPATCH_UPSCALE_2X
+724 ~                 if cmd.args.len() >= 4 => {
+725 |                     let src_addr = cmd.args[0] as u64;
+...
+729 |                     self.upscaler.upscale_2x(mmu, src_addr, src_w, src_h, dst_addr);
+730 ~                 }
+    |
+
+warning: this `map_or` can be simplified
+   --> src/gpu/nvgpu.rs:568:46
+    |
+568 |                     self.state.is_index_32 = cmd.args.get(1).map_or(false, |&val| val == 1);
+    |                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unnecessary_map_or
+help: use `is_some_and` instead
+    |
+568 -                     self.state.is_index_32 = cmd.args.get(1).map_or(false, |&val| val == 1);
+568 +                     self.state.is_index_32 = cmd.args.get(1).is_some_and(|&val| val == 1);
+    |
+
+warning: this `map_or` can be simplified
+   --> src/gpu/nvgpu.rs:575:32
+    |
+575 |                 let textured = cmd.args.get(1).map_or(false, |&val| val == 1);
+    |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unnecessary_map_or
+help: use `is_some_and` instead
+    |
+575 -                 let textured = cmd.args.get(1).map_or(false, |&val| val == 1);
+575 +                 let textured = cmd.args.get(1).is_some_and(|&val| val == 1);
+    |
+
+warning: this operation has no effect
+   --> src/gpu/nvgpu.rs:821:45
+    |
+821 |             let v0 = self.fetch_vertex(mmu, t * 3 + 0, stride_bytes, textured);
+    |                                             ^^^^^^^^^ help: consider reducing it to: `(t * 3)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#identity_op
+    = note: `#[warn(clippy::identity_op)]` on by default
+
+warning: manually reimplementing `div_ceil`
+  --> src/gpu/nvn.rs:84:24
+   |
+84 |         let blocks_x = (width + bw - 1) / bw;
+   |                        ^^^^^^^^^^^^^^^^^^^^^ help: consider using `.div_ceil()`: `width.div_ceil(bw)`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#manual_div_ceil
+   = note: `#[warn(clippy::manual_div_ceil)]` on by default
+
+warning: manually reimplementing `div_ceil`
+  --> src/gpu/nvn.rs:85:24
+   |
+85 |         let blocks_y = (height + bh - 1) / bh;
+   |                        ^^^^^^^^^^^^^^^^^^^^^^ help: consider using `.div_ceil()`: `height.div_ceil(bh)`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#manual_div_ceil
+
+warning: the loop variable `i` is only used to index `decoded_block`
+   --> src/gpu/nvn.rs:116:38
+    |
+116 | ...                   for i in 0..16 {
+    |                                ^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#needless_range_loop
+help: consider using an iterator
+    |
+116 -                             for i in 0..16 {
+116 +                             for <item> in decoded_block.iter_mut().take(16) {
+    |
+
+warning: the loop variable `i` is used to index `out`
+   --> src/gpu/nvn.rs:183:18
+    |
+183 |         for i in 0..16 {
+    |                  ^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#needless_range_loop
+help: consider using an iterator and enumerate()
+    |
+183 -         for i in 0..16 {
+183 +         for (i, <item>) in out.iter_mut().enumerate().take(16) {
+    |
+
+warning: the loop variable `i` is used to index `out`
+   --> src/gpu/nvn.rs:210:22
+    |
+210 |             for i in 0..16 {
+    |                      ^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#needless_range_loop
+help: consider using an iterator and enumerate()
+    |
+210 -             for i in 0..16 {
+210 +             for (i, <item>) in out.iter_mut().enumerate().take(16) {
+    |
+
+warning: the loop variable `i` is used to index `out`
+   --> src/gpu/nvn.rs:230:22
+    |
+230 |             for i in 0..16 {
+    |                      ^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#needless_range_loop
+help: consider using an iterator and enumerate()
+    |
+230 -             for i in 0..16 {
+230 +             for (i, <item>) in out.iter_mut().enumerate().take(16) {
+    |
+
+warning: the loop variable `i` is used to index `out`
+   --> src/gpu/nvn.rs:273:18
+    |
+273 |         for i in 0..16 {
+    |                  ^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#needless_range_loop
+help: consider using an iterator and enumerate()
+    |
+273 -         for i in 0..16 {
+273 +         for (i, <item>) in out.iter_mut().enumerate().take(16) {
+    |
+
+warning: using `chunks_exact` with a constant chunk size
+  --> src/gpu/present/headless.rs:57:33
+   |
+57 |         for pixel in frame.rgba.chunks_exact(4) {
+   |                                 ^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<4>().0`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#chunks_exact_to_as_chunks
+
+warning: field assignment outside of initializer for an instance created with Default::default()
+  --> src/gpu/present/minifb_window.rs:63:9
+   |
+63 |         opts.scale = minifb_scale(config.scale);
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+note: consider initializing the variable with `minifb::WindowOptions { scale: minifb_scale(config.scale), resize: true, ..Default::default() }` and removing relevant reassignments
+  --> src/gpu/present/minifb_window.rs:62:9
+   |
+62 |         let mut opts = WindowOptions::default();
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#field_reassign_with_default
+   = note: `#[warn(clippy::field_reassign_with_default)]` on by default
+
+warning: using `chunks_exact` with a constant chunk size
+   --> src/gpu/present/minifb_window.rs:103:63
+    |
+103 |         for (dst, src) in self.blit.iter_mut().zip(frame.rgba.chunks_exact(4)) {
+    |                                                               ^^^^^^^^^^^^^^^
+    |
+help: consider using `as_chunks::<4>()` instead
+   --> src/gpu/present/minifb_window.rs:103:63
+    |
+103 |         for (dst, src) in self.blit.iter_mut().zip(frame.rgba.chunks_exact(4)) {
+    |                                                               ^^^^^^^^^^^^^^^
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#chunks_exact_to_as_chunks
+
+warning: using `chunks_exact_mut` with a constant chunk size
+  --> src/gpu/present/surface.rs:37:22
+   |
+37 |     for px in packed.chunks_exact_mut(4) {
+   |                      ^^^^^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks_mut::<4>().0`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#chunks_exact_to_as_chunks
+
+warning: this `if` can be collapsed into the outer `match`
+   --> src/gpu/present/wgpu_window.rs:870:21
+    |
+870 | /                     if !vertices.is_empty() && !indices.is_empty() {
+871 | |                         let slot = emit_uniform_slot(
+872 | |                             &mut uniform_bytes,
+873 | |                             &mut last_slot_state,
+...   |
+879 | |                         draw_op_slots.insert(op_idx, slot);
+880 | |                     }
+    | |_____________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_match
+help: collapse nested if block
+    |
+869 ~                 Gpu3DDrawOp::DrawIndexed { vertices, indices, .. }
+870 ~                     if !vertices.is_empty() && !indices.is_empty() => {
+871 |                         let slot = emit_uniform_slot(
+...
+879 |                         draw_op_slots.insert(op_idx, slot);
+880 ~                     }
+    |
+
+warning: the loop variable `op_idx` is used to index `ops`
+    --> src/gpu/present/wgpu_window.rs:1038:27
+     |
+1038 |             for op_idx in start..end {
+     |                           ^^^^^^^^^^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#needless_range_loop
+help: consider using an iterator and enumerate()
+     |
+1038 -             for op_idx in start..end {
+1038 +             for (op_idx, <item>) in ops.iter().enumerate().take(end).skip(start) {
+     |
+
+warning: this `if` statement can be collapsed
+    --> src/gpu/present/wgpu_window.rs:1148:5
+     |
+1148 | /     if let Some((last_mvp, last_has_tex, last_depth)) = *last_slot_state {
+1149 | |         if last_mvp == *mvp && last_has_tex == has_tex && last_depth == depth_test && !uniform_bytes.is_empty() {
+1150 | |             return *current_slot_idx;
+1151 | |         }
+1152 | |     }
+     | |_____^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+     |
+1148 ~     if let Some((last_mvp, last_has_tex, last_depth)) = *last_slot_state
+1149 ~         && last_mvp == *mvp && last_has_tex == has_tex && last_depth == depth_test && !uniform_bytes.is_empty() {
+1150 |             return *current_slot_idx;
+1151 ~         }
+     |
+
+warning: this `map_or` can be simplified
+    --> src/gpu/present/wgpu_window.rs:1219:25
+     |
+1219 |         let vsync_off = std::env::var("OUNCE_VSYNC").map_or(false, |v| v == "0");
+     |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unnecessary_map_or
+help: use `is_ok_and` instead
+     |
+1219 -         let vsync_off = std::env::var("OUNCE_VSYNC").map_or(false, |v| v == "0");
+1219 +         let vsync_off = std::env::var("OUNCE_VSYNC").is_ok_and(|v| v == "0");
+     |
+
+warning: this `if` statement can be collapsed
+   --> src/gpu/present/mod.rs:252:5
+    |
+252 | /     if matches!(kind, BackendKind::Auto | BackendKind::Gpu) {
+253 | |         if let Some(backend) = open_gpu_backend(kind, config) {
+254 | |             return backend;
+255 | |         }
+256 | |     }
+    | |_____^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+252 ~     if matches!(kind, BackendKind::Auto | BackendKind::Gpu)
+253 ~         && let Some(backend) = open_gpu_backend(kind, config) {
+254 |             return backend;
+255 ~         }
+    |
+
+warning: this `if` statement can be collapsed
+   --> src/gpu/sass/cache.rs:122:13
+    |
+122 | /             if let Ok(raw) = fs::read(&path) {
+123 | |                 if let Some(loaded) = deserialize_shader(&raw) {
+124 | |                     if loaded.stage == stage {
+125 | |                         let arc = Arc::new(loaded);
+...   |
+131 | |             }
+    | |_____________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+122 ~             if let Ok(raw) = fs::read(&path)
+123 ~                 && let Some(loaded) = deserialize_shader(&raw) {
+124 |                     if loaded.stage == stage {
+...
+129 |                     }
+130 ~                 }
+    |
+
+warning: this `if` statement can be collapsed
+   --> src/gpu/sass/cache.rs:123:17
+    |
+123 | /                 if let Some(loaded) = deserialize_shader(&raw) {
+124 | |                     if loaded.stage == stage {
+125 | |                         let arc = Arc::new(loaded);
+126 | |                         self.entries.insert(key, Arc::clone(&arc));
+...   |
+130 | |                 }
+    | |_________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+123 ~                 if let Some(loaded) = deserialize_shader(&raw)
+124 ~                     && loaded.stage == stage {
+125 |                         let arc = Arc::new(loaded);
+...
+128 |                         return Ok((key, arc));
+129 ~                     }
+    |
+
+warning: manual implementation of `.is_multiple_of()`
+   --> src/gpu/sass/ir.rs:167:8
+    |
+167 |     if addr % 4 != 0 {
+    |        ^^^^^^^^^^^^^ help: replace with: `!addr.is_multiple_of(4)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#manual_is_multiple_of
+
+warning: manual implementation of `.is_multiple_of()`
+   --> src/gpu/sass/maxwell.rs:216:12
+    |
+216 |         if offset % 4 != 0 || offset & 0x8000 != 0 {
+    |            ^^^^^^^^^^^^^^^ help: replace with: `!offset.is_multiple_of(4)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#manual_is_multiple_of
+
+warning: manual implementation of `.is_multiple_of()`
+   --> src/gpu/sass/maxwell.rs:617:6
+    |
+617 |     (byte % 8 == 0 && slot != 0).then(|| (byte / 32) * 3 + (slot - 8) / 8)
+    |      ^^^^^^^^^^^^^ help: replace with: `byte.is_multiple_of(8)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#manual_is_multiple_of
+
+warning: methods with the following characteristics: (`to_*` and `self` type is `Copy`) usually take `self` by value
+  --> src/gpu/shader.rs:35:27
+   |
+35 |     pub fn to_glsl_symbol(&self) -> &'static str {
+   |                           ^^^^^
+   |
+   = help: consider choosing a less ambiguous name
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#wrong_self_convention
+
+warning: methods with the following characteristics: (`to_*` and `self` type is `Copy`) usually take `self` by value
+  --> src/gpu/shader.rs:71:25
+   |
+71 |     pub fn to_glsl_func(&self) -> &'static str {
+   |                         ^^^^^
+   |
+   = help: consider choosing a less ambiguous name
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#wrong_self_convention
+
+warning: the loop variable `lane` is used to index `d_frags`
+   --> src/gpu/tensor.rs:402:21
+    |
+402 |         for lane in 0..WARP_LANES {
+    |                     ^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#needless_range_loop
+help: consider using an iterator and enumerate()
+    |
+402 -         for lane in 0..WARP_LANES {
+402 +         for (lane, <item>) in d_frags.iter_mut().enumerate().take(WARP_LANES) {
+    |
+
+warning: the loop variable `lane` is used to index `d_frags`
+   --> src/gpu/tensor.rs:415:17
+    |
+415 |     for lane in 0..WARP_LANES {
+    |                 ^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#needless_range_loop
+help: consider using an iterator and enumerate()
+    |
+415 -     for lane in 0..WARP_LANES {
+415 +     for (lane, <item>) in d_frags.iter().enumerate().take(WARP_LANES) {
+    |
+
+warning: manually reimplementing `div_ceil`
+  --> src/gpu/texfmt/astc.rs:37:17
+   |
+37 |                 (8 * n + 4) / 5
+   |                 ^^^^^^^^^^^^^^^ help: consider using `.div_ceil()`: `(8 * n).div_ceil(5)`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#manual_div_ceil
+
+warning: manually reimplementing `div_ceil`
+  --> src/gpu/texfmt/astc.rs:39:17
+   |
+39 |                 (7 * n + 2) / 3
+   |                 ^^^^^^^^^^^^^^^ help: consider using `.div_ceil()`: `(7 * n).div_ceil(3)`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#manual_div_ceil
+
+warning: there is no need to manually implement bit rotation
+   --> src/gpu/texfmt/astc.rs:360:13
+    |
+360 |     s[11] = ((r >> 30) | (r << 2)) & 0xf;
+    |             ^^^^^^^^^^^^^^^^^^^^^^ help: this expression can be rewritten as: `r.rotate_left(2)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#manual_rotate
+    = note: `#[warn(clippy::manual_rotate)]` on by default
+
+warning: casting to the same type is unnecessary (`u32` -> `u32`)
+   --> src/gpu/texfmt/astc.rs:501:8
+    |
+501 |     if (color_start as u32) > ccs_pos {
+    |        ^^^^^^^^^^^^^^^^^^^^ help: try: `color_start`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unnecessary_cast
+
+warning: very complex type used. Consider factoring parts into `type` definitions
+   --> src/gpu/texfmt/bc.rs:221:18
+    |
+221 |     const MODES: [(u32, u32, u32, u32, u32, u32, u32, u32, u32, u32); 8] = [
+    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#type_complexity
+    = note: `#[warn(clippy::type_complexity)]` on by default
+
+warning: the loop variable `ch` is only used to index `e`
+   --> src/gpu/texfmt/bc.rs:263:23
+    |
+263 |             for ch in 0..3 {
+    |                       ^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#needless_range_loop
+help: consider using an iterator
+    |
+263 -             for ch in 0..3 {
+263 +             for <item> in e.iter_mut().take(3) {
+    |
+
+warning: the loop variable `ch` is only used to index `e`
+   --> src/gpu/texfmt/bc.rs:277:19
+    |
+277 |         for ch in 0..3 {
+    |                   ^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#needless_range_loop
+help: consider using an iterator
+    |
+277 -         for ch in 0..3 {
+277 +         for <item> in e.iter_mut().take(3) {
+    |
+
+warning: casting to the same type is unnecessary (`u8` -> `u8`)
+   --> src/gpu/texfmt/bc.rs:405:15
+    |
+405 |     let two = (b[0] & 3) as u8;
+    |               ^^^^^^^^^^^^^^^^ help: try: `(b[0] & 3)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unnecessary_cast
+
+warning: very complex type used. Consider factoring parts into `type` definitions
+   --> src/hid/gamepad_mac.rs:235:44
+    |
+235 | pub fn parse_synthetic_line(line: &str) -> Option<(u32, (f32, f32), (f32, f32), f64)> {
+    |                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#type_complexity
+
+warning: this `if` statement can be collapsed
+   --> src/kernel/hid.rs:327:9
+    |
+327 | /         if let Some(style) = style {
+328 | |             if (id == NPAD_ID_HANDHELD) != (style == NpadStyle::Handheld) {
+329 | |                 return Err(InputError::StyleNotAllowed { id, style });
+330 | |             }
+331 | |         }
+    | |_________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+327 ~         if let Some(style) = style
+328 ~             && (id == NPAD_ID_HANDHELD) != (style == NpadStyle::Handheld) {
+329 |                 return Err(InputError::StyleNotAllowed { id, style });
+330 ~             }
+    |
+
+warning: using `chunks_exact` with a constant chunk size
+   --> src/kernel/hid.rs:627:31
+    |
+627 |                         bytes.chunks_exact(4).map(|w| u32::from_le_bytes([w[0], w[1], w[2], w[3]])).collect()
+    |                               ^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<4>().0.iter()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#chunks_exact_to_as_chunks
+
+warning: manual implementation of `.is_multiple_of()`
+  --> src/kernel/audren.rs:92:25
+   |
+92 |         let nibble = if pos % 2 == 0 { byte >> 4 } else { byte & 0xF };
+   |                         ^^^^^^^^^^^^ help: replace with: `pos.is_multiple_of(2)`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#manual_is_multiple_of
+
+warning: using `chunks_exact` with a constant chunk size
+   --> src/kernel/audren.rs:325:32
+    |
+325 |         for (i, c) in channels.chunks_exact(CHANNEL_IN_SIZE).enumerate() {
+    |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<CHANNEL_IN_SIZE>().0.iter()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#chunks_exact_to_as_chunks
+
+warning: this `if` statement can be collapsed
+   --> src/kernel/audren.rs:326:13
+    |
+326 | /             if let Some(dst) = self.channels.get_mut(i) {
+327 | |                 if c[0x64] != 0 {
+328 | |                     for (b, m) in dst.iter_mut().enumerate() {
+329 | |                         *m = rdf32(c, 4 + b * 4);
+...   |
+332 | |             }
+    | |_____________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+326 ~             if let Some(dst) = self.channels.get_mut(i)
+327 ~                 && c[0x64] != 0 {
+328 |                     for (b, m) in dst.iter_mut().enumerate() {
+329 |                         *m = rdf32(c, 4 + b * 4);
+330 |                     }
+331 ~                 }
+    |
+
+warning: using `chunks_exact` with a constant chunk size
+   --> src/kernel/audren.rs:335:31
+    |
+335 |         for (id, v) in voices.chunks_exact(VOICE_IN_SIZE).enumerate() {
+    |                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<VOICE_IN_SIZE>().0.iter()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#chunks_exact_to_as_chunks
+
+warning: using `chunks_exact` with a constant chunk size
+   --> src/kernel/audren.rs:381:18
+    |
+381 |                 .chunks_exact(MIX_IN_SIZE)
+    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<MIX_IN_SIZE>().0.iter()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#chunks_exact_to_as_chunks
+
+warning: using `chunks_exact` with a constant chunk size
+   --> src/kernel/audren.rs:392:24
+    |
+392 |         for s in sinks.chunks_exact(SINK_IN_SIZE) {
+    |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<SINK_IN_SIZE>().0`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#chunks_exact_to_as_chunks
+
+warning: using `chunks_exact` with a constant chunk size
+   --> src/kernel/audren.rs:417:27
+    |
+417 |         for p in mempools.chunks_exact(MEMPOOL_IN_SIZE) {
+    |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<MEMPOOL_IN_SIZE>().0`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#chunks_exact_to_as_chunks
+
+warning: using `chunks_exact` with a constant chunk size
+   --> src/kernel/audren.rs:426:31
+    |
+426 |         for (id, _) in voices.chunks_exact(VOICE_IN_SIZE).enumerate() {
+    |                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<VOICE_IN_SIZE>().0.iter()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#chunks_exact_to_as_chunks
+
+warning: the loop variable `i` is only used to index `buffers`
+   --> src/kernel/audren.rs:452:18
+    |
+452 |         for i in 0..SAMPLES_PER_FRAME {
+    |                  ^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#needless_range_loop
+help: consider using an iterator
+    |
+452 -         for i in 0..SAMPLES_PER_FRAME {
+452 +         for <item> in buffers.iter().take(SAMPLES_PER_FRAME) {
+    |
+
+warning: the loop variable `d` is used to index `buffers`
+   --> src/kernel/audren.rs:475:26
+    |
+475 |                 for d in 0..dest_count {
+    |                          ^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#needless_range_loop
+help: consider using an iterator and enumerate()
+    |
+475 -                 for d in 0..dest_count {
+475 +                 for (d, <item>) in buffers.iter_mut().enumerate().take(dest_count) {
+    |
+
+warning: the loop variable `i` is only used to index `buffers`
+   --> src/kernel/audren.rs:497:18
+    |
+497 |         for i in 0..SAMPLES_PER_FRAME {
+    |                  ^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#needless_range_loop
+help: consider using an iterator
+    |
+497 -         for i in 0..SAMPLES_PER_FRAME {
+497 +         for <item> in buffers.iter_mut().take(SAMPLES_PER_FRAME) {
+    |
+
+warning: manual `Range::contains` implementation
+   --> src/kernel/ipc.rs:131:8
+    |
+131 |     if maybe_ptr >= 0x10000 && maybe_ptr < 0x0001_0000_0000_0000 && mmu.is_mapped(maybe_ptr) {
+    |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: use: `(0x10000..0x0001_0000_0000_0000).contains(&maybe_ptr)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#manual_range_contains
+
+warning: this OR pattern can be rewritten using a range
+   --> src/kernel/ipc.rs:655:17
+    |
+655 |                 0 | 1 | 2 => {
+    |                 ^^^^^^^^^ help: try: `0..=2`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#manual_range_patterns
+    = note: `#[warn(clippy::manual_range_patterns)]` on by default
+
+warning: this OR pattern can be rewritten using a range
+   --> src/kernel/ipc.rs:833:17
+    |
+833 |                 51 | 52 | 53 => {
+    |                 ^^^^^^^^^^^^ help: try: `51..=53`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#manual_range_patterns
+
+warning: this `if` statement can be collapsed
+    --> src/kernel/ipc.rs:1301:17
+     |
+1301 | /                 if ioctl_has_output(request) {
+1302 | |                     if let Some(b) = output(0) {
+1303 | |                         let n = data.len().min(b.size as usize);
+1304 | |                         let _ = mmu.write_bytes(b.addr, &data[..n]);
+1305 | |                     }
+1306 | |                 }
+     | |_________________^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+     |
+1301 ~                 if ioctl_has_output(request)
+1302 ~                     && let Some(b) = output(0) {
+1303 |                         let n = data.len().min(b.size as usize);
+1304 |                         let _ = mmu.write_bytes(b.addr, &data[..n]);
+1305 ~                     }
+     |
+
+warning: this `if` statement can be collapsed
+   --> src/kernel/sdk_hle.rs:280:13
+    |
+280 | /             if let Some(slice) = vfs.read_range(&file.path, off, size) {
+281 | |                 if mmu.write_bytes(dest_addr, &slice).is_ok() {
+282 | |                     file.current_offset = (off + slice.len() as u64) as i64;
+283 | |                     return (RESULT_SUCCESS, slice.len());
+284 | |                 }
+285 | |             }
+    | |_____________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+280 ~             if let Some(slice) = vfs.read_range(&file.path, off, size)
+281 ~                 && mmu.write_bytes(dest_addr, &slice).is_ok() {
+282 |                     file.current_offset = (off + slice.len() as u64) as i64;
+283 |                     return (RESULT_SUCCESS, slice.len());
+284 ~                 }
+    |
+
+warning: this function has too many arguments (8/7)
+   --> src/kernel/sdk_hle.rs:391:5
+    |
+391 | /     pub fn dispatch_call(
+392 | |         &mut self,
+393 | |         function_id: u32,
+394 | |         arg0: u64,
+...   |
+399 | |         mmu: &mut Memory,
+400 | |     ) -> (u32, u64) {
+    | |___________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#too_many_arguments
+    = note: `#[warn(clippy::too_many_arguments)]` on by default
+
+warning: using `chunks_exact` with a constant chunk size
+   --> src/kernel/nvdrv.rs:260:14
+    |
+260 |             .chunks_exact(4)
+    |              ^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<4>().0.iter()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#chunks_exact_to_as_chunks
+
+warning: this `if` statement can be collapsed
+   --> src/kernel/nvdrv.rs:575:17
+    |
+575 | /                 if let Some(out) = extra.outbuf {
+576 | |                     if out.len() >= 4 {
+577 | |                         out[..4].copy_from_slice(&tpc_mask.to_le_bytes());
+578 | |                     }
+579 | |                 }
+    | |_________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+575 ~                 if let Some(out) = extra.outbuf
+576 ~                     && out.len() >= 4 {
+577 |                         out[..4].copy_from_slice(&tpc_mask.to_le_bytes());
+578 ~                     }
+    |
+
+warning: manual implementation of `.is_multiple_of()`
+   --> src/kernel/svc.rs:234:20
+    |
+234 |                 if requested % HEAP_SIZE_ALIGN != 0 {
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: replace with: `!requested.is_multiple_of(HEAP_SIZE_ALIGN)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#manual_is_multiple_of
+
+warning: this `if` statement can be collapsed
+   --> src/kernel/svc.rs:571:21
+    |
+571 | /                     if let Some(e) = self.sync.events.get_mut(&handles[i]) {
+572 | |                         if e.auto_clear {
+573 | |                             e.signaled = false;
+574 | |                         }
+575 | |                     }
+    | |_____________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+571 ~                     if let Some(e) = self.sync.events.get_mut(&handles[i])
+572 ~                         && e.auto_clear {
+573 |                             e.signaled = false;
+574 ~                         }
+    |
+
+warning: manual implementation of `.is_multiple_of()`
+   --> src/kernel/svc.rs:865:20
+    |
+865 |                 if user_buffer % PAGE_SIZE as u64 != 0 {
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: replace with: `!user_buffer.is_multiple_of(PAGE_SIZE as u64)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#manual_is_multiple_of
+
+warning: manual implementation of `.is_multiple_of()`
+   --> src/kernel/svc.rs:869:33
+    |
+869 |                 if size == 0 || size % PAGE_SIZE as u64 != 0 {
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: replace with: `!size.is_multiple_of(PAGE_SIZE as u64)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#manual_is_multiple_of
+
+warning: manual implementation of `.is_multiple_of()`
+    --> src/kernel/svc.rs:1097:27
+     |
+1097 |                 } else if addr % align != 0 {
+     |                           ^^^^^^^^^^^^^^^^^ help: replace with: `!addr.is_multiple_of(align)`
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#manual_is_multiple_of
+
+warning: manual implementation of `.is_multiple_of()`
+    --> src/kernel/svc.rs:1157:20
+     |
+1157 |                 if addr % 4 != 0 {
+     |                    ^^^^^^^^^^^^^ help: replace with: `!addr.is_multiple_of(4)`
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#manual_is_multiple_of
+
+warning: manual implementation of `.is_multiple_of()`
+    --> src/kernel/svc.rs:1187:33
+     |
+1187 |                 if size == 0 || size % 0x1000 != 0 {
+     |                                 ^^^^^^^^^^^^^^^^^^ help: replace with: `!size.is_multiple_of(0x1000)`
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#manual_is_multiple_of
+
+warning: this OR pattern can be rewritten using a range
+    --> src/kernel/svc.rs:1241:13
+     |
+1241 |             0x73 | 0x74 | 0x75 => {
+     |             ^^^^^^^^^^^^^^^^^^ help: try: `0x73..=0x75`
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#manual_range_patterns
+
+warning: this `if` statement can be collapsed
+   --> src/kernel/sync.rs:116:9
+    |
+116 | /         if let Some(queue) = self.wait_queues.get_mut(&mutex_addr) {
+117 | |             if let Some(next_owner) = queue.pop_front() {
+118 | |                 let has_more = if queue.is_empty() { 0 } else { 0x4000_0000 };
+119 | |                 let _ = mmu.write_u32(mutex_addr, next_owner | has_more);
+...   |
+122 | |         }
+    | |_________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+116 ~         if let Some(queue) = self.wait_queues.get_mut(&mutex_addr)
+117 ~             && let Some(next_owner) = queue.pop_front() {
+118 |                 let has_more = if queue.is_empty() { 0 } else { 0x4000_0000 };
+119 |                 let _ = mmu.write_u32(mutex_addr, next_owner | has_more);
+120 |                 return 0;
+121 ~             }
+    |
+
+warning: manual implementation of `.is_multiple_of()`
+  --> src/kernel/vi.rs:91:28
+   |
+91 |             if off < 16 || off % 4 != 0 {
+   |                            ^^^^^^^^^^^^ help: replace with: `!off.is_multiple_of(4)`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#manual_is_multiple_of
+
+warning: using `chunks_exact` with a constant chunk size
+   --> src/kernel/vi.rs:112:45
+    |
+112 |         for entry in bytes[objects.clone()].chunks_exact(4) {
+    |                                             ^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<4>().0`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#chunks_exact_to_as_chunks
+
+warning: manual implementation of `.is_multiple_of()`
+   --> src/kernel/vi.rs:114:16
+    |
+114 |             if offset % 4 != 0
+    |                ^^^^^^^^^^^^^^^ help: replace with: `!offset.is_multiple_of(4)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#manual_is_multiple_of
+
+warning: this `map_or` can be simplified
+   --> src/kernel/vi.rs:275:67
+    |
+275 | ...   let (pitch, offset, kind, block_height_log2) = if word(0xE0).map_or(false, |b| b <= 5) && word(0xDC).map_or(false, |k| k > 5) {
+    |                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unnecessary_map_or
+help: use `is_ok_and` instead
+    |
+275 -                 let (pitch, offset, kind, block_height_log2) = if word(0xE0).map_or(false, |b| b <= 5) && word(0xDC).map_or(false, |k| k > 5) {
+275 +                 let (pitch, offset, kind, block_height_log2) = if word(0xE0).is_ok_and(|b| b <= 5) && word(0xDC).map_or(false, |k| k > 5) {
+    |
+
+warning: this `map_or` can be simplified
+   --> src/kernel/vi.rs:275:107
+    |
+275 | ... = if word(0xE0).map_or(false, |b| b <= 5) && word(0xDC).map_or(false, |k| k > 5) {
+    |                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unnecessary_map_or
+help: use `is_ok_and` instead
+    |
+275 -                 let (pitch, offset, kind, block_height_log2) = if word(0xE0).map_or(false, |b| b <= 5) && word(0xDC).map_or(false, |k| k > 5) {
+275 +                 let (pitch, offset, kind, block_height_log2) = if word(0xE0).map_or(false, |b| b <= 5) && word(0xDC).is_ok_and(|k| k > 5) {
+    |
+
+warning: this `if` statement can be collapsed
+   --> src/loader/nca.rs:557:17
+    |
+557 | /                 if let Ok(hdr) = NcaImage::plain_header(bytes) {
+558 | |                     if hdr[0x205] == 0x00 {
+559 | |                         return Some((name, bytes));
+560 | |                     }
+561 | |                 }
+    | |_________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+557 ~                 if let Ok(hdr) = NcaImage::plain_header(bytes)
+558 ~                     && hdr[0x205] == 0x00 {
+559 |                         return Some((name, bytes));
+560 ~                     }
+    |
+
+warning: derefed type is same as origin
+   --> src/loader/nca.rs:642:84
+    |
+642 |             return Self::load_nca_bytes_with_key(raw, base_addr, section_key, mmu, vfs.as_deref_mut());
+    |                                                                                    ^^^^^^^^^^^^^^^^^^ help: try: `vfs`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#needless_option_as_deref
+    = note: `#[warn(clippy::needless_option_as_deref)]` on by default
+
+warning: this `if` statement can be collapsed
+   --> src/loader/nca.rs:660:9
+    |
+660 | /         if let (Some(romfs_bytes), Some(vfs_ref)) = (&decrypted.decrypted_romfs, vfs) {
+661 | |             if let Ok(archive) = crate::fs::RomFsArchive::parse(romfs_bytes) {
+662 | |                 vfs_ref.mount_romfs_archive(&archive);
+663 | |             }
+664 | |         }
+    | |_________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+660 ~         if let (Some(romfs_bytes), Some(vfs_ref)) = (&decrypted.decrypted_romfs, vfs)
+661 ~             && let Ok(archive) = crate::fs::RomFsArchive::parse(romfs_bytes) {
+662 |                 vfs_ref.mount_romfs_archive(&archive);
+663 ~             }
+    |
+
+warning: this `if` statement can be collapsed
+   --> src/loader/nro.rs:450:9
+    |
+450 | /         if let Ok(mod0_rel) = mmu.read_u32(base_addr + 4) {
+451 | |             if mod0_rel > 0 {
+452 | |                 let mod0_addr = base_addr.wrapping_add(mod0_rel as u64);
+453 | |                 let mut current_magic = [0u8; 4];
+...   |
+675 | |         }
+    | |_________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+450 ~         if let Ok(mod0_rel) = mmu.read_u32(base_addr + 4)
+451 ~             && mod0_rel > 0 {
+452 |                 let mod0_addr = base_addr.wrapping_add(mod0_rel as u64);
+...
+673 |                 }
+674 ~             }
+    |
+
+warning: this `if` statement can be collapsed
+   --> src/loader/nro.rs:473:25
+    |
+473 | /                         if let Ok(tag) = mmu.read_u64(probe) {
+474 | |                             if tag == DT_GNU_HASH as u64 {
+475 | |                                 let mut start = probe;
+476 | |                                 while start >= search_start + 16 {
+...   |
+494 | |                         }
+    | |_________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+473 ~                         if let Ok(tag) = mmu.read_u64(probe)
+474 ~                             && tag == DT_GNU_HASH as u64 {
+475 |                                 let mut start = probe;
+...
+492 |                                 break;
+493 ~                             }
+    |
+
+warning: this `if` statement can be collapsed
+   --> src/loader/nro.rs:478:37
+    |
+478 | / ...                   if let Ok(prev_tag) = mmu.read_u64(prev) {
+479 | | ...                       if (1..=40).contains(&prev_tag)
+480 | | ...                           || prev_tag == DT_GNU_HASH as u64
+481 | | ...                           || prev_tag == 0x6ffffffb
+...   |
+488 | | ...                   }
+    | |_______________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+478 ~                                     if let Ok(prev_tag) = mmu.read_u64(prev)
+479 ~                                         && ((1..=40).contains(&prev_tag)
+480 |                                             || prev_tag == DT_GNU_HASH as u64
+481 |                                             || prev_tag == 0x6ffffffb
+482 |                                             || prev_tag == 0x6ffffffa
+483 ~                                             || prev_tag == 0x6ffffff9)
+484 |                                         {
+485 |                                             start = prev;
+486 |                                             continue;
+487 ~                                         }
+    |
+
+warning: manual implementation of `.is_multiple_of()`
+   --> src/loader/nro.rs:500:58
+    |
+500 | ...   if cur_dyn_addr != real_start && cur_dyn_addr % 8 == 0 && cur_dyn_addr >= search_start && cur_dyn_addr + 1024 <= search_end +...
+    |                                        ^^^^^^^^^^^^^^^^^^^^^ help: replace with: `cur_dyn_addr.is_multiple_of(8)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#manual_is_multiple_of
+
+warning: casting to the same type is unnecessary (`u64` -> `u64`)
+   --> src/loader/nro.rs:533:49
+    |
+533 | ...                   let target_offset = (data_mem_off as u64).to_le_bytes();
+    |                                           ^^^^^^^^^^^^^^^^^^^^^ help: try: `data_mem_off`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unnecessary_cast
+
+warning: this `if` statement can be collapsed
+    --> src/loader/nro.rs:1282:13
+     |
+1282 | /             if let Ok(v) = mmu.read_u64(addr) {
+1283 | |                 if mmu.write_u64(addr, v.wrapping_add(base_addr)).is_ok() {
+1284 | |                     applied += 1;
+1285 | |                 }
+1286 | |             }
+     | |_____________^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+     |
+1282 ~             if let Ok(v) = mmu.read_u64(addr)
+1283 ~                 && mmu.write_u64(addr, v.wrapping_add(base_addr)).is_ok() {
+1284 |                     applied += 1;
+1285 ~                 }
+     |
+
+warning: needlessly taken reference of both operands
+  --> src/loader/package.rs:58:12
+   |
+58 |         if &bytes[0x00..0x04] != &NPDM_MAGIC {
+   |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#op_ref
+   = note: `#[warn(clippy::op_ref)]` on by default
+help: use the values directly
+   |
+58 -         if &bytes[0x00..0x04] != &NPDM_MAGIC {
+58 +         if bytes[0x00..0x04] != NPDM_MAGIC {
+   |
+
+warning: needlessly taken reference of both operands
+   --> src/loader/package.rs:107:45
+    |
+107 |             if acid_bytes.len() >= 0x304 && &acid_bytes[0x300..0x304] == &ACID_MAGIC {
+    |                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#op_ref
+help: use the values directly
+    |
+107 -             if acid_bytes.len() >= 0x304 && &acid_bytes[0x300..0x304] == &ACID_MAGIC {
+107 +             if acid_bytes.len() >= 0x304 && acid_bytes[0x300..0x304] == ACID_MAGIC {
+    |
+
+warning: needlessly taken reference of both operands
+   --> src/loader/package.rs:109:52
+    |
+109 |             } else if acid_bytes.len() >= 0x204 && &acid_bytes[0x200..0x204] == &ACID_MAGIC {
+    |                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#op_ref
+help: use the values directly
+    |
+109 -             } else if acid_bytes.len() >= 0x204 && &acid_bytes[0x200..0x204] == &ACID_MAGIC {
+109 +             } else if acid_bytes.len() >= 0x204 && acid_bytes[0x200..0x204] == ACID_MAGIC {
+    |
+
+warning: needlessly taken reference of both operands
+   --> src/loader/package.rs:125:16
+    |
+125 |             if &aci0_bytes[0x00..0x04] == &ACI0_MAGIC {
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#op_ref
+help: use the values directly
+    |
+125 -             if &aci0_bytes[0x00..0x04] == &ACI0_MAGIC {
+125 +             if aci0_bytes[0x00..0x04] == ACI0_MAGIC {
+    |
+
+warning: using `chunks_exact` with a constant chunk size
+   --> src/loader/package.rs:209:47
+    |
+209 |                         for chunk in kac_data.chunks_exact(4) {
+    |                                               ^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<4>().0`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#chunks_exact_to_as_chunks
+
+warning: redundant pattern matching
+   --> src/loader/package.rs:606:16
+    |
+606 |         if let Ok(_) = mmu.read_bytes(sdk_base, &mut sdk_buf) {
+    |                ^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#redundant_pattern_matching
+    = note: `#[warn(clippy::redundant_pattern_matching)]` on by default
+help: consider using `is_ok()`
+    |
+606 -         if let Ok(_) = mmu.read_bytes(sdk_base, &mut sdk_buf) {
+606 +         if mmu.read_bytes(sdk_base, &mut sdk_buf).is_ok() {
+    |
+
+warning: this `if` statement can be collapsed
+   --> src/loader/package.rs:626:13
+    |
+626 | /             if let Some(elf_path) = check_elf(mod_name, mod_path) {
+627 | |                 if let Ok(bytes) = fs::read(&elf_path) {
+628 | |                     if let Some(tmpl) = NroLoader::parse_pt_tls(&bytes) {
+629 | |                         templates.insert(*mod_base, tmpl);
+...   |
+632 | |             }
+    | |_____________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+626 ~             if let Some(elf_path) = check_elf(mod_name, mod_path)
+627 ~                 && let Ok(bytes) = fs::read(&elf_path) {
+628 |                     if let Some(tmpl) = NroLoader::parse_pt_tls(&bytes) {
+629 |                         templates.insert(*mod_base, tmpl);
+630 |                     }
+631 ~                 }
+    |
+
+warning: this `if` statement can be collapsed
+   --> src/loader/package.rs:627:17
+    |
+627 | /                 if let Ok(bytes) = fs::read(&elf_path) {
+628 | |                     if let Some(tmpl) = NroLoader::parse_pt_tls(&bytes) {
+629 | |                         templates.insert(*mod_base, tmpl);
+630 | |                     }
+631 | |                 }
+    | |_________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+627 ~                 if let Ok(bytes) = fs::read(&elf_path)
+628 ~                     && let Some(tmpl) = NroLoader::parse_pt_tls(&bytes) {
+629 |                         templates.insert(*mod_base, tmpl);
+630 ~                     }
+    |
+
+warning: this `if` statement can be collapsed
+   --> src/loader/package.rs:714:17
+    |
+714 | /                 if let Ok(val) = mmu.read_u64(slot) {
+715 | |                     if val > 0 && val < 0x0500_0000 {
+716 | |                         let _ = mmu.write_u64(slot, val + main_base);
+717 | |                     }
+718 | |                 }
+    | |_________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+714 ~                 if let Ok(val) = mmu.read_u64(slot)
+715 ~                     && val > 0 && val < 0x0500_0000 {
+716 |                         let _ = mmu.write_u64(slot, val + main_base);
+717 ~                     }
+    |
+
+warning: redundant pattern matching
+   --> src/loader/package.rs:731:24
+    |
+731 |                 if let Ok(_) = mmu.read_bytes(addr, &mut insn_bytes) {
+    |                        ^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#redundant_pattern_matching
+help: consider using `is_ok()`
+    |
+731 -                 if let Ok(_) = mmu.read_bytes(addr, &mut insn_bytes) {
+731 +                 if mmu.read_bytes(addr, &mut insn_bytes).is_ok() {
+    |
+
+warning: this `if` statement can be collapsed
+   --> src/mmu/fastmem.rs:186:9
+    |
+186 | /         if offset < self.direct_limit {
+187 | |             if let Ok(mut guard) = self.state.lock() {
+188 | |                 guard.claimed_direct_pages.remove(&(offset >> 12));
+189 | |             }
+190 | |         }
+    | |_________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+186 ~         if offset < self.direct_limit
+187 ~             && let Ok(mut guard) = self.state.lock() {
+188 |                 guard.claimed_direct_pages.remove(&(offset >> 12));
+189 ~             }
+    |
+
+warning: this `if` statement can be collapsed
+   --> src/mmu/memory.rs:268:13
+    |
+268 | /             if matches!(page.storage, PageStorage::Heap(_)) {
+269 | |                 if let Some(offset) = arena.alloc_guest_page(page_idx) {
+270 | |                     let mut tmp = [0u8; PAGE_SIZE];
+271 | |                     tmp.copy_from_slice(page.storage.as_slice());
+...   |
+281 | |             }
+    | |_____________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+268 ~             if matches!(page.storage, PageStorage::Heap(_))
+269 ~                 && let Some(offset) = arena.alloc_guest_page(page_idx) {
+270 |                     let mut tmp = [0u8; PAGE_SIZE];
+...
+279 |                     migrated = true;
+280 ~                 }
+    |
+
+warning: this `if` statement can be collapsed
+   --> src/mmu/memory.rs:351:13
+    |
+351 | /             if let Some(page) = self.pages.get_mut(&page_idx) {
+352 | |                 if !page.holds_code {
+353 | |                     page.holds_code = true;
+354 | |                     newly_marked = true;
+355 | |                 }
+356 | |             }
+    | |_____________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+351 ~             if let Some(page) = self.pages.get_mut(&page_idx)
+352 ~                 && !page.holds_code {
+353 |                     page.holds_code = true;
+354 |                     newly_marked = true;
+355 ~                 }
+    |
+
+warning: this `if` statement can be collapsed
+   --> src/mmu/memory.rs:398:9
+    |
+398 | /         if let Some(arena) = &self.fastmem {
+399 | |             if let Some(offset) = arena.alloc_guest_page(page_idx) {
+400 | |                 return PageStorage::Fastmem {
+401 | |                     arena: arena.clone(),
+...   |
+406 | |         }
+    | |_________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+398 ~         if let Some(arena) = &self.fastmem
+399 ~             && let Some(offset) = arena.alloc_guest_page(page_idx) {
+400 |                 return PageStorage::Fastmem {
+...
+404 |                 };
+405 ~             }
+    |
+
+warning: this `if` statement can be collapsed
+   --> src/mmu/memory.rs:495:17
+    |
+495 | /                 if let Some(arena) = self.fastmem.clone() {
+496 | |                     if ((dst_page_idx as usize) << 12) + PAGE_SIZE <= arena.direct_limit() {
+497 | |                         let mut bytes = [0u8; PAGE_SIZE];
+498 | |                         bytes.copy_from_slice(page.storage.as_slice());
+...   |
+513 | |                 }
+    | |_________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+495 ~                 if let Some(arena) = self.fastmem.clone()
+496 ~                     && ((dst_page_idx as usize) << 12) + PAGE_SIZE <= arena.direct_limit() {
+497 |                         let mut bytes = [0u8; PAGE_SIZE];
+...
+511 |                         }
+512 ~                     }
+    |
+
+warning: using `chunks_exact` with a constant chunk size
+  --> src/ui/inspector.rs:49:26
+   |
+49 |         for chunk in raw.chunks_exact(4) {
+   |                          ^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<4>().0`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#chunks_exact_to_as_chunks
+
+warning: this `if` statement can be collapsed
+  --> src/ui/inspector.rs:78:21
+   |
+78 | /                     if nca_name.ends_with(".nca") && !nca_name.ends_with(".cnmt.nca") {
+79 | |                         if let Some(nca_raw) = secure.extract_file(nca_name) {
+80 | |                             if let Ok(nca) = NcaImage::parse_with_key(nca_raw, key) {
+81 | |                                 title_id = nca.title_id;
+...  |
+92 | |                     }
+   | |_____________________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+   |
+78 ~                     if nca_name.ends_with(".nca") && !nca_name.ends_with(".cnmt.nca")
+79 ~                         && let Some(nca_raw) = secure.extract_file(nca_name) {
+80 |                             if let Ok(nca) = NcaImage::parse_with_key(nca_raw, key) {
+...
+90 |                             }
+91 ~                         }
+   |
+
+warning: this `if` statement can be collapsed
+  --> src/ui/inspector.rs:79:25
+   |
+79 | /                         if let Some(nca_raw) = secure.extract_file(nca_name) {
+80 | |                             if let Ok(nca) = NcaImage::parse_with_key(nca_raw, key) {
+81 | |                                 title_id = nca.title_id;
+82 | |                                 code_size = nca.section_size;
+...  |
+91 | |                         }
+   | |_________________________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+   |
+79 ~                         if let Some(nca_raw) = secure.extract_file(nca_name)
+80 ~                             && let Ok(nca) = NcaImage::parse_with_key(nca_raw, key) {
+81 |                                 title_id = nca.title_id;
+...
+89 |                                 }
+90 ~                             }
+   |
+
+warning: this `if` statement can be collapsed
+  --> src/ui/inspector.rs:83:33
+   |
+83 | / ...                   if let Some(ref r_bytes) = nca.decrypted_romfs {
+84 | | ...                       if let Ok(archive) = RomFsArchive::parse(r_bytes) {
+85 | | ...                           for entry in archive.entries {
+86 | | ...                               romfs_files.push((entry.path, entry.data.len()));
+...  |
+89 | | ...                   }
+   | |_______________________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+   |
+83 ~                                 if let Some(ref r_bytes) = nca.decrypted_romfs
+84 ~                                     && let Ok(archive) = RomFsArchive::parse(r_bytes) {
+85 |                                         for entry in archive.entries {
+86 |                                             romfs_files.push((entry.path, entry.data.len()));
+87 |                                         }
+88 ~                                     }
+   |
+
+warning: this `if` statement can be collapsed
+   --> src/ui/inspector.rs:100:17
+    |
+100 | /                 if name.ends_with(".nca") && !name.ends_with(".cnmt.nca") {
+101 | |                     if let Some(nca_raw) = pfs0.extract_file(name) {
+102 | |                         if let Ok(nca) = NcaImage::parse_with_key(nca_raw, key) {
+103 | |                             title_id = nca.title_id;
+...   |
+114 | |                 }
+    | |_________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+100 ~                 if name.ends_with(".nca") && !name.ends_with(".cnmt.nca")
+101 ~                     && let Some(nca_raw) = pfs0.extract_file(name) {
+102 |                         if let Ok(nca) = NcaImage::parse_with_key(nca_raw, key) {
+...
+112 |                         }
+113 ~                     }
+    |
+
+warning: this `if` statement can be collapsed
+   --> src/ui/inspector.rs:101:21
+    |
+101 | /                     if let Some(nca_raw) = pfs0.extract_file(name) {
+102 | |                         if let Ok(nca) = NcaImage::parse_with_key(nca_raw, key) {
+103 | |                             title_id = nca.title_id;
+104 | |                             code_size = nca.section_size;
+...   |
+113 | |                     }
+    | |_____________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+101 ~                     if let Some(nca_raw) = pfs0.extract_file(name)
+102 ~                         && let Ok(nca) = NcaImage::parse_with_key(nca_raw, key) {
+103 |                             title_id = nca.title_id;
+...
+111 |                             }
+112 ~                         }
+    |
+
+warning: this `if` statement can be collapsed
+   --> src/ui/inspector.rs:105:29
+    |
+105 | / ...                   if let Some(ref r_bytes) = nca.decrypted_romfs {
+106 | | ...                       if let Ok(archive) = RomFsArchive::parse(r_bytes) {
+107 | | ...                           for entry in archive.entries {
+108 | | ...                               romfs_files.push((entry.path, entry.data.len()));
+...   |
+111 | | ...                   }
+    | |_______________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+105 ~                             if let Some(ref r_bytes) = nca.decrypted_romfs
+106 ~                                 && let Ok(archive) = RomFsArchive::parse(r_bytes) {
+107 |                                     for entry in archive.entries {
+108 |                                         romfs_files.push((entry.path, entry.data.len()));
+109 |                                     }
+110 ~                                 }
+    |
+
+warning: manual implementation of `.is_multiple_of()`
+   --> src/ui/trace.rs:253:20
+    |
+253 |                 if instructions_executed % crate::kernel::scheduler::PREEMPT_INTERVAL == 0 {
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: replace with: `instructions_executed.is_multiple_of(crate::kernel::scheduler::PREEMPT_INTERVAL)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#manual_is_multiple_of
+
+warning: manual arithmetic check found
+   --> src/main.rs:311:15
+    |
+311 |     let pad = if max_inner > used { max_inner - used } else { 0 };
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: replace it with: `max_inner.saturating_sub(used)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#implicit_saturating_sub
+    = note: `#[warn(clippy::implicit_saturating_sub)]` on by default
+
+warning: manual arithmetic check found
+   --> src/main.rs:322:15
+    |
+322 |     let pad = if BOX_WIDTH - 2 > header_width { (BOX_WIDTH - 2) - header_width } else { 0 };
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: replace it with: `(BOX_WIDTH - 2).saturating_sub(header_width)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#implicit_saturating_sub
+
+warning: manual arithmetic check found
+   --> src/main.rs:368:15
+    |
+368 |     let pad = if BOX_WIDTH - 2 > header_width { (BOX_WIDTH - 2) - header_width } else { 0 };
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: replace it with: `(BOX_WIDTH - 2).saturating_sub(header_width)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#implicit_saturating_sub
+
+warning: this `map_or` can be simplified
+   --> src/main.rs:559:18
+    |
+559 |     let is_gpu = display.as_ref().map_or(false, |d| d.is_gpu_accelerated());
+    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unnecessary_map_or
+help: use `is_some_and` instead
+    |
+559 -     let is_gpu = display.as_ref().map_or(false, |d| d.is_gpu_accelerated());
+559 +     let is_gpu = display.as_ref().is_some_and(|d| d.is_gpu_accelerated());
+    |
+
+warning: this `if` statement can be collapsed
+   --> src/main.rs:640:25
+    |
+640 | /                         if kernel.ipc.audio_renderer.is_some() {
+641 | |                             if let Some(sink) = host_audio.as_ref() {
+642 | |                                 stream_audio_to_host(&mut kernel, sink);
+643 | |                             }
+644 | |                         }
+    | |_________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+640 ~                         if kernel.ipc.audio_renderer.is_some()
+641 ~                             && let Some(sink) = host_audio.as_ref() {
+642 |                                 stream_audio_to_host(&mut kernel, sink);
+643 ~                             }
+    |
+
+warning: this `if` statement can be collapsed
+   --> src/main.rs:663:25
+    |
+663 | /                         if !audio_samples.is_empty() {
+664 | |                             if let Some(sink) = host_audio.as_ref() {
+665 | |                                 sink.push_samples(&audio_samples);
+666 | |                             }
+667 | |                         }
+    | |_________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+663 ~                         if !audio_samples.is_empty()
+664 ~                             && let Some(sink) = host_audio.as_ref() {
+665 |                                 sink.push_samples(&audio_samples);
+666 ~                             }
+    |
+
+warning: this `if` statement can be collapsed
+   --> src/main.rs:669:25
+    |
+669 | /                         if !audren_samples.is_empty() {
+670 | |                             if let Some(sink) = host_audio.as_ref() {
+671 | |                                 sink.push_samples(&audren_samples);
+672 | |                             }
+673 | |                         }
+    | |_________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+669 ~                         if !audren_samples.is_empty()
+670 ~                             && let Some(sink) = host_audio.as_ref() {
+671 |                                 sink.push_samples(&audren_samples);
+672 ~                             }
+    |
+
+warning: called `.as_mut().map(|x| &mut **x)` on an `Option` value
+    --> src/main.rs:1181:53
+     |
+1181 |     let outcome = run_vm_internal(cpu, mmu, kernel, display_none.as_mut().map(|x| &mut **x), None, 10_000, 0);
+     |                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using as_deref_mut: `display_none.as_deref_mut()`
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#option_as_ref_deref
+     = note: `#[warn(clippy::option_as_ref_deref)]` on by default
+
+warning: `ounce-runtime` (bin "ounce-runtime") generated 183 warnings (run `cargo clippy --fix --bin "ounce-runtime" -p ounce-runtime -- ` to apply 147 suggestions)
+warning: items after a test module
+    --> src/main.rs:3805:1
+     |
+3805 | mod harness_gate_tests {
+     | ^^^^^^^^^^^^^^^^^^^^^^
+...
+3829 | fn run_jit_selftest() {
+     | ^^^^^^^^^^^^^^^^^^^^^
+...
+3850 | fn fuzz_replay(args: &[String]) -> i32 {
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#items_after_test_module
+     = note: `#[warn(clippy::items_after_test_module)]` on by default
+     = help: move the items to before the test module was defined
+
+warning: this operation has no effect
+   --> src/gpu/ampere/ga10f_tests.rs:348:21
+    |
+348 |     let s2r_ctaid = op(0x919) | (0u128 << 16) | ((SR_CTAID_X as u128) << 72);
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider reducing it to: `op(0x919)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#identity_op
+    = note: `#[warn(clippy::identity_op)]` on by default
+
+warning: this operation has no effect
+   --> src/gpu/ampere/ga10f_tests.rs:350:20
+    |
+350 |     let imad_gid = op(0x824) | (0u128 << 16) | (0u128 << 24) | (32u128 << 32) | (1u128 << 64);
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider reducing it to: `(op(0x824) | (0u128 << 16))`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#identity_op
+
+warning: this operation has no effect
+   --> src/gpu/ampere/ga10f_tests.rs:350:20
+    |
+350 |     let imad_gid = op(0x824) | (0u128 << 16) | (0u128 << 24) | (32u128 << 32) | (1u128 << 64);
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider reducing it to: `op(0x824)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#identity_op
+
+warning: this operation has no effect
+   --> src/gpu/ampere/ga10f_tests.rs:351:21
+    |
+351 |     let uldc_base = op(0xab9) | (0u128 << 16) | (0u128 << 38);
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider reducing it to: `op(0xab9) | (0u128 << 16)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#identity_op
+
+warning: this operation has no effect
+   --> src/gpu/ampere/ga10f_tests.rs:351:21
+    |
+351 |     let uldc_base = op(0xab9) | (0u128 << 16) | (0u128 << 38);
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider reducing it to: `op(0xab9)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#identity_op
+
+warning: this operation has no effect
+   --> src/gpu/ampere/ga10f_tests.rs:352:20
+    |
+352 |     let lea_elem = op(0xc11) | (2u128 << 16) | (0u128 << 24) | (0u128 << 32) | (2u128 << 75);
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider reducing it to: `(op(0xc11) | (2u128 << 16) | (0u128 << 24))`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#identity_op
+
+warning: this operation has no effect
+   --> src/gpu/ampere/ga10f_tests.rs:352:20
+    |
+352 |     let lea_elem = op(0xc11) | (2u128 << 16) | (0u128 << 24) | (0u128 << 32) | (2u128 << 75);
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider reducing it to: `(op(0xc11) | (2u128 << 16))`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#identity_op
+
+warning: this operation has no effect
+   --> src/gpu/ampere/ga10f_tests.rs:533:22
+    |
+533 |     mem.put(TIC_VA + 1 * 32, &words_to_bytes(&make_tic(DXT1, BC1_TEX_VA, 8, 8)));
+    |                      ^^^^^^ help: consider reducing it to: `32`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#identity_op
+
+warning: this operation has no effect
+   --> src/gpu/ampere/ga10f_tests.rs:560:20
+    |
+560 |     let uldc_ur2 = op(0xab9) | (2u128 << 16) | (0u128 << 38) | (1u128 << 54);
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider reducing it to: `(op(0xab9) | (2u128 << 16))`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#identity_op
+
+warning: this operation has no effect
+   --> src/gpu/ampere/ga10f_tests.rs:561:23
+    |
+561 |     let ffma_r0_ur2 = op(0xc23) | (0u128 << 16) | (0u128 << 24) | (2u128 << 32) | ((RZ as u128) << 64);
+    |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider reducing it to: `(op(0xc23) | (0u128 << 16))`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#identity_op
+
+warning: this operation has no effect
+   --> src/gpu/ampere/ga10f_tests.rs:561:23
+    |
+561 |     let ffma_r0_ur2 = op(0xc23) | (0u128 << 16) | (0u128 << 24) | (2u128 << 32) | ((RZ as u128) << 64);
+    |                       ^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider reducing it to: `op(0xc23)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#identity_op
+
+warning: this operation has no effect
+   --> src/gpu/ampere/ga10f_tests.rs:595:19
+    |
+595 |       let ldc_r28 = op(0xb82)
+    |  ___________________^
+596 | |         | (28u128 << 16)
+597 | |         | ((RZ as u128) << 24)
+598 | |         | (0u128 << 38)
+    | |_______________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#identity_op
+help: consider reducing it to
+    |
+595 ~     let ldc_r28 = (op(0xb82)
+596 +         | (28u128 << 16)
+597 +         | ((RZ as u128) << 24))
+    |
+
+warning: this operation has no effect
+   --> src/gpu/ampere/ga10f_tests.rs:601:17
+    |
+601 |       let tex_b = op(0x361)
+    |  _________________^
+602 | |         | (0u128 << 16)
+    | |_______________________^ help: consider reducing it to: `op(0x361)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#identity_op
+
+warning: using `chunks_exact_mut` with a constant chunk size
+   --> src/gpu/display.rs:456:34
+    |
+456 |         for (i, pixel) in linear.chunks_exact_mut(4).enumerate() {
+    |                                  ^^^^^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks_mut::<4>().0.iter()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#chunks_exact_to_as_chunks
+
+warning: casting to the same type is unnecessary (`u32` -> `u32`)
+   --> src/gpu/upscaler.rs:107:25
+    |
+107 |                 let r = (x * 60) as u32;
+    |                         ^^^^^^^^^^^^^^^ help: try: `(x * 60)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unnecessary_cast
+
+warning: casting to the same type is unnecessary (`u32` -> `u32`)
+   --> src/gpu/upscaler.rs:108:25
+    |
+108 |                 let g = (y * 60) as u32;
+    |                         ^^^^^^^^^^^^^^^ help: try: `(y * 60)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unnecessary_cast
+
+warning: this operation has no effect
+   --> src/gpu/nvgpu.rs:821:45
+    |
+821 |             let v0 = self.fetch_vertex(mmu, t * 3 + 0, stride_bytes, textured);
+    |                                             ^^^^^^^^^ help: consider reducing it to: `(t * 3)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#identity_op
+
+warning: returning the result of a `let` binding from a block
+    --> src/gpu/present/wgpu_window.rs:2187:13
+     |
+2185 |         let pixels = slice.get_mapped_range().expect("readback not mapped").to_vec();
+     |         ----------------------------------------------------------------------------- unnecessary `let` binding
+2186 |
+2187 |             pixels
+     |             ^^^^^^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#let_and_return
+     = note: `#[warn(clippy::let_and_return)]` on by default
+help: return the expression directly
+     |
+2185 ~         
+2186 |
+2187 ~             slice.get_mapped_range().expect("readback not mapped").to_vec()
+     |
+
+warning: this operation has no effect
+   --> src/gpu/sass/tests.rs:353:19
+    |
+353 |     let ffma_ur = (0xc23u128 | (7 << 12)) | (4u128 << 16) | (0u128 << 24) | (4u128 << 32) | (0u128 << 64);
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider reducing it to: `(0xc23u128 | (7 << 12)) | (4u128 << 16) | (0u128 << 24) | (4u128 << 32)`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#identity_op
+
+warning: this operation has no effect
+   --> src/gpu/sass/tests.rs:353:19
+    |
+353 |     let ffma_ur = (0xc23u128 | (7 << 12)) | (4u128 << 16) | (0u128 << 24) | (4u128 << 32) | (0u128 << 64);
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider reducing it to: `((0xc23u128 | (7 << 12)) | (4u128 << 16))`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#identity_op
+
+warning: this operation has no effect
+   --> src/gpu/sass/tests.rs:382:17
+    |
+382 |       let tex_b = (0x361u128 | (7 << 12))
+    |  _________________^
+383 | |         | (0u128 << 16)
+    | |_______________________^ help: consider reducing it to: `((0x361u128 | (7 << 12)))`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#identity_op
+
+warning: this operation has no effect
+   --> src/gpu/sass/tests.rs:415:20
+    |
+415 |     let s2r_tidx = (0x919u128 | (7 << 12)) | (0u128 << 16) | ((SR_TID_X as u128) << 72);
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider reducing it to: `((0x919u128 | (7 << 12)))`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#identity_op
+
+warning: this operation has no effect
+   --> src/gpu/sass/tests.rs:417:21
+    |
+417 |     let uldc_base = (0xab9u128 | (7 << 12)) | (0u128 << 16) | (0x100u128 << 38);
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider reducing it to: `((0xab9u128 | (7 << 12)))`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#identity_op
+
+warning: this operation has no effect
+   --> src/gpu/sass/tests.rs:419:20
+    |
+419 |       let lea_addr = (0xc11u128 | (7 << 12))
+    |  ____________________^
+420 | |         | (2u128 << 16)
+421 | |         | (0u128 << 24)
+422 | |         | (0u128 << 32)
+    | |_______________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#identity_op
+help: consider reducing it to
+    |
+419 ~     let lea_addr = ((0xc11u128 | (7 << 12))
+420 +         | (2u128 << 16)
+421 +         | (0u128 << 24))
+    |
+
+warning: this operation has no effect
+   --> src/gpu/sass/tests.rs:419:20
+    |
+419 |       let lea_addr = (0xc11u128 | (7 << 12))
+    |  ____________________^
+420 | |         | (2u128 << 16)
+421 | |         | (0u128 << 24)
+    | |_______________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#identity_op
+help: consider reducing it to
+    |
+419 ~     let lea_addr = ((0xc11u128 | (7 << 12))
+420 +         | (2u128 << 16))
+    |
+
+warning: float has excessive precision
+   --> src/gpu/tensor.rs:491:31
+    |
+491 |         assert_eq!(f32_to_f16(6.103515625e-5), 0x0400); // smallest normal
+    |                               ^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#excessive_precision
+    = note: `#[warn(clippy::excessive_precision)]` on by default
+help: consider changing the type or truncating it to
+    |
+491 -         assert_eq!(f32_to_f16(6.103515625e-5), 0x0400); // smallest normal
+491 +         assert_eq!(f32_to_f16(6.103_515_6e-5), 0x0400); // smallest normal
+    |
+
+warning: float has excessive precision
+   --> src/gpu/tensor.rs:492:31
+    |
+492 |         assert_eq!(f32_to_f16(5.960464477539063e-8), 0x0001); // smallest subnormal
+    |                               ^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#excessive_precision
+help: consider changing the type or truncating it to
+    |
+492 -         assert_eq!(f32_to_f16(5.960464477539063e-8), 0x0001); // smallest subnormal
+492 +         assert_eq!(f32_to_f16(5.960_464_5e-8), 0x0001); // smallest subnormal
+    |
+
+warning: float has excessive precision
+   --> src/gpu/tensor.rs:498:40
+    |
+498 |         assert_eq!(f16_to_f32(0x0400), 6.103515625e-5);
+    |                                        ^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#excessive_precision
+help: consider changing the type or truncating it to
+    |
+498 -         assert_eq!(f16_to_f32(0x0400), 6.103515625e-5);
+498 +         assert_eq!(f16_to_f32(0x0400), 6.103_515_6e-5);
+    |
+
+warning: float has excessive precision
+   --> src/gpu/tensor.rs:499:40
+    |
+499 |         assert_eq!(f16_to_f32(0x0001), 5.960464477539063e-8);
+    |                                        ^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#excessive_precision
+help: consider changing the type or truncating it to
+    |
+499 -         assert_eq!(f16_to_f32(0x0001), 5.960464477539063e-8);
+499 +         assert_eq!(f16_to_f32(0x0001), 5.960_464_5e-8);
+    |
+
+warning: float has excessive precision
+   --> src/gpu/tensor.rs:508:37
+    |
+508 |         assert_eq!(f32_to_f16(1.0 + 0.000_732_421_875), 0x3C01);
+    |                                     ^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#excessive_precision
+help: consider changing the type or truncating it to
+    |
+508 -         assert_eq!(f32_to_f16(1.0 + 0.000_732_421_875), 0x3C01);
+508 +         assert_eq!(f32_to_f16(1.0 + 0.000_732_421_9), 0x3C01);
+    |
+
+warning: float has excessive precision
+   --> src/gpu/tensor.rs:511:37
+    |
+511 |         assert_eq!(f32_to_f16(1.0 + 0.001_464_843_75), 0x3C02);
+    |                                     ^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#excessive_precision
+help: consider changing the type or truncating it to
+    |
+511 -         assert_eq!(f32_to_f16(1.0 + 0.001_464_843_75), 0x3C02);
+511 +         assert_eq!(f32_to_f16(1.0 + 0.001_464_843_8), 0x3C02);
+    |
+
+warning: this operation has no effect
+  --> src/gpu/texfmt/tests.rs:77:18
+   |
+77 |     let v: u16 = 31 | (0 << 5) | (16 << 10) | (1 << 15);
+   |                  ^^^^^^^^^^^^^ help: consider reducing it to: `31`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#identity_op
+
+warning: very complex type used. Consider factoring parts into `type` definitions
+ --> src/gpu/texfmt/vectors.rs:7:24
+  |
+7 | pub(super) const SETS: &[(&str, u32, u32, u32, bool, &[(&str, &str)])] = &[
+  |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#type_complexity
+
+warning: manually reimplementing `div_ceil`
+  --> src/gpu/tiling/tests.rs:35:21
+   |
+35 |     let gobs_wide = (s.row_bytes() + 63) / 64;
+   |                     ^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using `.div_ceil()`: `s.row_bytes().div_ceil(64)`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#manual_div_ceil
+
+warning: manually reimplementing `div_ceil`
+  --> src/gpu/tiling/tests.rs:37:23
+   |
+37 |     let blocks_high = (rows + block_rows - 1) / block_rows;
+   |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: consider using `.div_ceil()`: `rows.div_ceil(block_rows)`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#manual_div_ceil
+
+warning: the method `draw_arrays` doesn't need a mutable reference
+   --> src/gpu/vulkan.rs:175:37
+    |
+175 |         assert!(backend.draw_arrays(&mut mmu, 0x8000_0000, 3).is_ok());
+    |                                     ^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unnecessary_mut_passed
+    = note: `#[warn(clippy::unnecessary_mut_passed)]` on by default
+help: remove this `mut`
+    |
+175 -         assert!(backend.draw_arrays(&mut mmu, 0x8000_0000, 3).is_ok());
+175 +         assert!(backend.draw_arrays(&mmu, 0x8000_0000, 3).is_ok());
+    |
+
+warning: this function has too many arguments (8/7)
+   --> src/kernel/audren.rs:661:5
+    |
+661 |     fn set_voice(b: &mut [u8], at: usize, format: u8, channel_ids: &[u32], dest: u32, addr: u64, size: u64, samples: i32) {
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#too_many_arguments
+    = note: `#[warn(clippy::too_many_arguments)]` on by default
+
+warning: using `chunks_exact` with a constant chunk size
+   --> src/kernel/audren.rs:696:19
+    |
+696 |         r.drain().chunks_exact(2).map(|p| (p[0], p[1])).collect()
+    |                   ^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<2>().0.iter()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#chunks_exact_to_as_chunks
+
+warning: this function has too many arguments (8/7)
+   --> src/kernel/sdk_hle.rs:391:5
+    |
+391 | /     pub fn dispatch_call(
+392 | |         &mut self,
+393 | |         function_id: u32,
+394 | |         arg0: u64,
+...   |
+399 | |         mmu: &mut Memory,
+400 | |     ) -> (u32, u64) {
+    | |___________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#too_many_arguments
+
+warning: this operation has no effect
+   --> src/kernel/svc_tests.rs:225:46
+    |
+225 |     call(&mut k, &mut cpu, &mut mmu, 0x22, &[u64::MAX & !0xFFF, 0x2000, session]);
+    |                                              ^^^^^^^^^^^^^^^^^ help: consider reducing it to: `!0xFFF`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#identity_op
+
+warning: items after a test module
+    --> src/loader/nro.rs:1676:1
+     |
+1676 | mod tests {
+     | ^^^^^^^^^
+...
+2110 | pub fn decompress_nintendo_lz4(src: &[u8], decomp_sz: usize) -> Result<Vec<u8>, String> {
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#items_after_test_module
+     = help: move the items to before the test module was defined
+
+warning: using `chunks_exact` with a constant chunk size
+   --> src/loader/fixture_tests.rs:507:39
+    |
+507 |     let frames: Vec<(i16, i16)> = pcm.chunks_exact(2).map(|f| (f[0], f[1])).collect();
+    |                                       ^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<2>().0.iter()`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#chunks_exact_to_as_chunks
+
+warning: using `chunks_exact` with a constant chunk size
+   --> src/ounce_e2e_test.rs:421:25
+    |
+421 |     for p in detiled_rt.chunks_exact(4) {
+    |                         ^^^^^^^^^^^^^^^ help: consider using `as_chunks` instead: `as_chunks::<4>().0`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#chunks_exact_to_as_chunks
+
+warning: useless use of `vec!`
+   --> src/loader/fuzz_tests.rs:198:17
+    |
+198 |     let seeds = vec![linked_nso_seed(), fixture("nro/hello/hello.nro")];
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: you can use an array directly: `[linked_nso_seed(), fixture("nro/hello/hello.nro")]`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#useless_vec
+    = note: `#[warn(clippy::useless_vec)]` on by default
+
+warning: `ounce-runtime` (bin "ounce-runtime" test) generated 228 warnings (180 duplicates) (run `cargo clippy --fix --bin "ounce-runtime" -p ounce-runtime --tests -- ` to apply 44 suggestions)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 11.11s
