@@ -684,4 +684,31 @@ mod tests {
         assert_eq!(st.v[0] >> 64, 0);
         assert_eq!(st.nzcv, 0x8000_0000);
     }
+
+    #[test]
+    fn fp_bin_canonicalizes_nans() {
+        let mut b = BlockBuilder::new();
+        let d1 = b.get(ir::Reg::VLo(1));
+        let d2 = b.get(ir::Reg::VLo(2));
+        let div = b.push(ir::Op::FpBin(ir::FpBinOp::Fdiv, ir::FpWidth::F64, d1, d2));
+        b.set(ir::Reg::VLo(0), div);
+        let s1 = b.get(ir::Reg::VLo(3));
+        let s2 = b.get(ir::Reg::VLo(4));
+        let sdiv = b.push(ir::Op::FpBin(ir::FpBinOp::Fdiv, ir::FpWidth::F32, s1, s2));
+        b.set(ir::Reg::VLo(5), sdiv);
+
+        let e = exit_to(&mut b, 0, 0x1000, 2);
+        let block = b.finish(Terminator::Exit(e));
+
+        let mut st = GuestState::default();
+        st.v[1] = 0.0f64.to_bits() as u128;
+        st.v[2] = 0.0f64.to_bits() as u128;
+        st.v[3] = 0.0f32.to_bits() as u128;
+        st.v[4] = 0.0f32.to_bits() as u128;
+
+        let exit = run(block, &mut st, &mut TestBus::default());
+        assert_eq!(exit, Exit { kind: ExitKind::Code(0), insns: 2 });
+        assert_eq!(st.v[0] as u64, 0x7ff8_0000_0000_0000);
+        assert_eq!(st.v[5] as u64, 0x7fc0_0000);
+    }
 }

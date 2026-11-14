@@ -648,7 +648,10 @@ impl Lowering<'_> {
                             }
                         };
                         let ires32 = self.b.ins().bitcast(types::I32, Self::bitcast_flags(), fres);
-                        self.b.ins().uextend(types::I64, ires32)
+                        let is_nan = self.b.ins().fcmp(FloatCC::Unordered, fres, fres);
+                        let qnan32 = self.b.ins().iconst(types::I32, 0x7fc0_0000i64);
+                        let out32 = self.b.ins().select(is_nan, qnan32, ires32);
+                        self.b.ins().uextend(types::I64, out32)
                     }
                     FpWidth::F64 => {
                         let fa = self.b.ins().bitcast(types::F64, Self::bitcast_flags(), va);
@@ -665,7 +668,10 @@ impl Lowering<'_> {
                                 self.b.ins().fneg(m)
                             }
                         };
-                        self.b.ins().bitcast(types::I64, Self::bitcast_flags(), fres)
+                        let ires64 = self.b.ins().bitcast(types::I64, Self::bitcast_flags(), fres);
+                        let is_nan = self.b.ins().fcmp(FloatCC::Unordered, fres, fres);
+                        let qnan64 = self.b.ins().iconst(types::I64, 0x7ff8_0000_0000_0000u64 as i64);
+                        self.b.ins().select(is_nan, qnan64, ires64)
                     }
                 }
             }
