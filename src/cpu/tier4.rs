@@ -1175,8 +1175,8 @@ impl Tier4JitEngine {
         // Linked native blocks finish the block crossing their soft budget. Reserve
         // one maximum-sized block, then interpret the short tail so VM scheduler
         // quanta and public instruction limits remain exact.
-        if budget < MAX_BLOCK_INSNS { return None; }
         let mut id = self.lookup_or_compile_fast(cpu.regs.pc, mmu)?;
+        if budget < MAX_BLOCK_INSNS { return None; }
         let r = &mut cpu.regs;
         let mut state = GuestState { x: r.x, sp: r.sp, pc: r.pc, nzcv: r.pstate.to_bits() as u64, v: r.v };
         let mut executed = 0usize;

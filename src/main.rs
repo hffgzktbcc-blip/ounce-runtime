@@ -638,7 +638,9 @@ fn run_vm_internal(
                         // libnx audio renderer output plays as it is mixed (homebrew may never present a
                         // frame), and the host device's playback clock paces the guest.
                         if kernel.ipc.audio_renderer.is_some() {
-                            if let Some(sink) = host_audio.as_ref() { stream_audio_to_host(&mut kernel, sink); }
+                            if let Some(sink) = host_audio.as_ref() {
+                                stream_audio_to_host(&mut kernel, sink);
+                            }
                         }
                     }
                     SvcResult::PresentFrame => {
@@ -651,19 +653,23 @@ fn run_vm_internal(
                                 h.poll_keyboard(&active_keys);
                             }
                             if let Some(mgr) = gamepad_mgr.as_mut() {
-                        mgr.poll(h);
-                    }
+                                mgr.poll(h);
+                            }
                             let _ = h.update_shared_memory(&mut mmu);
                         }
 
                         // 2. Stream audio to host output sink (48 kHz stereo)
                         let audio_samples = kernel.audio.drain_samples();
                         if !audio_samples.is_empty() {
-                            if let Some(sink) = host_audio.as_ref() { sink.push_samples(&audio_samples); }
+                            if let Some(sink) = host_audio.as_ref() {
+                                sink.push_samples(&audio_samples);
+                            }
                         }
                         let audren_samples = kernel.audren.drain_samples();
                         if !audren_samples.is_empty() {
-                            if let Some(sink) = host_audio.as_ref() { sink.push_samples(&audren_samples); }
+                            if let Some(sink) = host_audio.as_ref() {
+                                sink.push_samples(&audren_samples);
+                            }
                         }
 
                         // 3. Present video frame to host window
@@ -688,7 +694,9 @@ fn run_vm_internal(
                     SvcResult::ExitProcess => {
                         println!("\n[VM] Process exited gracefully (svcExitProcess).");
                         if kernel.ipc.audio_renderer.is_some() {
-                            if let Some(sink) = host_audio.as_ref() { stream_audio_to_host(&mut kernel, sink); }
+                            if let Some(sink) = host_audio.as_ref() {
+                                stream_audio_to_host(&mut kernel, sink);
+                            }
                             // Let the last queued audio play out (bounded) before the process ends.
                             let deadline = Instant::now() + std::time::Duration::from_secs(3);
                             while host_audio.as_ref().is_some_and(|sink| sink.is_enabled && sink.queued_sample_count() > 0) && Instant::now() < deadline {
