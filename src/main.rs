@@ -43,6 +43,17 @@ static SDMC_HOST_DIR: std::sync::OnceLock<std::path::PathBuf> = std::sync::OnceL
 mod ounce_e2e_test;
 
 fn main() {
+    if let Ok(path) = std::env::var("OUNCE_REPORT_JSON") {
+        if !path.is_empty() {
+            run_report::set_report_path(std::path::PathBuf::from(path));
+        }
+    }
+    if std::env::var("OUNCE_AUDIO").as_deref() == Ok("null") {
+        run_report::set_audio_null(true);
+    }
+    if matches!(std::env::var("OUNCE_DETERMINISTIC").as_deref(), Ok("1" | "true")) {
+        run_report::set_deterministic(true);
+    }
     // `--present=<auto|gpu|minifb|headless>`, `--cpu=<tier3|tier4>`, and `--sdmc=<dir>`
     // may appear anywhere; strip them so the positional arguments of every command stay where they were.
     let mut args: Vec<String> = Vec::new();
