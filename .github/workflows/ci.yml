@@ -30,6 +30,19 @@ jobs:
           fi
           echo "Cleanliness check passed."
 
+  cargo-deny:
+    name: Cargo Deny (licenses, bans, advisories)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run cargo-deny check
+        uses: EmbarkStudios/cargo-deny-action@v2
+        with:
+          command: check
+          arguments: --locked
+
   test:
     name: Test (${{ matrix.os }})
     runs-on: ${{ matrix.os }}

@@ -66,6 +66,7 @@ While `ounce-core` focuses on strict differential verification and safe-Rust exe
 Download the archive for your platform from [Releases](https://github.com/hffgzktbcc-blip/ounce-runtime/releases/latest):
 - **macOS Apple Silicon** (`aarch64-apple-darwin`)
 - **Linux x86_64** (`x86_64-unknown-linux-gnu`)
+- **Linux ARM64** (`aarch64-unknown-linux-gnu`)
 - **Windows x86_64** (`x86_64-pc-windows-msvc`)
 
 Extract the archive and run:
