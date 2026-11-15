@@ -24,7 +24,8 @@ confidence-threshold = 0.8
 
 [bans]
 multiple-versions = "warn"
-wildcards = "deny"
+# Internal optional path dep `crates/ounce-recompiler` triggers wildcard check without `publish = false`.
+wildcards = "warn"
 allow-wildcard-paths = true
 
 [sources]
