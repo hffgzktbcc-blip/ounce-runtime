@@ -104,6 +104,7 @@ cargo build --release --locked
 | `cargo run --release -- jit-selftest` | Validate host native code generation and recompiler caches |
 | `cargo run --release -- --present=gpu 3d 300` | Launch the 3D graphics demonstration with host GPU rendering |
 | `cargo run --release -- run|run-nro path/to/app.nro` | Execute an unencrypted homebrew NRO program |
+| `cargo run --release -- run-nro path/to/app.nro --present=headless --report-json=run.json` | Write an `ounce.run.v1` report for that run. See [docs/QUICKSTART.md](docs/QUICKSTART.md). On `main` after v0.5.0; not in the v0.5.0 archive |
 | `cargo run --release -- help` | Display comprehensive CLI options and flag reference |
 
 ---
