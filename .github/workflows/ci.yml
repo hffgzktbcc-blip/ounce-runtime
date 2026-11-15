@@ -4,6 +4,8 @@ on:
   workflow_dispatch:
   pull_request:
     branches: [main]
+  push:
+    branches: [main]
 
 env:
   CARGO_TERM_COLOR: always
@@ -29,6 +31,19 @@ jobs:
             exit 1
           fi
           echo "Cleanliness check passed."
+
+  cargo-deny:
+    name: Cargo Deny (licenses, bans, advisories)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run cargo-deny check
+        uses: EmbarkStudios/cargo-deny-action@v2
+        with:
+          command: check
+          arguments: --locked
 
   test:
     name: Test (${{ matrix.os }})

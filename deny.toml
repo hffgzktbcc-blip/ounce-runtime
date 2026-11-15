@@ -1,0 +1,34 @@
+# cargo-deny configuration for ounce-runtime (GPL-3.0-or-later)
+# See docs/DEPENDENCY_LICENSE_AUDIT.md
+
+[advisories]
+ignore = [
+    # ttf-parser 0.25.1 (via ab_glyph) is marked unmaintained with no safe upgrade available.
+    "RUSTSEC-2026-0192",
+]
+
+[licenses]
+allow = [
+    "GPL-3.0-or-later",
+    "MIT",
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "Unlicense",
+    "Zlib",
+    "Unicode-3.0",
+]
+confidence-threshold = 0.8
+
+[bans]
+multiple-versions = "warn"
+# Internal optional path dep `crates/ounce-recompiler` triggers wildcard check without `publish = false`.
+wildcards = "warn"
+allow-wildcard-paths = true
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
