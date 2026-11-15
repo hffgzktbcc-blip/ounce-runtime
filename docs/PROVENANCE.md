@@ -9,7 +9,8 @@ Each listed fixture directory has a `main.c`, a `Makefile`, and a prebuilt `.nro
 | Fixture | Source authorship | Build information recorded | Binary contents verified | Ships in repo |
 |---|---|---|---|---|
 | hello, services, romfs, nvdrv, gpu, input, threads, audren | unverified; upstream example comparison pending | devkitA64 r30 / GCC 16.1.0-1, newlib 4.6.0.20260123-4, libnx 4.12.0-1 (see toolchain register) | no; Makefiles link libnx, and toolchain metadata identifies newlib; binary-level component inventory is pending | yes (binary and source) |
-| deko3d | unverified; upstream example comparison pending | devkitA64 + libnx + deko3d per fixture Makefile; shader compiler/version record pending | no; binary-level component inventory is pending | yes (binary and source) |
+| input_multi, sdmc | project-authored (each directory README). Not an upstream sample. | devkitA64 r30 (GCC 16.1.0), libnx 4.12.0, switch-tools 1.13.1, recorded 2026-10-28 in the fixture README. Checked-in SHA-256 matches that README (see toolchain register). | no; binary-level component inventory is pending, same as the other libnx fixtures | yes (binary and source) |
+| deko3d | unverified; upstream example comparison pending | devkitA64 + libnx + deko3d per fixture Makefile. Checked-in `.nro` identity is in the toolchain register. A clean rebuild that records the `deko3d` and `uam` package versions has not been done. | no; binary-level component inventory is pending | yes (binary and source) |
 
 Notes:
 - The fixture Makefiles explicitly link libnx; the recorded devkitA64 toolchain includes newlib. This does not establish the complete contents of each prebuilt binary. No libstdc++ linkage has been verified. See `THIRD_PARTY.md` for upstream notice references and open checks.

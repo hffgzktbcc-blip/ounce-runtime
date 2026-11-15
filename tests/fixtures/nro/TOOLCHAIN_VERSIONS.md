@@ -1,8 +1,9 @@
 # NRO fixture toolchain/version register
 
-This register records eight fixtures added on 2026-10-27 from the same devkitPro `switch-dev` cohort, based
-on maintainer-recorded build information. It is not a complete register of the current fixture tree. The
-`deko3d` fixture was added later; its exact toolchain versions, build ID, and hash remain to be recorded.
+This register records the checked-in `.nro` fixtures. The eight fixtures added on 2026-10-27, plus
+`input_multi` and `sdmc` (2026-10-28), share the devkitPro `switch-dev` cohort below, based on
+maintainer-recorded build information. `deko3d` was added later: its checked-in binary identity is
+recorded here, and a clean rebuild that captures the `deko3d` and `uam` package versions is still open.
 
 Toolchain cohort recorded for that date:
 
@@ -23,6 +24,9 @@ Per-fixture binary identity:
 | `input/input.nro` | `e8c53cd49730f2264805f6d64878285410f841ef` | `47058d19847dccf5e20b552030e355fdfc42f89b` | `a67aeb592aa4d03db8d52b0b6780073b73a3f797ddd9e4aaa3f8af1549453204` |
 | `threads/threads.nro` | `e8027e4ec9a6d8d45a3c120fe9c12f28184dd371` | `8db32f75fae8b5dedba72ccf368838180ce42a0d` | `496c6db53ec97bacfde9f25e7dba6e8e7deeae9c974d072e8c9adb0abebad78c` |
 | `audren/audren.nro` | `10177e93d452b6412ac3d77d387fbb1590ac9ed8` | `ee9a60cc76f1c112b449102d8a10c71e8452bc83` | `3fd52f32643de7e3869d954a7f5e6b66f8b243e7e2ec465f729483ed9ef0916f` |
+| `input_multi/input_multi.nro` | fixture README, 2026-10-28 | `d4f26541c2024e30f59bd9fc4ad28e8677376c53` | `7810f89006c9f54db3cdb4fbbde1f2476527f4c1a395ee33a82ab08edb6fdda8` |
+| `sdmc/sdmc.nro` | fixture README, 2026-10-28 | `2dd0b468b2c63d18c7b329509a9015a1b6b70988` | `42d46955e74b1aa01cd6181f442b54a19c7138721de15b19999e93e938004f48` |
+| `deko3d/deko3d.nro` | checked-in binary; rebuild not yet recorded | `717c66a61d1ef5ccaf2466a1ce7b0c9d92bfdecf` | `9e555711561ce16f846170a97545245422961b3991bb6526d16ef62833798af6` |
 
 Version source:
 
