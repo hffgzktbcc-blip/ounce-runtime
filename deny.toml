@@ -2,7 +2,10 @@
 # See docs/DEPENDENCY_LICENSE_AUDIT.md
 
 [advisories]
-ignore = []
+ignore = [
+    # ttf-parser 0.25.1 (via ab_glyph) is marked unmaintained with no safe upgrade available.
+    "RUSTSEC-2026-0192",
+]
 
 [licenses]
 allow = [
@@ -22,6 +25,7 @@ confidence-threshold = 0.8
 [bans]
 multiple-versions = "warn"
 wildcards = "deny"
+allow-wildcard-paths = true
 
 [sources]
 unknown-registry = "deny"
