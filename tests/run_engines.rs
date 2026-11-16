@@ -99,7 +99,8 @@ fn run_nro_subcommand_matches_run_across_engines() {
     } else {
         "Tier-3"
     };
-    let nce_label = if cfg!(all(target_os = "macos", target_arch = "aarch64")) {
+    // NCE executes on both Apple Silicon and Linux ARM64 hosts.
+    let nce_label = if cfg!(target_arch = "aarch64") {
         "NCE"
     } else {
         tier4_label
