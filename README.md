@@ -61,6 +61,8 @@ While `ounce-core` focuses on strict differential verification and safe-Rust exe
 
 ## Quick start
 
+> **Published release: [v0.6.0 (16 November 2026)](https://github.com/hffgzktbcc-blip/ounce-runtime/releases/tag/v0.6.0).** Check the exact tagged archive and its documented capabilities before treating changes on `main` as shipped. The canonical cross-project priorities are maintained in the [Ounce Family 2026–2027 roadmap](https://github.com/hffgzktbcc-blip/ounce-core/blob/main/docs/roadmap/OUNCE_FAMILY_1_YEAR_ROADMAP.md).
+
 ### Download a prebuilt release
 
 Download the archive for your platform from [Releases](https://github.com/hffgzktbcc-blip/ounce-runtime/releases/latest):
@@ -105,7 +107,7 @@ cargo build --release --locked
 | `cargo run --release -- jit-selftest` | Validate host native code generation and recompiler caches |
 | `cargo run --release -- --present=gpu 3d 300` | Launch the 3D graphics demonstration with host GPU rendering |
 | `cargo run --release -- run|run-nro path/to/app.nro` | Execute an unencrypted homebrew NRO program |
-| `cargo run --release -- run-nro path/to/app.nro --present=headless --report-json=run.json` | Write an `ounce.run.v1` report for that run. See [docs/QUICKSTART.md](docs/QUICKSTART.md). On `main` after v0.5.0; not in the v0.5.0 archive |
+| `cargo run --release -- run-nro path/to/app.nro --present=headless --report-json=run.json` | Write an `ounce.run.v1` report for that run. See [docs/QUICKSTART.md](docs/QUICKSTART.md). Available in the published v0.6.0 release (not in v0.5.0) |
 | `cargo run --release -- help` | Display comprehensive CLI options and flag reference |
 
 ---
