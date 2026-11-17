@@ -26,3 +26,5 @@ ns2jb*
 # Keep committed synthetic NRO test fixtures tracked
 !tests/fixtures/nro/**/*.nro
 OunceCore.app/
+__pycache__/
+*.pyc

@@ -61,6 +61,8 @@ While `ounce-core` focuses on strict differential verification and safe-Rust exe
 
 ## Quick start
 
+> **Published release: [v0.6.0 (16 November 2026)](https://github.com/hffgzktbcc-blip/ounce-runtime/releases/tag/v0.6.0).** Check the exact tagged archive and its documented capabilities before treating changes on `main` as shipped. The canonical cross-project priorities are maintained in the [Ounce Family 2026–2027 roadmap](https://github.com/hffgzktbcc-blip/ounce-core/blob/main/docs/roadmap/OUNCE_FAMILY_1_YEAR_ROADMAP.md).
+
 ### Download a prebuilt release
 
 Download the archive for your platform from [Releases](https://github.com/hffgzktbcc-blip/ounce-runtime/releases/latest):
@@ -78,7 +80,7 @@ Extract the archive and run:
 
 ### Build from source
 
-Prerequisites: Rust 1.85+ with edition 2024 support. On Ubuntu/Debian, install host audio and device dependencies:
+Prerequisites: a recent stable Rust (edition 2024; CI uses the current stable toolchain). On Ubuntu/Debian, install host audio and device dependencies:
 
 ```bash
 sudo apt-get install -y libasound2-dev libudev-dev
@@ -105,16 +107,18 @@ cargo build --release --locked
 | `cargo run --release -- jit-selftest` | Validate host native code generation and recompiler caches |
 | `cargo run --release -- --present=gpu 3d 300` | Launch the 3D graphics demonstration with host GPU rendering |
 | `cargo run --release -- run|run-nro path/to/app.nro` | Execute an unencrypted homebrew NRO program |
-| `cargo run --release -- run-nro path/to/app.nro --present=headless --report-json=run.json` | Write an `ounce.run.v1` report for that run. See [docs/QUICKSTART.md](docs/QUICKSTART.md). On `main` after v0.5.0; not in the v0.5.0 archive |
+| `cargo run --release -- run-nro path/to/app.nro --present=headless --report-json=run.json` | Write an `ounce.run.v1` report for that run. See [docs/QUICKSTART.md](docs/QUICKSTART.md). Included since v0.6.0 |
 | `cargo run --release -- help` | Display comprehensive CLI options and flag reference |
 
 ---
 
 ## Verification & Parity
 
+> Conformance and speed figures below describe the specified trace suite, host and test conditions, not general ARM64 application correctness or guaranteed speed on other hosts.
+
 - **Synthetic Architecture Harness**: 27 architecture checks across 25 stages validating instruction semantics, memory permissions, atomics, and service dispatch.
-- **Unit & Integration Suite**: 495 passing workspace tests (470 runtime unit, 20 recompiler unit, 5 CLI integration) spanning JIT compilation, fastmem isolation, RomFS parsing, and IPC serialization.
-- **ARM64 Hardware Conformance**: 12/12 pass on `conformance/arm64-v0.2.0` (and 1/1 on `arm64-v0.1.0`) across `interp`, `tier3`, `tier4`, and `nce`, including `FPSR.QC` saturation, default quiet NaN propagation, `ADCS`/`SBCS` carry chains, `FEAT_LRCPC2` (`LDAPUR*`/`STLUR*`), and `FEAT_SHA3` (`EOR3`, `BCAX`, `RAX1`, `XAR`).
+- **Unit & Integration Suite**: The workspace test suite (`cargo test --release`; run it for the current count) spans JIT compilation, fastmem isolation, RomFS parsing, and IPC serialization.
+- **Published ARM64 trace-suite results (bounded evidence)**: 12/12 pass on `conformance/arm64-v0.2.0` (and 1/1 on `arm64-v0.1.0`) across `interp`, `tier3`, `tier4`, and `nce`, including `FPSR.QC` saturation, default quiet NaN propagation, `ADCS`/`SBCS` carry chains, `FEAT_LRCPC2` (`LDAPUR*`/`STLUR*`), and `FEAT_SHA3` (`EOR3`, `BCAX`, `RAX1`, `XAR`).
 - **Tri-Engine Tournament**: 100% exit code and execution parity with `ounce-core` across homebrew NROs and Stage 20 scaling (exact 15,304 instruction match across all engines; up to 116.53 MIPS under Apple Silicon NCE). See the [Tri-Engine Tournament Scoreboard](https://github.com/hffgzktbcc-blip/ounce-hb/blob/main/docs/TRI_ENGINE_COMPETITION.md).
 - **Corpus Parity**: Head-to-head homebrew execution comparison with `ounce-core` is tracked under `docs/CORPUS_PARITY.md`.
 

@@ -1,3 +1,5 @@
+> Status note: this file records the state when the sample metadata was added. Check `manifest.json` and `sources.json` and the `external-corpus` workflow for the current pass/fail results.
+
 # External homebrew candidates
 
 `sources.json` records the pinned upstream revisions, observed notices, local build inputs and artifact hashes for three original-Switch samples. The source files were built unchanged. Generated NROs remain in external sibling work directories; this repository change adds metadata only.
