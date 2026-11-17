@@ -18,3 +18,8 @@ check it before multi-repo, release or roadmap work. Docs map: [docs/README.md](
 - Homebrew only: unencrypted NRO/NSO built from source. Never commit keys, firmware or retail content; CI greps for key file names.
 - Sign off commits (`git commit -s`, DCO). Keep PRs small, with tests where they make sense.
 - Never fabricate pass rates or benchmarks; state what was and was not run. Provenance and notices: [docs/PROVENANCE.md](docs/PROVENANCE.md), `THIRD_PARTY.md`.
+
+## Release state and license separation
+- Published: ounce-runtime v0.6.0 (with ounce-core v0.9.0 and ounce-hb v0.1.0). Verify live GitHub state before treating a dated plan or handoff as unfinished; do not retag or reimplement released work.
+- This repository is experimental **GPL-3.0-or-later**; `ounce-core`, `ounce-hb` and `deckstream` are MIT. Share behavior and evidence through CLI/JSON contracts and subprocesses; never copy or port GPL source into an MIT sibling.
+- Open a PR rather than merging without owner authorization. Escalate credentials, spending, destructive changes and material distribution or legal decisions.
