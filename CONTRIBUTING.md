@@ -14,6 +14,6 @@ Thanks for helping. There are only a few hard rules; everything else is about mo
 
 ## Workflow
 
-- `cargo build --release`, `cargo test --release` and `cargo run --release -- test` should pass. Known failing tests are listed in the README.
+- `cargo build --release`, `cargo test --release` and `cargo run --release -- test` should pass.
 - Sign off commits with `git commit -s` (DCO).
 - Small focused PRs, with tests where they make sense.

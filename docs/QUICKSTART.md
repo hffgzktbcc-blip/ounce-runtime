@@ -21,8 +21,7 @@ cargo build --release --locked
 `native-jit` and `gpu-present` are on by default. `--no-default-features`
 builds without them. A prebuilt archive from
 [Releases](https://github.com/hffgzktbcc-blip/ounce-runtime/releases/latest)
-is the v0.5.0 line until v0.6.0 is tagged. The commands below that say
-"main" need a build from `main` after 14 Nov 2026.
+is the latest tagged release (v0.6.0, which includes `--report-json`). Commands that need newer code say "main" and need a build from `main`.
 
 ## `ounce.run.v1`
 
