@@ -61,6 +61,8 @@ While `ounce-core` focuses on strict differential verification and safe-Rust exe
 
 ## Quick start
 
+> **Published release: [v0.6.0 (16 November 2026)](https://github.com/hffgzktbcc-blip/ounce-runtime/releases/tag/v0.6.0).** Check the exact tagged archive and its documented capabilities before treating changes on `main` as shipped. The canonical cross-project priorities are maintained in the [Ounce Family 2026–2027 roadmap](https://github.com/hffgzktbcc-blip/ounce-core/blob/main/docs/roadmap/OUNCE_FAMILY_1_YEAR_ROADMAP.md).
+
 ### Download a prebuilt release
 
 Download the archive for your platform from [Releases](https://github.com/hffgzktbcc-blip/ounce-runtime/releases/latest):
@@ -112,9 +114,11 @@ cargo build --release --locked
 
 ## Verification & Parity
 
+> Conformance and speed figures below describe the specified trace suite, host and test conditions, not general ARM64 application correctness or guaranteed speed on other hosts.
+
 - **Synthetic Architecture Harness**: 27 architecture checks across 25 stages validating instruction semantics, memory permissions, atomics, and service dispatch.
 - **Unit & Integration Suite**: The workspace test suite (`cargo test --release`; run it for the current count) spans JIT compilation, fastmem isolation, RomFS parsing, and IPC serialization.
-- **ARM64 Hardware Conformance**: 12/12 pass on `conformance/arm64-v0.2.0` (and 1/1 on `arm64-v0.1.0`) across `interp`, `tier3`, `tier4`, and `nce`, including `FPSR.QC` saturation, default quiet NaN propagation, `ADCS`/`SBCS` carry chains, `FEAT_LRCPC2` (`LDAPUR*`/`STLUR*`), and `FEAT_SHA3` (`EOR3`, `BCAX`, `RAX1`, `XAR`).
+- **Published ARM64 trace-suite results (bounded evidence)**: 12/12 pass on `conformance/arm64-v0.2.0` (and 1/1 on `arm64-v0.1.0`) across `interp`, `tier3`, `tier4`, and `nce`, including `FPSR.QC` saturation, default quiet NaN propagation, `ADCS`/`SBCS` carry chains, `FEAT_LRCPC2` (`LDAPUR*`/`STLUR*`), and `FEAT_SHA3` (`EOR3`, `BCAX`, `RAX1`, `XAR`).
 - **Tri-Engine Tournament**: 100% exit code and execution parity with `ounce-core` across homebrew NROs and Stage 20 scaling (exact 15,304 instruction match across all engines; up to 116.53 MIPS under Apple Silicon NCE). See the [Tri-Engine Tournament Scoreboard](https://github.com/hffgzktbcc-blip/ounce-hb/blob/main/docs/TRI_ENGINE_COMPETITION.md).
 - **Corpus Parity**: Head-to-head homebrew execution comparison with `ounce-core` is tracked under `docs/CORPUS_PARITY.md`.
 
