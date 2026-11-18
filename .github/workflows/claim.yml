@@ -1,0 +1,48 @@
+name: Issue claim
+
+# A contributor comments "/claim" (or "I'll take this") on an open, unassigned
+# issue labelled "good first issue" or "help wanted" and is assigned to it.
+# Uses only the preinstalled gh CLI; no third-party actions.
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  claim:
+    if: |
+      github.event.issue.pull_request == null &&
+      github.event.issue.state == 'open' &&
+      github.event.sender.type != 'Bot' &&
+      github.event.sender.login != github.repository_owner
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Assign the commenter
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.issue.number }}
+          AUTHOR: ${{ github.event.comment.user.login }}
+          BODY: ${{ github.event.comment.body }}
+          ASSIGNEES: ${{ toJson(github.event.issue.assignees.*.login) }}
+          LABELS: ${{ toJson(github.event.issue.labels.*.name) }}
+        run: |
+          # Comment text is data: it is only matched, never executed.
+          if ! printf '%s' "$BODY" | grep -qiE '^[[:space:]]*(/claim|/take|i.ll take this|can i (work on|take) this)'; then
+            exit 0
+          fi
+          if ! printf '%s' "$LABELS" | grep -qE '"(good first issue|help wanted)"'; then
+            gh issue comment "$NUMBER" --body "Self-assignment is open for issues labelled \`good first issue\` or \`help wanted\`. A maintainer will coordinate this one."
+            exit 0
+          fi
+          if [ "$ASSIGNEES" != "[]" ]; then
+            gh issue comment "$NUMBER" --body "Thanks @$AUTHOR — this issue is already assigned. Other open starter issues: https://github.com/$GH_REPO/issues?q=is%3Aissue+is%3Aopen+no%3Aassignee+label%3A%22good+first+issue%22%2C%22help+wanted%22"
+            exit 0
+          fi
+          gh issue edit "$NUMBER" --add-assignee "$AUTHOR"
+          gh issue comment "$NUMBER" --body "Assigned to @$AUTHOR. Please open a draft PR or comment within 14 days if you're still working on it, so others can pick it up otherwise."
