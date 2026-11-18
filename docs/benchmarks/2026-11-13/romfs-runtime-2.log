@@ -3,7 +3,7 @@
   Target: ARMv8.5-A AArch64 (PAC + BTI) | Switch 2 & Switch 1 Execution
 ============================================================
 
-[Loader] Reading package/executable: /Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/romfs/romfs.nro
+[Loader] Reading package/executable: /Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/romfs/romfs.nro
 [BootLoader] Successfully loaded package:
   Format      : NRO0
   Title ID    : 0x0000000000000000
@@ -11,7 +11,7 @@
   MOD0 relocs : 0
 [VM] Starting execution at PC: 0x0000000080000000
 [VM] Stack Pointer: 0x0000007FFFFFE000
-[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] controls: /Users/<user>/Library/Application Support/OunceCore/controls.json
 [OunceCore] no controller: keyboard and DM_CTL only
 ounce-romfs result=0x00000EEE
 

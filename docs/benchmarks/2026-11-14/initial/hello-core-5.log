@@ -3,7 +3,7 @@
   Target: ARMv8.5-A AArch64 (PAC + BTI) | Horizon OS 64-bit Microkernel
 ============================================================
 
-[Loader] Reading package/executable: /Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-gold-parity/tests/fixtures/nro/hello/hello.nro
+[Loader] Reading package/executable: /Users/<user>/orca/workspaces/ounce-runtime/runtime-gold-parity/tests/fixtures/nro/hello/hello.nro
 [BootLoader] Successfully loaded package:
   Format      : NRO0
   Title ID    : 0x0000000000000000

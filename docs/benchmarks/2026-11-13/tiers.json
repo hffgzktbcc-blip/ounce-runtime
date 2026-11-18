@@ -5,7 +5,7 @@
     "trial": 0,
     "warmup": true,
     "command": [
-      "/Users/nathanaelgovender/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
+      "/Users/<user>/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
       "test",
       "--cpu=tier3",
       "--present=headless"
@@ -25,7 +25,7 @@
     "trial": 1,
     "warmup": false,
     "command": [
-      "/Users/nathanaelgovender/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
+      "/Users/<user>/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
       "test",
       "--cpu=tier3",
       "--present=headless"
@@ -45,7 +45,7 @@
     "trial": 2,
     "warmup": false,
     "command": [
-      "/Users/nathanaelgovender/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
+      "/Users/<user>/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
       "test",
       "--cpu=tier3",
       "--present=headless"
@@ -65,7 +65,7 @@
     "trial": 3,
     "warmup": false,
     "command": [
-      "/Users/nathanaelgovender/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
+      "/Users/<user>/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
       "test",
       "--cpu=tier3",
       "--present=headless"
@@ -85,7 +85,7 @@
     "trial": 4,
     "warmup": false,
     "command": [
-      "/Users/nathanaelgovender/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
+      "/Users/<user>/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
       "test",
       "--cpu=tier3",
       "--present=headless"
@@ -105,7 +105,7 @@
     "trial": 5,
     "warmup": false,
     "command": [
-      "/Users/nathanaelgovender/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
+      "/Users/<user>/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
       "test",
       "--cpu=tier3",
       "--present=headless"
@@ -125,7 +125,7 @@
     "trial": 0,
     "warmup": true,
     "command": [
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "test",
       "--cpu=tier3",
       "--present=headless"
@@ -145,7 +145,7 @@
     "trial": 1,
     "warmup": false,
     "command": [
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "test",
       "--cpu=tier3",
       "--present=headless"
@@ -165,7 +165,7 @@
     "trial": 2,
     "warmup": false,
     "command": [
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "test",
       "--cpu=tier3",
       "--present=headless"
@@ -185,7 +185,7 @@
     "trial": 3,
     "warmup": false,
     "command": [
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "test",
       "--cpu=tier3",
       "--present=headless"
@@ -205,7 +205,7 @@
     "trial": 4,
     "warmup": false,
     "command": [
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "test",
       "--cpu=tier3",
       "--present=headless"
@@ -225,7 +225,7 @@
     "trial": 5,
     "warmup": false,
     "command": [
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "test",
       "--cpu=tier3",
       "--present=headless"
@@ -245,7 +245,7 @@
     "trial": 0,
     "warmup": true,
     "command": [
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "test",
       "--cpu=tier4",
       "--present=headless"
@@ -265,7 +265,7 @@
     "trial": 1,
     "warmup": false,
     "command": [
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "test",
       "--cpu=tier4",
       "--present=headless"
@@ -285,7 +285,7 @@
     "trial": 2,
     "warmup": false,
     "command": [
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "test",
       "--cpu=tier4",
       "--present=headless"
@@ -305,7 +305,7 @@
     "trial": 3,
     "warmup": false,
     "command": [
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "test",
       "--cpu=tier4",
       "--present=headless"
@@ -325,7 +325,7 @@
     "trial": 4,
     "warmup": false,
     "command": [
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "test",
       "--cpu=tier4",
       "--present=headless"
@@ -345,7 +345,7 @@
     "trial": 5,
     "warmup": false,
     "command": [
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "test",
       "--cpu=tier4",
       "--present=headless"
@@ -365,7 +365,7 @@
     "trial": 0,
     "warmup": true,
     "command": [
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "test",
       "--cpu=nce",
       "--present=headless"
@@ -385,7 +385,7 @@
     "trial": 1,
     "warmup": false,
     "command": [
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "test",
       "--cpu=nce",
       "--present=headless"
@@ -405,7 +405,7 @@
     "trial": 2,
     "warmup": false,
     "command": [
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "test",
       "--cpu=nce",
       "--present=headless"
@@ -425,7 +425,7 @@
     "trial": 3,
     "warmup": false,
     "command": [
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "test",
       "--cpu=nce",
       "--present=headless"
@@ -445,7 +445,7 @@
     "trial": 4,
     "warmup": false,
     "command": [
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "test",
       "--cpu=nce",
       "--present=headless"
@@ -465,7 +465,7 @@
     "trial": 5,
     "warmup": false,
     "command": [
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "test",
       "--cpu=nce",
       "--present=headless"

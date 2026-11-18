@@ -3,7 +3,7 @@
   "suite_version": "0.2.0",
   "suite_manifest_sha256": "be277f02e2fb50c0900fdfafee3e60cb0b867fce6b0e80460346efbe47581237",
   "adapter_argv": [
-    "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-gold-parity/target/release/ounce-runtime",
+    "/Users/<user>/orca/workspaces/ounce-runtime/runtime-gold-parity/target/release/ounce-runtime",
     "fuzz-replay",
     "--engine",
     "interp"

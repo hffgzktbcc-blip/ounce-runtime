@@ -1,4 +1,4 @@
-   Compiling ounce-core v0.8.1 (/Users/nathanaelgovender/orca/ounce-core)
+   Compiling ounce-core v0.8.1 (/Users/<user>/orca/ounce-core)
 warning: associated items `DEFAULT` and `with_round` are never used
   --> src/cpu/softfp.rs:64:15
    |

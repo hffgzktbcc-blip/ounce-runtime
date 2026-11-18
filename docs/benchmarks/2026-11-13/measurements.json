@@ -7,9 +7,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
+      "/Users/<user>/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
       "run-nro",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/hello/hello.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/hello/hello.nro",
       "--present=headless",
       "fixture"
     ],
@@ -30,9 +30,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
+      "/Users/<user>/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
       "run-nro",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/hello/hello.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/hello/hello.nro",
       "--present=headless",
       "fixture"
     ],
@@ -53,9 +53,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
+      "/Users/<user>/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
       "run-nro",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/hello/hello.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/hello/hello.nro",
       "--present=headless",
       "fixture"
     ],
@@ -76,9 +76,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
+      "/Users/<user>/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
       "run-nro",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/hello/hello.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/hello/hello.nro",
       "--present=headless",
       "fixture"
     ],
@@ -99,9 +99,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
+      "/Users/<user>/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
       "run-nro",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/hello/hello.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/hello/hello.nro",
       "--present=headless",
       "fixture"
     ],
@@ -122,9 +122,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
+      "/Users/<user>/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
       "run-nro",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/hello/hello.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/hello/hello.nro",
       "--present=headless",
       "fixture"
     ],
@@ -145,9 +145,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "run",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/hello/hello.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/hello/hello.nro",
       "--present=headless",
       "fixture"
     ],
@@ -168,9 +168,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "run",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/hello/hello.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/hello/hello.nro",
       "--present=headless",
       "fixture"
     ],
@@ -191,9 +191,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "run",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/hello/hello.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/hello/hello.nro",
       "--present=headless",
       "fixture"
     ],
@@ -214,9 +214,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "run",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/hello/hello.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/hello/hello.nro",
       "--present=headless",
       "fixture"
     ],
@@ -237,9 +237,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "run",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/hello/hello.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/hello/hello.nro",
       "--present=headless",
       "fixture"
     ],
@@ -260,9 +260,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "run",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/hello/hello.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/hello/hello.nro",
       "--present=headless",
       "fixture"
     ],
@@ -283,9 +283,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
+      "/Users/<user>/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
       "run-nro",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/services/services.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/services/services.nro",
       "--present=headless"
     ],
     "wall_seconds": 0.04899508300000033,
@@ -305,9 +305,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
+      "/Users/<user>/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
       "run-nro",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/services/services.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/services/services.nro",
       "--present=headless"
     ],
     "wall_seconds": 0.04824925000000002,
@@ -327,9 +327,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
+      "/Users/<user>/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
       "run-nro",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/services/services.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/services/services.nro",
       "--present=headless"
     ],
     "wall_seconds": 0.048228833000000026,
@@ -349,9 +349,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
+      "/Users/<user>/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
       "run-nro",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/services/services.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/services/services.nro",
       "--present=headless"
     ],
     "wall_seconds": 0.050051832999999935,
@@ -371,9 +371,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
+      "/Users/<user>/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
       "run-nro",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/services/services.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/services/services.nro",
       "--present=headless"
     ],
     "wall_seconds": 0.05220079100000019,
@@ -393,9 +393,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
+      "/Users/<user>/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
       "run-nro",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/services/services.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/services/services.nro",
       "--present=headless"
     ],
     "wall_seconds": 0.049636374999999955,
@@ -415,9 +415,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "run",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/services/services.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/services/services.nro",
       "--present=headless"
     ],
     "wall_seconds": 0.10769325000000007,
@@ -437,9 +437,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "run",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/services/services.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/services/services.nro",
       "--present=headless"
     ],
     "wall_seconds": 0.10849145900000012,
@@ -459,9 +459,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "run",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/services/services.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/services/services.nro",
       "--present=headless"
     ],
     "wall_seconds": 0.12311279100000005,
@@ -481,9 +481,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "run",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/services/services.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/services/services.nro",
       "--present=headless"
     ],
     "wall_seconds": 0.12550874999999984,
@@ -503,9 +503,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "run",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/services/services.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/services/services.nro",
       "--present=headless"
     ],
     "wall_seconds": 0.10990333400000019,
@@ -525,9 +525,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "run",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/services/services.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/services/services.nro",
       "--present=headless"
     ],
     "wall_seconds": 0.11000224999999997,
@@ -547,9 +547,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
+      "/Users/<user>/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
       "run-nro",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/romfs/romfs.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/romfs/romfs.nro",
       "--present=headless"
     ],
     "wall_seconds": 0.05192975000000022,
@@ -569,9 +569,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
+      "/Users/<user>/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
       "run-nro",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/romfs/romfs.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/romfs/romfs.nro",
       "--present=headless"
     ],
     "wall_seconds": 0.05159695799999975,
@@ -591,9 +591,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
+      "/Users/<user>/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
       "run-nro",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/romfs/romfs.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/romfs/romfs.nro",
       "--present=headless"
     ],
     "wall_seconds": 0.05702583299999997,
@@ -613,9 +613,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
+      "/Users/<user>/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
       "run-nro",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/romfs/romfs.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/romfs/romfs.nro",
       "--present=headless"
     ],
     "wall_seconds": 0.05010620899999996,
@@ -635,9 +635,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
+      "/Users/<user>/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
       "run-nro",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/romfs/romfs.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/romfs/romfs.nro",
       "--present=headless"
     ],
     "wall_seconds": 0.051630374999999784,
@@ -657,9 +657,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
+      "/Users/<user>/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
       "run-nro",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/romfs/romfs.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/romfs/romfs.nro",
       "--present=headless"
     ],
     "wall_seconds": 0.047651124999999794,
@@ -679,9 +679,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "run",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/romfs/romfs.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/romfs/romfs.nro",
       "--present=headless"
     ],
     "wall_seconds": 0.10835637500000006,
@@ -701,9 +701,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "run",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/romfs/romfs.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/romfs/romfs.nro",
       "--present=headless"
     ],
     "wall_seconds": 0.109182208,
@@ -723,9 +723,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "run",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/romfs/romfs.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/romfs/romfs.nro",
       "--present=headless"
     ],
     "wall_seconds": 0.11312141699999989,
@@ -745,9 +745,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "run",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/romfs/romfs.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/romfs/romfs.nro",
       "--present=headless"
     ],
     "wall_seconds": 0.11092691600000038,
@@ -767,9 +767,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "run",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/romfs/romfs.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/romfs/romfs.nro",
       "--present=headless"
     ],
     "wall_seconds": 0.11361625000000064,
@@ -789,9 +789,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "run",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/romfs/romfs.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/romfs/romfs.nro",
       "--present=headless"
     ],
     "wall_seconds": 0.11194212499999967,
@@ -811,9 +811,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
+      "/Users/<user>/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
       "run-nro",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/threads/threads.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/threads/threads.nro",
       "--present=headless"
     ],
     "wall_seconds": 0.05394070799999984,
@@ -833,9 +833,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
+      "/Users/<user>/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
       "run-nro",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/threads/threads.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/threads/threads.nro",
       "--present=headless"
     ],
     "wall_seconds": 0.053286707999999905,
@@ -855,9 +855,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
+      "/Users/<user>/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
       "run-nro",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/threads/threads.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/threads/threads.nro",
       "--present=headless"
     ],
     "wall_seconds": 0.0528957090000004,
@@ -877,9 +877,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
+      "/Users/<user>/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
       "run-nro",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/threads/threads.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/threads/threads.nro",
       "--present=headless"
     ],
     "wall_seconds": 0.0564850830000001,
@@ -899,9 +899,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
+      "/Users/<user>/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
       "run-nro",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/threads/threads.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/threads/threads.nro",
       "--present=headless"
     ],
     "wall_seconds": 0.05606725000000079,
@@ -921,9 +921,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
+      "/Users/<user>/orca/workspaces/ounce-core/family-ounce-core/target/release/ounce-core",
       "run-nro",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/threads/threads.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/threads/threads.nro",
       "--present=headless"
     ],
     "wall_seconds": 0.05293304200000026,
@@ -943,9 +943,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "run",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/threads/threads.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/threads/threads.nro",
       "--present=headless"
     ],
     "wall_seconds": 0.10693800000000042,
@@ -965,9 +965,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "run",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/threads/threads.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/threads/threads.nro",
       "--present=headless"
     ],
     "wall_seconds": 0.10846512500000038,
@@ -987,9 +987,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "run",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/threads/threads.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/threads/threads.nro",
       "--present=headless"
     ],
     "wall_seconds": 0.10972191699999989,
@@ -1009,9 +1009,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "run",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/threads/threads.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/threads/threads.nro",
       "--present=headless"
     ],
     "wall_seconds": 0.10619087500000024,
@@ -1031,9 +1031,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "run",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/threads/threads.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/threads/threads.nro",
       "--present=headless"
     ],
     "wall_seconds": 0.10940829199999946,
@@ -1053,9 +1053,9 @@
     "command": [
       "/usr/bin/time",
       "-l",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/target/release/ounce-runtime",
       "run",
-      "/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/threads/threads.nro",
+      "/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/tests/fixtures/nro/threads/threads.nro",
       "--present=headless"
     ],
     "wall_seconds": 0.17844704200000017,
