@@ -1,4 +1,4 @@
-   Compiling ounce-runtime v0.4.0 (/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-gold-parity)
+   Compiling ounce-runtime v0.4.0 (/Users/<user>/orca/workspaces/ounce-runtime/runtime-gold-parity)
 warning: variant `Halt` is never constructed
    --> src/main.rs:465:5
     |

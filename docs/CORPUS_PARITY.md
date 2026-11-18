@@ -52,11 +52,11 @@ All four engines report **0/12 full passes**, with exit status 1 per case. FPSR/
 
 ```sh
 cargo build --release --locked
-cargo build --release --locked --manifest-path /Users/nathanaelgovender/orca/ounce-core/Cargo.toml
-python3 scripts/benchmark_corpus.py --core /Users/nathanaelgovender/orca/ounce-core/target/release/ounce-core --output docs/benchmarks/2026-11-14
-python3 scripts/benchmark_tiers.py --core /Users/nathanaelgovender/orca/ounce-core/target/release/ounce-core --output docs/benchmarks/2026-11-14
+cargo build --release --locked --manifest-path /Users/<user>/orca/ounce-core/Cargo.toml
+python3 scripts/benchmark_corpus.py --core /Users/<user>/orca/ounce-core/target/release/ounce-core --output docs/benchmarks/2026-11-14
+python3 scripts/benchmark_tiers.py --core /Users/<user>/orca/ounce-core/target/release/ounce-core --output docs/benchmarks/2026-11-14
 # Repeat for interp, tier3, tier4, nce with a fresh report filename:
-python3 /Users/nathanaelgovender/orca/ounce-core/scripts/run_conformance.py --suite /Users/nathanaelgovender/orca/ounce-core/conformance/arm64-v0.2.0 --report /tmp/runtime-conformance-tier3.json -- target/release/ounce-runtime fuzz-replay --engine tier3
+python3 /Users/<user>/orca/ounce-core/scripts/run_conformance.py --suite /Users/<user>/orca/ounce-core/conformance/arm64-v0.2.0 --report /tmp/runtime-conformance-tier3.json -- target/release/ounce-runtime fuzz-replay --engine tier3
 ```
 
 ## 2026-11-13: Apple M3 head-to-head

@@ -41,13 +41,13 @@
       "limitation": "Repository-wide baseline formatting drift; main baseline independently fails rustfmt check."
     },
     {
-      "argv": "python3 scripts/benchmark_corpus.py --core /Users/nathanaelgovender/orca/ounce-core/target/release/ounce-core --output docs/benchmarks/2026-11-14",
+      "argv": "python3 scripts/benchmark_corpus.py --core /Users/<user>/orca/ounce-core/target/release/ounce-core --output docs/benchmarks/2026-11-14",
       "exit": 0,
       "runs": 120,
       "passed": 120
     },
     {
-      "argv": "python3 scripts/benchmark_tiers.py --core /Users/nathanaelgovender/orca/ounce-core/target/release/ounce-core --output docs/benchmarks/2026-11-14",
+      "argv": "python3 scripts/benchmark_tiers.py --core /Users/<user>/orca/ounce-core/target/release/ounce-core --output docs/benchmarks/2026-11-14",
       "exit": 0,
       "runs": 24,
       "passed": 24

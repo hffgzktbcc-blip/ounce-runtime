@@ -114,7 +114,7 @@
    Compiling coreaudio-rs v0.14.2
    Compiling objc2-app-kit v0.2.2
    Compiling core-graphics v0.23.2
-   Compiling ounce-runtime v0.4.0 (/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks)
+   Compiling ounce-runtime v0.4.0 (/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks)
    Compiling dpi v0.1.2
    Compiling memchr v2.8.3
    Compiling dasp_sample v0.11.0
@@ -129,7 +129,7 @@
    Compiling wgpu-core-deps-apple v30.0.1
    Compiling cranelift-native v0.137.0
    Compiling cranelift-frontend v0.137.0
-   Compiling ounce-recompiler v0.1.0 (/Users/nathanaelgovender/orca/workspaces/ounce-runtime/runtime-benchmarks/crates/ounce-recompiler)
+   Compiling ounce-recompiler v0.1.0 (/Users/<user>/orca/workspaces/ounce-runtime/runtime-benchmarks/crates/ounce-recompiler)
     Finished `release` profile [optimized] target(s) in 1m 45s
      Running `target/release/ounce-runtime test`
 ============================================================
@@ -142,7 +142,7 @@
 [Stage 01/25] AArch64 Arithmetic & Branching Execution (Fibonacci N=10)
 [VM] Starting execution at PC: 0x0000000080000000
 [VM] Stack Pointer: 0x0000007FFFFFE000
-[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] controls: /Users/<user>/Library/Application Support/OunceCore/controls.json
 [OunceCore] no controller: keyboard and DM_CTL only
 
 [VM] Process exited gracefully (svcExitProcess).
@@ -155,7 +155,7 @@
 [Stage 02/25] Horizon OS Debug Output Subsystem (svcOutputDebugString)
 [VM] Starting execution at PC: 0x0000000080000000
 [VM] Stack Pointer: 0x0000007FFFFFE000
-[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] controls: /Users/<user>/Library/Application Support/OunceCore/controls.json
 [OunceCore] no controller: keyboard and DM_CTL only
 Hello from Tegra T239 homebrew on Ounce-Core!
 
@@ -169,7 +169,7 @@ Hello from Tegra T239 homebrew on Ounce-Core!
 [Stage 03/25] Stack Frame & Subroutine Management (STP, LDP, BL, RET)
 [VM] Starting execution at PC: 0x0000000080000000
 [VM] Stack Pointer: 0x0000007FFFFFE000
-[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] controls: /Users/<user>/Library/Application Support/OunceCore/controls.json
 [OunceCore] no controller: keyboard and DM_CTL only
 
 [VM] Process exited gracefully (svcExitProcess).
@@ -182,7 +182,7 @@ Hello from Tegra T239 homebrew on Ounce-Core!
 [Stage 04/25] Horizon CMIF IPC & IEEE-754 Vector Math (FADD)
 [VM] Starting execution at PC: 0x0000000080000000
 [VM] Stack Pointer: 0x0000007FFFFFE000
-[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] controls: /Users/<user>/Library/Application Support/OunceCore/controls.json
 [OunceCore] no controller: keyboard and DM_CTL only
 
 [VM] Process exited gracefully (svcExitProcess).
@@ -197,7 +197,7 @@ Hello from Tegra T239 homebrew on Ounce-Core!
 [Stage 05/25] Virtual Filesystem (RomFS) & Linear PCM Audio (audout:u)
 [VM] Starting execution at PC: 0x0000000080000000
 [VM] Stack Pointer: 0x0000007FFFFFE000
-[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] controls: /Users/<user>/Library/Application Support/OunceCore/controls.json
 [OunceCore] no controller: keyboard and DM_CTL only
 Ounce-Core Switch 2 Tech Demo (Tegra T239 Ampere)
 [VM] Process exited gracefully (svcExitProcess).
@@ -212,7 +212,7 @@ Ounce-Core Switch 2 Tech Demo (Tegra T239 Ampere)
   [Crypto/NCA] Decrypted TitleID 0x0100F2C0115B6000 via AES-128-CTR (16 bytes ExeFS 'main')
 [VM] Starting execution at PC: 0x0000000080000000
 [VM] Stack Pointer: 0x0000007FFFFFE000
-[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] controls: /Users/<user>/Library/Application Support/OunceCore/controls.json
 [OunceCore] no controller: keyboard and DM_CTL only
 
 [VM] Process exited gracefully (svcExitProcess).
@@ -230,7 +230,7 @@ Ounce-Core Switch 2 Tech Demo (Tegra T239 Ampere)
   [BootLoader] Format: NSP -> NCA3 (AES-128-CTR) -> ExeFS | TitleID: 0x0100A2B020267000 | Code: 56 bytes
 [VM] Starting execution at PC: 0x0000000080000000
 [VM] Stack Pointer: 0x0000007FFFFFE000
-[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] controls: /Users/<user>/Library/Application Support/OunceCore/controls.json
 [OunceCore] no controller: keyboard and DM_CTL only
 
 [VM] Process exited gracefully (svcExitProcess).
@@ -246,7 +246,7 @@ Ounce-Core Switch 2 Tech Demo (Tegra T239 Ampere)
 [Stage 08/25] Horizon crt0 Initialization, Basic-Block JIT & Depth Occlusion
 [VM] Starting execution at PC: 0x0000000080000000
 [VM] Stack Pointer: 0x0000007FFFFFE000
-[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] controls: /Users/<user>/Library/Application Support/OunceCore/controls.json
 [OunceCore] no controller: keyboard and DM_CTL only
 
 [VM] Process exited gracefully (svcExitProcess).
@@ -262,7 +262,7 @@ Ounce-Core Switch 2 Tech Demo (Tegra T239 Ampere)
 [Stage 09/25] 128-bit NEON SIMD, 2x Upscaler Model & SaveData
 [VM] Starting execution at PC: 0x0000000080000000
 [VM] Stack Pointer: 0x0000007FFFFFE000
-[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] controls: /Users/<user>/Library/Application Support/OunceCore/controls.json
 [OunceCore] no controller: keyboard and DM_CTL only
 
 [VM] Process exited gracefully (svcExitProcess).
@@ -279,7 +279,7 @@ Ounce-Core Switch 2 Tech Demo (Tegra T239 Ampere)
 [Stage 10/25] Native FS Payload Execution (BTI & Horizon SVCs)
 [VM] Starting execution at PC: 0x0000000080000000
 [VM] Stack Pointer: 0x0000007FFFFFE000
-[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] controls: /Users/<user>/Library/Application Support/OunceCore/controls.json
 [OunceCore] no controller: keyboard and DM_CTL only
 
 [VM] Process exited gracefully (svcExitProcess).
@@ -294,7 +294,7 @@ Ounce-Core Switch 2 Tech Demo (Tegra T239 Ampere)
   [BootLoader] Format: NSO0 (Nintendo Shared Object) | ProgramID: 0x0400000000000037 | .text: 84 bytes
 [VM] Starting execution at PC: 0x0000000080000000
 [VM] Stack Pointer: 0x0000007FFFFFE000
-[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] controls: /Users/<user>/Library/Application Support/OunceCore/controls.json
 [OunceCore] no controller: keyboard and DM_CTL only
 
 [VM] Process exited gracefully (svcExitProcess).
@@ -308,7 +308,7 @@ Ounce-Core Switch 2 Tech Demo (Tegra T239 Ampere)
 [Stage 12/25] Synthetic Thread-Affinity Wrapper (BL + AND X0, X0, #7)
 [VM] Starting execution at PC: 0x0000000080007010
 [VM] Stack Pointer: 0x0000007FFFFFE000
-[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] controls: /Users/<user>/Library/Application Support/OunceCore/controls.json
 [OunceCore] no controller: keyboard and DM_CTL only
 
 [VM] Process exited gracefully (svcExitProcess).
@@ -322,7 +322,7 @@ Ounce-Core Switch 2 Tech Demo (Tegra T239 Ampere)
 [Stage 13/25] Timing, Event Management & Thread Arbitration
 [VM] Starting execution at PC: 0x0000000080000000
 [VM] Stack Pointer: 0x0000007FFFFFE000
-[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] controls: /Users/<user>/Library/Application Support/OunceCore/controls.json
 [OunceCore] no controller: keyboard and DM_CTL only
 
 [VM] Process exited gracefully (svcExitProcess).
@@ -337,7 +337,7 @@ Ounce-Core Switch 2 Tech Demo (Tegra T239 Ampere)
   [BootLoader] Format: XCI (GameCard HEAD) -> HFS0 (secure) -> NCA3 -> ExeFS | ProgramID: 0x0400000000000037 | .text: 84 bytes
 [VM] Starting execution at PC: 0x0000000080000000
 [VM] Stack Pointer: 0x0000007FFFFFE000
-[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] controls: /Users/<user>/Library/Application Support/OunceCore/controls.json
 [OunceCore] no controller: keyboard and DM_CTL only
 
 [VM] Process exited gracefully (svcExitProcess).
@@ -354,7 +354,7 @@ Ounce-Core Switch 2 Tech Demo (Tegra T239 Ampere)
   [RomFS] Mounted asset 'romfs:/shaders/t239_ampere.glsl' (97 bytes)
 [VM] Starting execution at PC: 0x0000000080000000
 [VM] Stack Pointer: 0x0000007FFFFFE000
-[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] controls: /Users/<user>/Library/Application Support/OunceCore/controls.json
 [OunceCore] no controller: keyboard and DM_CTL only
 
 [VM] Process exited gracefully (svcExitProcess).
@@ -385,7 +385,7 @@ Ounce-Core Switch 2 Tech Demo (Tegra T239 Ampere)
   [fsp-srv] Storage #65547 -> RomFS Level 3 Data Size: 0x40000 (256 KB)
 [VM] Starting execution at PC: 0x0000000080010000
 [VM] Stack Pointer: 0x0000007FFFFFE000
-[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] controls: /Users/<user>/Library/Application Support/OunceCore/controls.json
 [OunceCore] no controller: keyboard and DM_CTL only
 
 [VM] Process exited gracefully (svcExitProcess).
@@ -405,7 +405,7 @@ Ounce-Core Switch 2 Tech Demo (Tegra T239 Ampere)
   [NVN Driver] Executed 2 commands binding Texture Descriptor #0
 [VM] Starting execution at PC: 0x0000000080010000
 [VM] Stack Pointer: 0x0000007FFFFFE000
-[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] controls: /Users/<user>/Library/Application Support/OunceCore/controls.json
 [OunceCore] no controller: keyboard and DM_CTL only
 
 [VM] Process exited gracefully (svcExitProcess).
@@ -421,7 +421,7 @@ Ounce-Core Switch 2 Tech Demo (Tegra T239 Ampere)
   [nn::init] Initialized StandardAllocator arena at 0x100000000 (16 MB)
 [VM] Starting execution at PC: 0x0000000080020000
 [VM] Stack Pointer: 0x0000007FFFFFE000
-[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] controls: /Users/<user>/Library/Application Support/OunceCore/controls.json
 [OunceCore] no controller: keyboard and DM_CTL only
 
 [VM] Process exited gracefully (svcExitProcess).
@@ -448,7 +448,7 @@ Ounce-Core Switch 2 Tech Demo (Tegra T239 Ampere)
   [RomFS Direct Mount] Lazy-streamed loose asset 'romfs:/package.json' (37 bytes, 0 RAM preload)
 [VM] Starting execution at PC: 0x0000000080040000
 [VM] Stack Pointer: 0x0000007FFFFFE000
-[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] controls: /Users/<user>/Library/Application Support/OunceCore/controls.json
 [OunceCore] no controller: keyboard and DM_CTL only
 
 [VM] Process exited gracefully (svcExitProcess).
@@ -465,7 +465,7 @@ Ounce-Core Switch 2 Tech Demo (Tegra T239 Ampere)
   [Texture HAL] Decompressed ASTC 4x4 void-extent block (16 texels decoded, sample: 0xFF0088FF)
 [VM] Starting execution at PC: 0x0000000080050000
 [VM] Stack Pointer: 0x0000007FFFFFE000
-[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] controls: /Users/<user>/Library/Application Support/OunceCore/controls.json
 [OunceCore] no controller: keyboard and DM_CTL only
 
 [VM] Process exited gracefully (svcExitProcess).
@@ -484,7 +484,7 @@ Ounce-Core Switch 2 Tech Demo (Tegra T239 Ampere)
   [Texture HAL] Decompressed ASTC 8x8 void-extent block (64 texels decoded, sample: 0xFFFF44CC)
 [VM] Starting execution at PC: 0x0000000080060000
 [VM] Stack Pointer: 0x0000007FFFFFE000
-[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] controls: /Users/<user>/Library/Application Support/OunceCore/controls.json
 [OunceCore] no controller: keyboard and DM_CTL only
 
 [VM] Process exited gracefully (svcExitProcess).
@@ -501,7 +501,7 @@ Ounce-Core Switch 2 Tech Demo (Tegra T239 Ampere)
   [NVN Driver] Executed 5 stream commands | Active Backbuffer: #2 | Total Cycles: 3
 [VM] Starting execution at PC: 0x0000000080070000
 [VM] Stack Pointer: 0x0000007FFFFFE000
-[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] controls: /Users/<user>/Library/Application Support/OunceCore/controls.json
 [OunceCore] no controller: keyboard and DM_CTL only
 
 [VM] Process exited gracefully (svcExitProcess).
@@ -520,7 +520,7 @@ Ounce-Core Switch 2 Tech Demo (Tegra T239 Ampere)
   [binary16] 2048.0 -> 0x6800 | 2049.0 round-tripped through binary16 = 2048 (FP32 accumulator keeps 2049)
 [VM] Starting execution at PC: 0x0000000080080000
 [VM] Stack Pointer: 0x0000007FFFFFE000
-[OunceCore] controls: /Users/nathanaelgovender/Library/Application Support/OunceCore/controls.json
+[OunceCore] controls: /Users/<user>/Library/Application Support/OunceCore/controls.json
 [OunceCore] no controller: keyboard and DM_CTL only
 
 [VM] Process exited gracefully (svcExitProcess).
