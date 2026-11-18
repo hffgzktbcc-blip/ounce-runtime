@@ -36,6 +36,10 @@ pub struct RunReport {
     pub stop_kind: &'static str,
     pub exit_code: i32,
     pub pc: Option<u64>,
+    /// Link register (`x30`) at the stop; set exactly when `pc` is.
+    pub lr: Option<u64>,
+    /// Stack pointer at the stop; set exactly when `pc` is.
+    pub sp: Option<u64>,
     pub opcode: Option<u32>,
     pub fault_addr: Option<u64>,
     pub svc_id: Option<u32>,
@@ -60,6 +64,8 @@ pub fn write_if_configured(report: &RunReport) {
         "stop_kind": report.stop_kind,
         "exit_code": report.exit_code,
         "pc": report.pc,
+        "lr": report.lr,
+        "sp": report.sp,
         "opcode": report.opcode,
         "fault_addr": report.fault_addr,
         "svc_id": report.svc_id,
@@ -67,6 +73,8 @@ pub fn write_if_configured(report: &RunReport) {
         "insns_executed": report.insns_executed,
         "frames_presented": report.frames_presented,
         "framebuffer_hash": report.framebuffer_hash,
+        // Homebrew has no exit status; `run-elf`-only in the contract, so always null here.
+        "guest_exit_status": serde_json::Value::Null,
         "message": report.message,
     });
     if let Some(parent) = path.parent() {
