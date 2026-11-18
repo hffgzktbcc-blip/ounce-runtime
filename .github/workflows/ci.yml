@@ -7,6 +7,14 @@ on:
   push:
     branches: [main]
 
+# Cancel the older run when a PR or branch gets a new push, so macOS/Windows runners are not tied up on stale commits.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
 env:
   CARGO_TERM_COLOR: always
 
@@ -14,6 +22,7 @@ jobs:
   cleanliness:
     name: Cleanliness check
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -35,6 +44,7 @@ jobs:
   cargo-deny:
     name: Cargo Deny (licenses, bans, advisories)
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -48,6 +58,7 @@ jobs:
   test:
     name: Test (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
@@ -77,6 +88,7 @@ jobs:
   gpu-present:
     name: GPU presentation feature (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
@@ -111,6 +123,7 @@ jobs:
   native-jit:
     name: Tier-4 native code (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
