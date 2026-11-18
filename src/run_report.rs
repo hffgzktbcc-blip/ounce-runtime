@@ -47,6 +47,10 @@ pub struct RunReport {
     pub insns_executed: u64,
     pub frames_presented: u64,
     pub framebuffer_hash: Option<String>,
+    /// Stereo frames the guest mixed through `audout` or `audren`.
+    pub audio_frames_mixed: u64,
+    /// `fnv1a64:<hex>` over the mixed samples; `None` when nothing was mixed.
+    pub audio_hash: Option<String>,
     pub message: Option<String>,
 }
 
@@ -73,6 +77,8 @@ pub fn write_if_configured(report: &RunReport) {
         "insns_executed": report.insns_executed,
         "frames_presented": report.frames_presented,
         "framebuffer_hash": report.framebuffer_hash,
+        "audio_frames_mixed": report.audio_frames_mixed,
+        "audio_hash": report.audio_hash,
         // Homebrew has no exit status; `run-elf`-only in the contract, so always null here.
         "guest_exit_status": serde_json::Value::Null,
         "message": report.message,

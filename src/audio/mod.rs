@@ -3,12 +3,14 @@
 pub mod audout;
 pub mod audren;
 pub mod host;
+pub mod mix_stats;
 
 pub use audout::{AudioOutServer, AudoutServer, Waveform, AUDIO_CHANNELS, AUDIO_SAMPLE_RATE};
 pub use audren::{
     AudioRenderer, AudioRendererConfig, AudioVoice, AudrenServer, PlaybackState, SampleFormat,
     WaveBuffer, AUDREN_SAMPLE_RATE_32KHZ, AUDREN_SAMPLE_RATE_48KHZ,
 };
+pub use mix_stats::{report_fields as mix_report_fields, MixStats};
 pub use host::{
     AudioSinkMetrics, HostAudioSink, PullStats, DEFAULT_CHANNELS, DEFAULT_MAX_CAPACITY, DEFAULT_SAMPLE_RATE,
 };
