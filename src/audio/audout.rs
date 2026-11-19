@@ -60,6 +60,8 @@ pub struct AudioOutServer {
     pub buffers_queued: u64,
     pub total_samples_processed: u64,
     pub peak_amplitude: i16,
+    /// Everything submitted through `AppendAudioOutBuffer`, for the run report.
+    pub mix_stats: super::MixStats,
     ring_buffer: Vec<i16>,
 }
 
@@ -78,6 +80,7 @@ impl AudioOutServer {
             buffers_queued: 0,
             total_samples_processed: 0,
             peak_amplitude: 0,
+            mix_stats: super::MixStats::default(),
             ring_buffer: Vec::with_capacity(48_000),
         }
     }
@@ -94,6 +97,7 @@ impl AudioOutServer {
             let addr = sample_addr.wrapping_add((i * 2) as u64);
             if let Ok(raw) = mmu.read_u16(addr) {
                 let sample = raw as i16;
+                self.mix_stats.feed(&[sample]);
                 let abs_val = sample.saturating_abs();
                 if abs_val > peak {
                     peak = abs_val;
@@ -227,6 +231,11 @@ mod tests {
         assert_eq!(audio.buffers_queued, 1);
         assert_eq!(audio.total_samples_processed, 8);
         assert_eq!(audio.peak_amplitude, 12000);
+        // The run report counts exactly what the guest submitted: 8 samples = 4 stereo frames.
+        assert_eq!(audio.mix_stats.frames(), 4);
+        let (frames, hash) = super::super::mix_report_fields(&super::super::MixStats::default(), &audio.mix_stats);
+        assert_eq!(frames, 4);
+        assert!(hash.unwrap().starts_with("fnv1a64:"));
     }
 
     #[test]

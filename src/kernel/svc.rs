@@ -79,6 +79,8 @@ pub struct HorizonKernel {
     pub vfs: VirtualFileSystem,
     pub audio: AudioOutServer,
     pub audren: crate::audio::AudioRenderer,
+    /// Everything the `audren:u` renderer mixed, for the run report.
+    pub renderer_mix: crate::audio::MixStats,
     pub scheduler: ThreadScheduler,
     pub sync: SyncManager,
     pub nvn: crate::gpu::nvn::NvnDriver,
@@ -109,6 +111,7 @@ impl HorizonKernel {
             vfs: VirtualFileSystem::new(),
             audio: AudioOutServer::new(),
             audren: crate::audio::AudioRenderer::new(Default::default()),
+            renderer_mix: crate::audio::MixStats::default(),
             scheduler: ThreadScheduler::new(),
             sync: SyncManager::new(),
             nvn: crate::gpu::nvn::NvnDriver::new(),
@@ -199,6 +202,7 @@ impl HorizonKernel {
         if let Some(r) = self.ipc.audio_renderer.as_mut() {
             r.render_frame(mmu);
             let pcm = r.drain();
+            self.renderer_mix.feed(&pcm);
             self.audren.output_ring_buffer.extend_from_slice(&pcm);
         }
     }

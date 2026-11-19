@@ -920,6 +920,7 @@ fn run_vm_internal(
     let framebuffer_hash = display
         .as_deref()
         .and_then(|d| d.last_framebuffer_hash());
+    let (audio_frames_mixed, audio_hash) = audio::mix_report_fields(&kernel.renderer_mix, &kernel.audio.mix_stats);
     let report = run_report::RunReport {
         tier: tier_str,
         silent_fallback,
@@ -935,6 +936,8 @@ fn run_vm_internal(
         insns_executed: instructions_executed as u64,
         frames_presented: frames_presented_count,
         framebuffer_hash,
+        audio_frames_mixed,
+        audio_hash,
         message: stop_message,
     };
 
@@ -3934,6 +3937,8 @@ mod harness_gate_tests {
                 insns_executed: 0,
                 frames_presented: 0,
                 framebuffer_hash: None,
+                audio_frames_mixed: 0,
+                audio_hash: None,
                 message: None,
             },
         }
