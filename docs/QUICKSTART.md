@@ -79,6 +79,12 @@ wall-clock date, omitting the HUD overlay, and keeping 3D draws on the
 software rasterizer). `--deterministic` on a future ELF runner is a different
 question; this binary's documented guest entry for homebrew is `run` / `run-nro`.
 
+`OUNCE_TRACE_SUMMARY=<path>` writes a bounded `ounce.trace.v1` JSON trace
+summary on every stop (clean exit, fault, `svcBreak`, unhandled SVC, or budget),
+recording up to `OUNCE_TRACE_STEPS` retired instruction checkpoints (default
+`1024`, clamped to `1..=65536`) alongside summary stop and final register fields
+for cross-engine comparison (`ounce-hb diff-trace` / `ounce-core trace-diff`).
+
 ## Family tools
 
 `ounce-hb doctor` and `setup-ounce` live in the MIT repo
