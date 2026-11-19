@@ -465,3 +465,73 @@ fn unimplemented_svcs_are_reported_not_faked() {
         assert_eq!(call(&mut k, &mut cpu, &mut mmu, id, &[]), SvcResult::Unhandled(id), "svc 0x{id:X}");
     }
 }
+
+#[test]
+fn deterministic_mode_uses_fixed_clock_and_ticks() {
+    let (mut cpu, mut mmu, mut k1) = setup();
+    let (mut cpu2, mut mmu2, mut k2) = setup();
+    k1.set_deterministic(true);
+    k2.set_deterministic(true);
+
+    // First two SVCs advance by 20 us each -> clamped at 19_200 ticks (1 ms floor).
+    call(&mut k1, &mut cpu, &mut mmu, 0x1E, &[]);
+    let t1 = cpu.regs.read_x(0);
+    assert_eq!(t1, 19_200);
+    call(&mut k1, &mut cpu, &mut mmu, 0x1E, &[]);
+    let t2 = cpu.regs.read_x(0);
+    assert_eq!(t2, 19_200);
+
+    // Sleep 1 ms (1_000_000 ns): clock reaches 60_000 + 1_000_000 = 1_060_000 ns; next SVC adds 20 us -> 1_080_000 ns = 20_736 ticks.
+    call(&mut k1, &mut cpu, &mut mmu, 0x0B, &[1_000_000]);
+    call(&mut k1, &mut cpu, &mut mmu, 0x1E, &[]);
+    assert_eq!(cpu.regs.read_x(0), 20_736);
+
+    // Two preemptions (2 * 1 ms) + one SVC (20 us) -> 3_100_000 ns = 59_520 ticks.
+    k1.scheduler.preempt(&mut cpu);
+    k1.scheduler.preempt(&mut cpu);
+    call(&mut k1, &mut cpu, &mut mmu, 0x1E, &[]);
+    assert_eq!(cpu.regs.read_x(0), 59_520);
+
+    // RandomEntropy and IPC time clocks match deterministically across separate kernel instances.
+    call(&mut k1, &mut cpu, &mut mmu, 0x29, &[0, 11, CURRENT_PROCESS, 0]);
+    let entropy1 = cpu.regs.read_x(1);
+
+    std::thread::sleep(std::time::Duration::from_millis(5));
+    for id in [0x1E, 0x1E] {
+        call(&mut k2, &mut cpu2, &mut mmu2, id, &[]);
+    }
+    call(&mut k2, &mut cpu2, &mut mmu2, 0x0B, &[1_000_000]);
+    call(&mut k2, &mut cpu2, &mut mmu2, 0x1E, &[]);
+    k2.scheduler.preempt(&mut cpu2);
+    k2.scheduler.preempt(&mut cpu2);
+    call(&mut k2, &mut cpu2, &mut mmu2, 0x1E, &[]);
+    call(&mut k2, &mut cpu2, &mut mmu2, 0x29, &[0, 11, CURRENT_PROCESS, 0]);
+    assert_eq!(cpu2.regs.read_x(1), entropy1);
+    assert_eq!(k1.ipc.steady_nanos(), k2.ipc.steady_nanos());
+    assert_eq!(k1.ipc.time.unix_secs(), super::time::DETERMINISTIC_UNIX_SECS);
+
+    // time:u ISystemClock / ISteadyClock IPC commands return the fixed UTC date and virtual steady ns.
+    let time_h = k1.ipc.allocate_handle(crate::kernel::ServiceType::Time);
+    mmu.write_u32(SCRATCH + 0x10, crate::kernel::CMIF_IN_MAGIC).unwrap();
+    mmu.write_u32(SCRATCH + 0x18, 20).unwrap(); // monotonic steady ns
+    let mut dummy_nvgpu = crate::gpu::nvgpu::NvgpuChannel::new();
+    let mut dummy_audio = crate::audio::AudioOutServer::new();
+    let mut dummy_vfs = crate::fs::VirtualFileSystem::new();
+    assert_eq!(
+        k1.ipc.handle_sync_request(time_h, SCRATCH, &mut mmu, &mut dummy_nvgpu, &mut dummy_audio, &mut dummy_vfs),
+        0
+    );
+    let steady_ns = ((mmu.read_u32(SCRATCH + 0x24).unwrap() as u64) << 32)
+        | (mmu.read_u32(SCRATCH + 0x20).unwrap() as u64);
+    assert_eq!(steady_ns, k1.ipc.steady_nanos());
+
+    mmu.write_u32(SCRATCH + 0x10, crate::kernel::CMIF_IN_MAGIC).unwrap();
+    mmu.write_u32(SCRATCH + 0x18, 21).unwrap(); // POSIX UTC seconds
+    assert_eq!(
+        k1.ipc.handle_sync_request(time_h, SCRATCH, &mut mmu, &mut dummy_nvgpu, &mut dummy_audio, &mut dummy_vfs),
+        0
+    );
+    let posix_secs = ((mmu.read_u32(SCRATCH + 0x24).unwrap() as u64) << 32)
+        | (mmu.read_u32(SCRATCH + 0x20).unwrap() as u64);
+    assert_eq!(posix_secs, super::time::DETERMINISTIC_UNIX_SECS);
+}

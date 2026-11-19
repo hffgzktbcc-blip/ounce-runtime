@@ -174,6 +174,8 @@ pub struct IpcManager {
     next_handle: u32,
     pub total_ipc_requests: u64,
     pub start_instant: std::time::Instant,
+    /// Fixed virtual steady-clock nanoseconds when deterministic mode is active.
+    pub deterministic_now_ns: Option<u64>,
     /// Ordered list of distinct service names opened through `sm:` `GetService`.
     pub opened_services: Vec<String>,
     /// Distinct `(service_name, cmd_id)` pairs that were unimplemented (capped at 64).
@@ -188,6 +190,7 @@ impl Default for IpcManager {
 
 impl IpcManager {
     pub fn new() -> Self {
+        let deterministic = crate::run_report::is_deterministic();
         Self {
             handles: HashMap::new(),
             request: Default::default(),
@@ -199,14 +202,33 @@ impl IpcManager {
             audio_renderer: None,
             applet: Default::default(),
             apm: Default::default(),
-            time: Default::default(),
+            time: super::time::TimeState::new(),
             vi_binder: Default::default(),
             reported_tipc: Default::default(),
             next_handle: 0x10001,
             total_ipc_requests: 0,
             start_instant: std::time::Instant::now(),
+            deterministic_now_ns: deterministic.then_some(0),
             opened_services: Vec::new(),
             unhandled_commands: Vec::new(),
+        }
+    }
+
+    /// Monotonic nanoseconds since start, pinned to `deterministic_now_ns` when deterministic mode is active.
+    pub fn steady_nanos(&self) -> u64 {
+        self.deterministic_now_ns
+            .unwrap_or_else(|| self.start_instant.elapsed().as_nanos() as u64)
+    }
+
+    /// Synchronizes the IPC steady/system clocks with the scheduler's deterministic mode and time.
+    pub fn sync_deterministic_clock(&mut self, deterministic: bool, now_ns: u64) {
+        if deterministic {
+            self.deterministic_now_ns = Some(now_ns);
+            if self.time.fixed_unix_secs.is_none() {
+                self.time.fixed_unix_secs = Some(super::time::DETERMINISTIC_UNIX_SECS);
+            }
+        } else {
+            self.deterministic_now_ns = None;
         }
     }
 
@@ -1074,7 +1096,7 @@ impl IpcManager {
                 }
                 // Command 20 | 100: GetCurrentSteadyClockTime / Monotonic Clock (matching host Instant with nanosecond precision)
                 20 | 100 => {
-                    let nanos = self.start_instant.elapsed().as_nanos() as u64;
+                    let nanos = self.steady_nanos();
                     let lo = (nanos & 0xFFFF_FFFF) as u32;
                     let hi = ((nanos >> 32) & 0xFFFF_FFFF) as u32;
                     self.write_cmif_response(tls_addr, mmu, 0, &[lo, hi], None);
@@ -1082,10 +1104,7 @@ impl IpcManager {
                 }
                 // Command 21: GetPosixTimeWithAutomaticCorrection / POSIX Time Clock (standard Horizon OS UTC epoch timestamp)
                 21 => {
-                    let now_secs = std::time::SystemTime::now()
-                        .duration_since(std::time::UNIX_EPOCH)
-                        .map(|d| d.as_secs())
-                        .unwrap_or(1793000000);
+                    let now_secs = self.time.unix_secs();
                     let lo = (now_secs & 0xFFFF_FFFF) as u32;
                     let hi = ((now_secs >> 32) & 0xFFFF_FFFF) as u32;
                     self.write_cmif_response(tls_addr, mmu, 0, &[lo, hi], None);
@@ -1100,10 +1119,7 @@ impl IpcManager {
             ServiceType::SystemClock => match cmd_id {
                 // Command 0: GetCurrentTime -> returns 64-bit UTC epoch timestamp
                 0 => {
-                    let now_secs = std::time::SystemTime::now()
-                        .duration_since(std::time::UNIX_EPOCH)
-                        .map(|d| d.as_secs())
-                        .unwrap_or(1793000000);
+                    let now_secs = self.time.unix_secs();
                     let lo = (now_secs & 0xFFFF_FFFF) as u32;
                     let hi = ((now_secs >> 32) & 0xFFFF_FFFF) as u32;
                     self.write_cmif_response(tls_addr, mmu, 0, &[lo, hi], None);
@@ -1118,7 +1134,7 @@ impl IpcManager {
             ServiceType::SteadyClock => match cmd_id {
                 // Command 0 | 1: GetCurrentTimePoint -> returns 64-bit monotonic clock in nanoseconds
                 0 | 1 => {
-                    let nanos = self.start_instant.elapsed().as_nanos() as u64;
+                    let nanos = self.steady_nanos();
                     let lo = (nanos & 0xFFFF_FFFF) as u32;
                     let hi = ((nanos >> 32) & 0xFFFF_FFFF) as u32;
                     self.write_cmif_response(tls_addr, mmu, 0, &[lo, hi], None);

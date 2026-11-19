@@ -39,21 +39,26 @@ Beside the shared fields (`tier`, `silent_fallback`, `stop_kind`, `exit_code`,
 writes:
 
 - `frames_presented` — frames the display presented, or `0` when there is no display.
-- `framebuffer_hash` — `fnv1a64:` and 16 hex digits of the presented front
-  buffer after at least one frame, otherwise `null`.
+- `framebuffer_hash` — `fnv1a64:` and 16 hex digits over the RGBA8 bytes of the
+  last presented guest frame before the telemetry HUD (alpha forced to `0xFF`),
+  otherwise `null` (when no frame was presented, or when a host GPU window
+  rendered 3D draws outside deterministic mode).
 
 `silent_fallback` is true when Tier-4 or NCE was requested and that tier did
 not run. On this homebrew path a fault is reported as `cpu_error` with exit
 code 12, and `opcode` and `fault_addr` are null. ounce-core splits faults into
 exit 10, 11, or 12. Do not treat those reports as the same classification.
 
-`--deterministic` and `OUNCE_DETERMINISTIC=1` or `true` are accepted. They do
-not by themselves switch the homebrew kernel clock in this tree.
-`--deterministic` on a future ELF runner is a different question; this binary's
-documented guest entry for homebrew is `run` / `run-nro`.
+`--present=headless` attaches the headless presentation backend to `run` /
+`run-nro` so `frames_presented` and pre-HUD `framebuffer_hash` are recorded
+without opening a host window.
 
-The hash covers the presented front buffer. It is not yet a pre-HUD guest-pixel
-oracle. A mismatch is not, by itself, an engine bug.
+`--deterministic` and `OUNCE_DETERMINISTIC=1` or `true` run the homebrew kernel
+clock and scheduler on fixed deterministic time (advancing 20 µs per SVC and
+1 ms per 20,000-instruction slice, skipping timed waits virtually, fixing the
+wall-clock date, omitting the HUD overlay, and keeping 3D draws on the
+software rasterizer). `--deterministic` on a future ELF runner is a different
+question; this binary's documented guest entry for homebrew is `run` / `run-nro`.
 
 ## Family tools
 

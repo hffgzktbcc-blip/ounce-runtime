@@ -120,6 +120,13 @@ impl HorizonKernel {
         }
     }
 
+    /// Enables or disables fixed-clock deterministic execution on the kernel and its subsystems.
+    pub fn set_deterministic(&mut self, enabled: bool) {
+        self.scheduler.set_deterministic(enabled);
+        self.ipc.sync_deterministic_clock(enabled, self.scheduler.now_ns());
+        self.ipc.nvdrv.deterministic = enabled;
+    }
+
     /// Configures the Horizon process address space, `ProgramId`, `SystemResourceSize`, and
     /// `ga10f` GPU persona for a Switch 2 ("Ounce") package or NPDM.
     pub fn configure_ounce_process(
@@ -225,11 +232,14 @@ impl HorizonKernel {
         if (svc_id as usize) < self.svc_counts.len() {
             self.svc_counts[svc_id as usize] += 1;
         }
+        self.scheduler.advance_deterministic(20_000);
+        self.ipc
+            .sync_deterministic_clock(self.scheduler.deterministic, self.scheduler.now_ns());
         // Guests poll HID shared memory between SVCs, so publish the latest input before each one.
         self.ipc.hid.sync(mmu);
         self.scheduler.expire_timers();
         self.scheduler.finish_timeouts(mmu);
-        match svc_id {
+        let result = match svc_id {
             // 0x01: svcSetHeapSize(&out_addr, size)
             // Sizes go in 2 MiB steps up to the heap region. Growing keeps what the heap holds; shrinking unmaps the tail.
             0x01 => {
@@ -1272,7 +1282,10 @@ impl HorizonKernel {
                 eprintln!("[Horizon SVC] Unhandled SVC #0x{other:02X}");
                 SvcResult::Unhandled(other)
             }
-        }
+        };
+        self.ipc
+            .sync_deterministic_clock(self.scheduler.deterministic, self.scheduler.now_ns());
+        result
     }
 }
 

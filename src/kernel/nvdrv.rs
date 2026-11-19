@@ -102,6 +102,8 @@ pub struct NvDrv {
     pub engines: HashMap<u32, Ampere3d>,
     /// Distinct 3D engine diagnostics seen so far (at most [`MAX_GPU_DIAGNOSTICS`]).
     pub gpu_diagnostics: Vec<Diagnostic>,
+    /// Keep 3D engines on deterministic CPU software execution when active.
+    pub deterministic: bool,
 }
 
 /// Cap on [`NvDrv::gpu_diagnostics`], so a long run cannot grow it without bound.
@@ -211,6 +213,7 @@ impl NvDrv {
             next_id: 0x1001,
             syncpts: vec![0; NUM_SYNCPTS],
             next_gpu_va: GPU_VA_BASE,
+            deterministic: crate::run_report::is_deterministic(),
             ..Default::default()
         }
     }
@@ -264,8 +267,10 @@ impl NvDrv {
             entry.0 -= 1;
         }
         let persona = self.persona;
+        let deterministic = self.deterministic;
         let engine = self.engines.entry(fd).or_insert_with(|| match persona {
             GpuPersona::Gm20b => Ampere3d::new(),
+            GpuPersona::Ga10f if deterministic => Ampere3d::new_orin_t239(),
             GpuPersona::Ga10f => Ampere3d::new_orin_t239_accelerated(),
         });
         let mut mem = GuestGpuMemory {

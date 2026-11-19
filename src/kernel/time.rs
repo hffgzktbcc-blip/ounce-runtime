@@ -22,14 +22,24 @@ const SHMEM_STEADY: u64 = 0x00;
 const SHMEM_LOCAL_CLOCK: u64 = 0x38;
 const SHMEM_NETWORK_CLOCK: u64 = 0x80;
 
+/// Fixed UTC epoch seconds used in `--deterministic` / `OUNCE_DETERMINISTIC=1` mode.
+pub const DETERMINISTIC_UNIX_SECS: u64 = 1_793_000_000;
+
 #[derive(Debug, Clone, Default)]
 pub struct TimeState {
     pub shm_handle: Option<u32>,
-    /// Pins "now" (UTC seconds) for tests; `None` reads the host clock.
+    /// Pins "now" (UTC seconds) for tests or deterministic runs; `None` reads the host clock.
     pub fixed_unix_secs: Option<u64>,
 }
 
 impl TimeState {
+    pub fn new() -> Self {
+        Self {
+            shm_handle: None,
+            fixed_unix_secs: crate::run_report::is_deterministic().then_some(DETERMINISTIC_UNIX_SECS),
+        }
+    }
+
     pub fn unix_secs(&self) -> u64 {
         self.fixed_unix_secs.unwrap_or_else(|| SystemTime::now().duration_since(UNIX_EPOCH).unwrap_or(Duration::ZERO).as_secs())
     }
@@ -88,7 +98,7 @@ pub fn posix_time(cal: &[u8]) -> u64 {
 
 impl IpcManager {
     fn steady_secs(&self) -> i64 {
-        self.start_instant.elapsed().as_secs() as i64
+        (self.steady_nanos() / 1_000_000_000) as i64
     }
 
     /// Writes the clock block libnx reads once the guest maps the shared memory at `addr`.
