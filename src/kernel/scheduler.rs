@@ -137,9 +137,13 @@ pub struct ThreadScheduler {
     clock_start: Instant,
     /// Time skipped while every thread slept (virtual time only).
     skew_ns: u64,
+    /// Fixed virtual clock (ns) when `deterministic` is active; starts at 0 and ignores host time.
+    virtual_ns: u64,
     /// When every thread sleeps: `false` sleeps the host until the next deadline, `true` skips to it.
-    /// Set by `OUNCE_VIRTUAL_TIME`; tests set it directly.
+    /// Set by `OUNCE_VIRTUAL_TIME` or deterministic mode; tests set it directly.
     pub virtual_time: bool,
+    /// Fixed-clock mode (`--deterministic` / `OUNCE_DETERMINISTIC=1`).
+    pub deterministic: bool,
     /// Handle the loader gave the guest for its main thread (libnx `envGetMainThreadHandle`).
     pub main_handle: Option<u32>,
 }
@@ -152,6 +156,7 @@ impl Default for ThreadScheduler {
 
 impl ThreadScheduler {
     pub fn new() -> Self {
+        let deterministic = crate::run_report::is_deterministic();
         Self {
             next_handle: 0x2000,
             next_thread_id: 2, // Thread ID 1 is the main application thread
@@ -168,8 +173,25 @@ impl ThreadScheduler {
             switches: 0,
             clock_start: Instant::now(),
             skew_ns: 0,
-            virtual_time: std::env::var_os("OUNCE_VIRTUAL_TIME").is_some(),
+            virtual_ns: 0,
+            virtual_time: deterministic || std::env::var_os("OUNCE_VIRTUAL_TIME").is_some(),
+            deterministic,
             main_handle: None,
+        }
+    }
+
+    /// Enables or disables fixed-clock deterministic scheduling.
+    pub fn set_deterministic(&mut self, enabled: bool) {
+        self.deterministic = enabled;
+        if enabled {
+            self.virtual_time = true;
+        }
+    }
+
+    /// Advances the deterministic virtual clock by `delta_ns` when deterministic mode is active.
+    pub fn advance_deterministic(&mut self, delta_ns: u64) {
+        if self.deterministic {
+            self.virtual_ns = self.virtual_ns.saturating_add(delta_ns);
         }
     }
 
@@ -521,6 +543,7 @@ impl ThreadScheduler {
     /// Only threads that could take this core from the running one get it: equal or better priority on the
     /// same core, or any thread whose ideal core is another one (on hardware it would run in parallel).
     pub fn preempt(&mut self, cpu: &mut Cpu) {
+        self.advance_deterministic(1_000_000);
         self.expire_timers();
         self.yield_to(cpu, YieldTo::SameCore);
     }
@@ -533,16 +556,23 @@ impl ThreadScheduler {
         }
     }
 
-    /// Scheduler time in nanoseconds: host time since creation, plus any time skipped while all threads slept.
+    /// Scheduler time in nanoseconds: fixed virtual time in deterministic mode, otherwise host time
+    /// since creation plus any time skipped while all threads slept.
     pub fn now_ns(&self) -> u64 {
-        self.clock_start.elapsed().as_nanos() as u64 + self.skew_ns
+        if self.deterministic {
+            self.virtual_ns
+        } else {
+            self.clock_start.elapsed().as_nanos() as u64 + self.skew_ns
+        }
     }
 
     /// Lets time pass until `deadline` while nothing can run: sleeps the host, or skips ahead.
     fn advance_to(&mut self, deadline: u64) {
         let now = self.now_ns();
         if deadline > now {
-            if self.virtual_time {
+            if self.deterministic {
+                self.virtual_ns = deadline;
+            } else if self.virtual_time {
                 self.skew_ns += deadline - now;
             } else {
                 std::thread::sleep(Duration::from_nanos(deadline - now));
@@ -1213,5 +1243,26 @@ mod tests {
         assert!(total_insns >= 4 * 1500);
         assert_eq!(sched.total_threads_completed, 4);
         assert_eq!(mmu.read_u64(shared_addr).unwrap(), 2_000);
+    }
+
+    #[test]
+    fn deterministic_clock_starts_at_zero_and_advances_without_host_time() {
+        let (mut sched, mut cpu, mut mmu) = (ThreadScheduler::new(), Cpu::new(), Memory::new());
+        sched.set_deterministic(true);
+        assert_eq!(sched.now_ns(), 0);
+
+        // Host wall-clock passage does not move the deterministic clock.
+        std::thread::sleep(Duration::from_millis(5));
+        assert_eq!(sched.now_ns(), 0);
+
+        // Each scheduler quantum preemption adds exactly 1 ms (1_000_000 ns).
+        sched.preempt(&mut cpu);
+        assert_eq!(sched.now_ns(), 1_000_000);
+        sched.preempt(&mut cpu);
+        assert_eq!(sched.now_ns(), 2_000_000);
+
+        // Timed sleep advances virtual_ns straight to the deadline without host delay.
+        sched.sleep_current(&mut cpu, &mut mmu, 500_000);
+        assert_eq!(sched.now_ns(), 2_500_000);
     }
 }

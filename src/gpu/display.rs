@@ -118,6 +118,12 @@ pub struct DisplayServer {
     frame_count: u64,
     fps_timer: Instant,
     last_fps: f64,
+    /// Pre-HUD FNV-1a 64 hash of the guest pixels staged in `swapchain.back_buffer`.
+    pending_guest_hash: Option<u64>,
+    /// Pre-HUD FNV-1a 64 hash of the last presented frame (`None` if host GPU rendered 3D).
+    last_guest_hash: Option<u64>,
+    /// Fixed-clock / deterministic mode (`--deterministic` / `OUNCE_DETERMINISTIC=1`).
+    pub deterministic: bool,
 }
 
 impl DisplayServer {
@@ -133,6 +139,9 @@ impl DisplayServer {
             frame_count: 0,
             fps_timer: Instant::now(),
             last_fps: 60.0,
+            pending_guest_hash: None,
+            last_guest_hash: None,
+            deterministic: crate::run_report::is_deterministic(),
         }
     }
 
@@ -155,10 +164,15 @@ impl DisplayServer {
         self.backend.as_ref().map(|b| b.name())
     }
 
-    /// Reads the guest framebuffer into the back buffer and draws the telemetry overlay.
-    ///
-    /// Split out from presentation so it can be tested without a host surface.
-    pub fn composite(&mut self, mmu: &Memory) {
+    /// Forces alpha channel bytes to `0xFF` across an RGBA8 buffer.
+    fn force_opaque_alpha(rgba: &mut [u8]) {
+        for pixel in rgba.as_chunks_mut::<4>().0 {
+            pixel[3] = 0xFF;
+        }
+    }
+
+    /// Reads the guest framebuffer into the back buffer and captures the pre-HUD pixel hash.
+    fn composite_guest(&mut self, mmu: &Memory) {
         if self.swapchain.back_buffer.width != self.width || self.swapchain.back_buffer.height != self.height {
             self.swapchain.resize(self.width, self.height);
         }
@@ -167,17 +181,22 @@ impl DisplayServer {
         // The guest framebuffer is already RGBA8 in the host's layout, so it is read
         // straight into the frame instead of being converted pixel by pixel.
         if mmu.read_bytes(self.fb_addr, &mut frame.rgba).is_ok() {
-            for pixel in frame.rgba.chunks_exact_mut(4) {
-                pixel[3] = 0xFF;
-            }
+            Self::force_opaque_alpha(&mut frame.rgba);
         }
+        self.pending_guest_hash = Some(self.swapchain.back_buffer.content_hash());
+    }
 
+    /// Reads the guest framebuffer into the back buffer and draws the telemetry overlay.
+    ///
+    /// Split out from presentation so it can be tested without a host surface.
+    pub fn composite(&mut self, mmu: &Memory) {
+        self.composite_guest(mmu);
         self.draw_hud_overlay(mmu);
     }
 
-    /// Composites a submitted VI surface into the back buffer.
-    /// Supports both linear pitch framebuffers and NVIDIA Maxwell/Orin block-linear surfaces.
-    pub fn composite_surface(&mut self, mmu: &Memory, surface: &SubmittedSurface) {
+    /// Composites a submitted VI surface into the back buffer without drawing the HUD overlay,
+    /// and captures the pre-HUD pixel hash.
+    fn composite_surface_guest(&mut self, mmu: &Memory, surface: &SubmittedSurface) {
         if surface.width as usize != self.width || surface.height as usize != self.height {
             self.width = surface.width as usize;
             self.height = surface.height as usize;
@@ -204,20 +223,23 @@ impl DisplayServer {
                 if let Ok(linear_pixels) = detile(&tiling_surf, &tiled_bytes) {
                     let copy_len = frame.rgba.len().min(linear_pixels.len());
                     frame.rgba[..copy_len].copy_from_slice(&linear_pixels[..copy_len]);
-                    for pixel in frame.rgba.chunks_exact_mut(4) {
-                        pixel[3] = 0xFF;
-                    }
+                    Self::force_opaque_alpha(&mut frame.rgba);
                 }
             }
         } else {
             // Layout 0: Linear pitch buffer.
             if mmu.read_bytes(surface.guest_addr, &mut frame.rgba).is_ok() {
-                for pixel in frame.rgba.chunks_exact_mut(4) {
-                    pixel[3] = 0xFF;
-                }
+                Self::force_opaque_alpha(&mut frame.rgba);
             }
         }
 
+        self.pending_guest_hash = Some(self.swapchain.back_buffer.content_hash());
+    }
+
+    /// Composites a submitted VI surface into the back buffer.
+    /// Supports both linear pitch framebuffers and NVIDIA Maxwell/Orin block-linear surfaces.
+    pub fn composite_surface(&mut self, mmu: &Memory, surface: &SubmittedSurface) {
+        self.composite_surface_guest(mmu, surface);
         self.draw_hud_overlay(mmu);
     }
 
@@ -257,16 +279,23 @@ impl DisplayServer {
             }
         }
 
-        let is_gpu = self.is_gpu_accelerated();
+        let is_gpu = self.is_gpu_accelerated() && !self.deterministic;
         if is_gpu && !draw_ops.is_empty() {
             let backend = self.backend.as_mut().expect("backend opened above");
             if let Err(e) = backend.render_3d(draw_ops) {
                 eprintln!("[Display Error] 3D render failed: {}", e);
             }
-        } else if let Some(surf) = surface {
-            self.composite_surface(mmu, surf);
+            self.pending_guest_hash = None;
         } else {
-            self.composite(mmu);
+            if let Some(surf) = surface {
+                self.composite_surface_guest(mmu, surf);
+            } else {
+                self.composite_guest(mmu);
+            }
+            let is_headless = self.backend.as_ref().is_some_and(|b| b.name() == "headless");
+            if !is_headless && !self.deterministic {
+                self.draw_hud_overlay(mmu);
+            }
         }
 
         let frame_time_us = frame_start.elapsed().as_micros();
@@ -276,6 +305,7 @@ impl DisplayServer {
         if backend.present(&self.swapchain.front_buffer) == PresentStatus::Closed {
             return false;
         }
+        self.last_guest_hash = self.pending_guest_hash;
 
         self.frame_count += 1;
         let elapsed = self.fps_timer.elapsed();
@@ -322,10 +352,8 @@ impl DisplayServer {
         if self.frames_presented_count() == 0 {
             return None;
         }
-        Some(format!(
-            "fnv1a64:{:016x}",
-            self.swapchain.front_buffer.content_hash()
-        ))
+        self.last_guest_hash
+            .map(|hash| format!("fnv1a64:{hash:016x}"))
     }
 
     /// Pumps backend window events (keyboard presses, window close, focus) without
@@ -505,5 +533,107 @@ mod tests {
         let x = 10;
         let idx = (y * width + x) * 4;
         assert_eq!(frame.pixel(x, y), Some((linear[idx], linear[idx + 1], linear[idx + 2], 0xFF)));
+    }
+
+    #[test]
+    fn test_headless_present_hashes_pre_hud_guest_pixels() {
+        let width = 320;
+        let height = 32;
+        let mut mmu = Memory::new();
+        mmu.map_range(DEFAULT_FRAMEBUFFER_ADDR, width * height * 4, Permission::READ_WRITE);
+
+        // Paint guest pixels inside the HUD region (y < HUD_HEIGHT) with non-0xFF alpha.
+        let mut guest_pixels = vec![0u8; width * height * 4];
+        for px in guest_pixels.as_chunks_mut::<4>().0 {
+            px[0] = 0x44;
+            px[1] = 0x33;
+            px[2] = 0x22;
+            px[3] = 0x11;
+        }
+        mmu.write_bytes(DEFAULT_FRAMEBUFFER_ADDR, &guest_pixels).unwrap();
+
+        let mut expected_frame = Frame::new(width, height);
+        for (dst, src) in expected_frame
+            .rgba
+            .as_chunks_mut::<4>()
+            .0
+            .iter_mut()
+            .zip(guest_pixels.as_chunks::<4>().0)
+        {
+            dst[0] = src[0];
+            dst[1] = src[1];
+            dst[2] = src[2];
+            dst[3] = 0xFF;
+        }
+        let expected_hash = format!("fnv1a64:{:016x}", expected_frame.content_hash());
+
+        let mut display = headless_server(width, height);
+        assert_eq!(display.last_framebuffer_hash(), None);
+        assert!(display.present_frame(&mmu));
+
+        // Headless presentation omits HUD and hashes pre-HUD guest pixels with alpha forced to 0xFF.
+        assert_eq!(display.swapchain.front_buffer.pixel(0, 0), Some((0x44, 0x33, 0x22, 0xFF)));
+        assert_eq!(display.swapchain.front_buffer.pixel(16, 7), Some((0x44, 0x33, 0x22, 0xFF)));
+        assert_eq!(display.last_framebuffer_hash().as_deref(), Some(expected_hash.as_str()));
+    }
+
+    struct MockWindowBackend {
+        frames: u64,
+        gpu_accel: bool,
+    }
+
+    impl PresentBackend for MockWindowBackend {
+        fn name(&self) -> &'static str {
+            "mock"
+        }
+
+        fn present(&mut self, _frame: &Frame) -> PresentStatus {
+            self.frames += 1;
+            PresentStatus::Continue
+        }
+
+        fn is_gpu_accelerated(&self) -> bool {
+            self.gpu_accel
+        }
+
+        fn frames_presented(&self) -> u64 {
+            self.frames
+        }
+    }
+
+    #[test]
+    fn test_windowed_present_hashes_pre_hud_and_respects_deterministic() {
+        let width = 320;
+        let height = 32;
+        let mut mmu = Memory::new();
+        mmu.map_range(DEFAULT_FRAMEBUFFER_ADDR, width * height * 4, Permission::READ_WRITE);
+        let guest_pixels = vec![0x40u8; width * height * 4];
+        mmu.write_bytes(DEFAULT_FRAMEBUFFER_ADDR, &guest_pixels).unwrap();
+
+        let mut expected_frame = Frame::new(width, height);
+        expected_frame.rgba.fill(0x40);
+        DisplayServer::force_opaque_alpha(&mut expected_frame.rgba);
+        let expected_hash = format!("fnv1a64:{:016x}", expected_frame.content_hash());
+
+        let mut display = headless_server(width, height);
+        display.backend = Some(Box::new(MockWindowBackend { frames: 0, gpu_accel: true }));
+
+        // CPU-composited frame on a windowed backend draws the HUD on front_buffer,
+        // yet last_framebuffer_hash still hashes pre-HUD guest pixels.
+        assert!(display.present_frame(&mmu));
+        assert_eq!(display.swapchain.front_buffer.pixel(0, 0), Some((0x20, 0x20, 0x20, 0xFF)));
+        assert_eq!(display.swapchain.front_buffer.pixel(16, 7), Some((0x00, 0xFF, 0xA3, 0xFF)));
+        assert_eq!(display.last_framebuffer_hash().as_deref(), Some(expected_hash.as_str()));
+
+        // Host GPU 3D draws outside deterministic mode produce null framebuffer_hash.
+        let dummy_ops = [Gpu3DDrawOp::SetDepthTest { enabled: false }];
+        assert!(display.present_frame_3d(&mmu, &dummy_ops));
+        assert_eq!(display.last_framebuffer_hash(), None);
+
+        // Deterministic mode forces CPU composite and omits HUD overlay even with a GPU backend.
+        display.deterministic = true;
+        assert!(display.present_frame_3d(&mmu, &dummy_ops));
+        assert_eq!(display.swapchain.front_buffer.pixel(0, 0), Some((0x40, 0x40, 0x40, 0xFF)));
+        assert_eq!(display.last_framebuffer_hash().as_deref(), Some(expected_hash.as_str()));
     }
 }

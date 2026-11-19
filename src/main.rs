@@ -596,7 +596,8 @@ fn run_vm_internal(
             eprintln!("[Display Error] {error}");
         }
     }
-    let is_gpu = display.as_ref().map_or(false, |d| d.is_gpu_accelerated());
+    let deterministic = run_report::is_deterministic();
+    let is_gpu = !deterministic && display.as_ref().is_some_and(|d| d.is_gpu_accelerated());
     kernel.nvgpu.set_hardware_acceleration(is_gpu);
 
     println!("[VM] Starting execution at PC: 0x{:016X}", cpu.regs.pc);
@@ -606,13 +607,13 @@ fn run_vm_internal(
     let mut instructions_executed = 0;
     let mut frames_presented = 0;
     let host_devices = display.as_ref().is_some_and(|d| d.backend_name().is_some_and(|name| name != "headless"));
-    let mut gamepad_mgr = host_devices.then(HostGamepadManager::new);
+    let mut gamepad_mgr = (host_devices && !deterministic).then(HostGamepadManager::new);
     let mut engine = cpu::CpuEngine::new(cpu::CpuTier::from_env());
     println!("[CPU] Engine: {}", engine.name());
     if let Some(pad_name) = gamepad_mgr.as_mut().and_then(|mgr| mgr.active_gamepad_name()) {
         println!("[HID] Physical gamepad attached: {}", pad_name);
     }
-    let host_audio = (host_devices && !run_report::is_audio_null()).then(HostAudioSink::new);
+    let host_audio = (host_devices && !run_report::is_audio_null() && !deterministic).then(HostAudioSink::new);
     let mut stop = VmStop::Budget;
     let mut stop_pc: Option<u64> = None;
     let mut stop_svc_id: Option<u32> = None;
@@ -628,7 +629,7 @@ fn run_vm_internal(
         }
 
         // Periodic 60Hz event pump (~16ms) decoupled from guest SVCs to prevent macOS beachballing:
-        if last_event_pump.elapsed() >= std::time::Duration::from_millis(16) {
+        if host_devices && last_event_pump.elapsed() >= std::time::Duration::from_millis(16) {
             last_event_pump = Instant::now();
             if let Some(ref mut disp) = display {
                 if !disp.pump_events() {
@@ -636,21 +637,23 @@ fn run_vm_internal(
                     stop = VmStop::WindowClosed;
                     break;
                 }
-                if let Some(ref mut h) = hid {
-                    h.poll_keyboard(&disp.get_active_keys());
-                    if let Some(mgr) = gamepad_mgr.as_mut() {
-                        mgr.poll(h);
-                    }
-                    if kernel.ipc.hid.addr.is_some() {
-                        let _ = h.update_shared_memory(&mut mmu);
-                        kernel.ipc.hid.input = kernel::hid::NpadInput::from_controller(&h.state);
+                if !deterministic {
+                    if let Some(ref mut h) = hid {
+                        h.poll_keyboard(&disp.get_active_keys());
+                        if let Some(mgr) = gamepad_mgr.as_mut() {
+                            mgr.poll(h);
+                        }
+                        if kernel.ipc.hid.addr.is_some() {
+                            let _ = h.update_shared_memory(&mut mmu);
+                            kernel.ipc.hid.input = kernel::hid::NpadInput::from_controller(&h.state);
+                        }
                     }
                 }
             }
         }
 
-        // Periodic frame presentation (~33ms / 30Hz or on new draws):
-        if last_frame_present.elapsed() >= std::time::Duration::from_millis(33) {
+        // Periodic frame presentation (~33ms / 30Hz) for interactive GUI windows outside deterministic mode:
+        if host_devices && !deterministic && last_frame_present.elapsed() >= std::time::Duration::from_millis(33) {
             last_frame_present = Instant::now();
             if let Some(ref mut disp) = display {
                 let draw_ops = kernel.nvgpu.drain_draw_ops();
@@ -691,15 +694,17 @@ fn run_vm_internal(
                         frames_presented += 1;
 
                         // 1. Poll host keyboard and physical gamepad input
-                        if let Some(ref mut h) = hid {
-                            if let Some(ref mut disp) = display {
-                                let active_keys = disp.get_active_keys();
-                                h.poll_keyboard(&active_keys);
+                        if !deterministic {
+                            if let Some(ref mut h) = hid {
+                                if let Some(ref mut disp) = display {
+                                    let active_keys = disp.get_active_keys();
+                                    h.poll_keyboard(&active_keys);
+                                }
+                                if let Some(mgr) = gamepad_mgr.as_mut() {
+                                    mgr.poll(h);
+                                }
+                                let _ = h.update_shared_memory(&mut mmu);
                             }
-                            if let Some(mgr) = gamepad_mgr.as_mut() {
-                                mgr.poll(h);
-                            }
-                            let _ = h.update_shared_memory(&mut mmu);
                         }
 
                         // 2. Stream audio to host output sink (48 kHz stereo)
@@ -3510,6 +3515,19 @@ fn inspect_directory_package(dir_path: &str) {
     }
 }
 
+fn headless_display_if_requested(gui_mode: bool, title: String) -> Option<DisplayServer> {
+    (!gui_mode && gpu::BackendKind::from_env() == gpu::BackendKind::Headless).then(|| {
+        DisplayServer::new(
+            DEFAULT_FRAMEBUFFER_ADDR,
+            DisplayConfig {
+                title,
+                backend: gpu::BackendKind::Headless,
+                ..Default::default()
+            },
+        )
+    })
+}
+
 fn run_directory_package(dir_path: &str, gui_mode: bool) {
     println!("[Loader] Bootstrapping loose directory package (OunceCake format): {}", dir_path);
     let pkg = match loader::LoosePackageLoader::discover(dir_path) {
@@ -3586,11 +3604,17 @@ fn run_directory_package(dir_path: &str, gui_mode: bool) {
                 display.present_frame_3d(&mmu, &[]);
                 let mut hid = HidServer::new(HID_SHARED_MEM_ADDR);
                 cpu.regs.pc = info.entry_pc;
-                run_vm_internal(cpu, mmu, kernel, Some(&mut display), Some(&mut hid), 0, 0);
+                let outcome = run_vm_internal(cpu, mmu, kernel, Some(&mut display), Some(&mut hid), 0, 0);
+                run_report::write_if_configured(&outcome.report);
             } else {
                 cpu.regs.pc = info.entry_pc;
                 let budget = if info.has_rtld { NRO_INSTRUCTION_BUDGET } else { 100_000 };
-                run_vm(cpu, mmu, kernel, budget);
+                let mut headless_display = headless_display_if_requested(
+                    gui_mode,
+                    format!("Ounce-NX2 | {} [Tegra T239 GA10F]", info.process_name),
+                );
+                let outcome = run_vm_internal(cpu, mmu, kernel, headless_display.as_mut(), None, budget, 0);
+                run_report::write_if_configured(&outcome.report);
             }
         }
         Err(e) => {
@@ -3668,12 +3692,17 @@ fn run_file(path: &str, guest_args: &[&str], gui_mode: bool) {
                 );
                 let mut hid = HidServer::new(HID_SHARED_MEM_ADDR);
                 cpu.regs.pc = DEFAULT_BASE_ADDR;
-                run_vm_internal(cpu, mmu, kernel, Some(&mut display), Some(&mut hid), 0, 0);
+                let outcome = run_vm_internal(cpu, mmu, kernel, Some(&mut display), Some(&mut hid), 0, 0);
+                run_report::write_if_configured(&outcome.report);
             } else {
                 cpu.regs.pc = DEFAULT_BASE_ADDR;
                 // libnx startup alone runs tens of thousands of instructions.
                 let budget = if is_nro { NRO_INSTRUCTION_BUDGET } else { 100_000 };
-                let outcome = run_vm(cpu, mmu, kernel, budget);
+                let mut headless_display = headless_display_if_requested(
+                    gui_mode,
+                    format!("Ounce-NX2 | 0x{:016X} [T239]", info.title_id),
+                );
+                let outcome = run_vm_internal(cpu, mmu, kernel, headless_display.as_mut(), None, budget, 0);
                 run_report::write_if_configured(&outcome.report);
                 if outcome.stop != VmStop::ExitProcess {
                     eprintln!("[VM] Non-zero exit due to {:?}", outcome.stop);
