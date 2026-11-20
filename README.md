@@ -2,7 +2,7 @@
 
 ![ounce-runtime — systems research, built in Rust](docs/assets/banner.svg)
 
-**The performance and graphics branch of the Ounce family, built in Rust.**
+**Ounce-Runtime runs supported open-source ARM64 homebrew and experiments with faster execution, graphics and controller input.** It is an experimental runtime, not a general-purpose game emulator or an independently validated compatibility product.
 
 [![Release](https://img.shields.io/github/v/release/hffgzktbcc-blip/ounce-runtime?color=28bca4&label=release)](https://github.com/hffgzktbcc-blip/ounce-runtime/releases/latest)
 [![CI](https://github.com/hffgzktbcc-blip/ounce-runtime/actions/workflows/ci.yml/badge.svg)](https://github.com/hffgzktbcc-blip/ounce-runtime/actions/workflows/ci.yml)
@@ -34,6 +34,14 @@ ounce-runtime is one of four independent, open-source projects sharing an eviden
 **Independent siblings, clean boundaries.** Each project solves a distinct problem with its own repository, tests, and releases. DeckStream is an independent sibling, not an Ounce-Core derivative; no code flows inappropriately across licensing boundaries (`ounce-core`, `ounce-hb`, and `deckstream` are MIT; `ounce-runtime` is GPL-3.0-or-later).
 
 ---
+
+## What you can do
+
+- **Run an open-source homebrew test:** try a supported unencrypted NRO and inspect how it stops.
+- **Investigate performance or graphics:** compare the project's execution modes and inspect host rendering for your own test inputs.
+- **Record a result:** use a machine-readable run report to share an exact outcome, including failures.
+
+The implementation is experimental and only supports tested subsets. See [limits](docs/LIMITS.md) before treating any example as a compatibility promise.
 
 ## What ounce-runtime adds
 
