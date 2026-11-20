@@ -6,6 +6,7 @@
 |---|---|
 | Working rules | [../AGENTS.md](../AGENTS.md), [../CONTRIBUTING.md](../CONTRIBUTING.md) |
 | Quick start and `ounce.run.v1` reports | [QUICKSTART.md](QUICKSTART.md) |
+| What is supported, unverified or out of scope | [LIMITS.md](LIMITS.md) |
 | Corpus parity log (dated, partly historical) | [CORPUS_PARITY.md](CORPUS_PARITY.md); benchmark evidence in [benchmarks/](benchmarks/) |
 | Syscall coverage | [svc-coverage.md](svc-coverage.md) |
 | Verification | [verify/README.md](verify/README.md), `tools/ounce_verify.py` |

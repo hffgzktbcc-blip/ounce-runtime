@@ -20,8 +20,8 @@ cargo build --release --locked
 
 `native-jit` and `gpu-present` are on by default. `--no-default-features`
 builds without them. A prebuilt archive from
-[Releases](https://github.com/hffgzktbcc-blip/ounce-runtime/releases/latest)
-is the latest tagged release (v0.6.0, which includes `--report-json`). Commands that need newer code say "main" and need a build from `main`.
+[the latest published release](https://github.com/hffgzktbcc-blip/ounce-runtime/releases/latest)
+shows the current tag and downloadable archives. Check its notes before assuming a command on `main` exists in the release; `--report-json` first shipped in v0.6.0.
 
 ## `ounce.run.v1`
 
@@ -44,7 +44,7 @@ writes:
   otherwise `null` (when no frame was presented, or when a host GPU window
   rendered 3D draws outside deterministic mode).
 
-In `v0.7.0` (not in `v0.6.0`) it also writes:
+Starting with the **published v0.7.0 release** (not the older v0.6.0 archive), it also writes:
 
 - `lr` and `sp` — the link register (`x30`) and stack pointer at the stop. They
   are set exactly when `pc` is, and `null` otherwise.
