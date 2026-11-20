@@ -1,8 +1,10 @@
 # Changelog
 
-All notable changes to `ounce-runtime` are documented in this file.
+All notable changes to `ounce-runtime` are documented in this file. The [latest GitHub release](https://github.com/hffgzktbcc-blip/ounce-runtime/releases/latest) is the source for what is actually published. Dated sections below describe historical releases; new work belongs under `Unreleased` until publication.
 
-## [0.7.0] — Unreleased (ready to tag)
+## Unreleased
+
+## [0.7.0] — 2026-11-20 (published)
 
 ### Added
 - **Pre-HUD `framebuffer_hash` and deterministic execution (#28, closes #19)**:
