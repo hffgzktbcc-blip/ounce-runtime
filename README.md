@@ -61,7 +61,7 @@ While `ounce-core` focuses on strict differential verification and safe-Rust exe
 
 ## Quick start
 
-> **Published release: [v0.6.0 (16 November 2026)](https://github.com/hffgzktbcc-blip/ounce-runtime/releases/tag/v0.6.0).** Check the exact tagged archive and its documented capabilities before treating changes on `main` as shipped. The canonical cross-project priorities are maintained in the [Ounce Family 2026–2027 roadmap](https://github.com/hffgzktbcc-blip/ounce-core/blob/main/docs/roadmap/OUNCE_FAMILY_1_YEAR_ROADMAP.md).
+> **Latest published release:** [Open the latest GitHub release](https://github.com/hffgzktbcc-blip/ounce-runtime/releases/latest) for the current tag, downloads and release date. The [changelog](CHANGELOG.md) distinguishes released changes from work on `main`; verify the tagged artifact before claiming a feature shipped. See the [Ounce Family 2026–2027 roadmap](https://github.com/hffgzktbcc-blip/ounce-core/blob/main/docs/roadmap/OUNCE_FAMILY_1_YEAR_ROADMAP.md) for shared direction, not release status.
 
 ### Download a prebuilt release
 
