@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 //! Bounded Binder bootstrap for the public libnx parcel/relay interfaces.
 //!
 //! Sources: libnx display/parcel.h (16-byte parcel header, 0x400 payload cap)
@@ -134,6 +135,7 @@ pub struct BinderObjects {
     layers: BTreeMap<u64, u32>,
     next_id: u32,
     pub last_submission: Option<GraphicBufferSlot>,
+    pub pending_present: bool,
 }
 
 impl BinderObjects {
@@ -225,7 +227,7 @@ impl BinderObjects {
                 object.next_slot = (object.next_slot + 1) % slots.len();
                 Ok(reply_parcel(&[slot as u32, 0, 0]))
             }
-            // QUEUE_BUFFER: record the exact registered slot. Presentation/capture is separate.
+            // QUEUE_BUFFER: record the exact registered slot and flag a pending frame presentation.
             0x7 => {
                 if !object.connected {
                     return Err(INVALID_STATE);
@@ -233,6 +235,7 @@ impl BinderObjects {
                 let slot = word(0x50)? as i32;
                 let submitted = object.slots.get(&slot).cloned().ok_or(INVALID_HANDLE)?;
                 self.last_submission = Some(submitted);
+                self.pending_present = true;
                 Ok(buffer_output_parcel(1280, 720))
             }
             // CONNECT(NATIVE_WINDOW_API_EGL=1 | CPU=2 | MEDIA=3 | CAMERA/NVN=4).
@@ -345,6 +348,11 @@ fn buffer_output_parcel(width: u32, height: u32) -> Vec<u8> {
 }
 
 impl IpcManager {
+    /// Returns `true` once after a `vi:binder-relay` `QUEUE_BUFFER` transaction completes.
+    pub fn take_pending_vi_present(&mut self) -> bool {
+        std::mem::take(&mut self.vi_binder.pending_present)
+    }
+
     /// Resolves the last queued producer slot through the nvmap registry. This
     /// describes raw guest memory only; it does not imply a valid rendered frame.
     #[allow(dead_code)]

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #![allow(dead_code)]
 
 use crate::mmu::Memory;
@@ -207,29 +208,97 @@ impl DisplayServer {
 
         let frame = &mut self.swapchain.back_buffer;
 
-        if surface.layout == 1 {
+        // Horizon Android PixelFormat (1=RGBA_8888, 2=RGBX_8888, 4=RGB_565, 5=BGRA_8888)
+        // and libnx NvColorFormat (0x0A88_1210 = NvColorFormat_R5G6B5).
+        const NV_COLOR_FORMAT_R5G6B5: u32 = 0x0A88_1210;
+        let is_rgb565 = surface.color_format == 4 || surface.color_format == NV_COLOR_FORMAT_R5G6B5;
+        let is_bgra8 = surface.color_format == 5;
+        let (tiling_fmt, bpp) = if is_rgb565 {
+            (Format::R5G6B5Unorm, 2usize)
+        } else if is_bgra8 {
+            (Format::B8G8R8A8Unorm, 4usize)
+        } else {
+            (Format::R8G8B8A8Unorm, 4usize)
+        };
+
+        let linear_bytes: Option<Vec<u8>> = if surface.layout == 1 {
             // Block-linear format (standard for Switch 1 & Switch 2 / libnx / retail graphics).
-            // Uses TilingSurface and detile() to unswizzle GOBs directly into linear RGBA8.
-            let size = if surface.size > 0 { surface.size as usize } else { (self.width * self.height * 4).max(0x384000) };
+            // Uses TilingSurface and detile() to unswizzle GOBs directly into linear pixels.
+            let size = if surface.size > 0 {
+                surface.size as usize
+            } else {
+                (self.width * self.height * bpp).max(0x384000)
+            };
             let mut tiled_bytes = vec![0u8; size];
             if mmu.read_bytes(surface.guest_addr, &mut tiled_bytes).is_ok() {
-                let height_log2 = if surface.block_height_log2 <= 5 { surface.block_height_log2 as u8 } else { 4 };
+                let height_log2 = if surface.block_height_log2 <= 5 {
+                    surface.block_height_log2 as u8
+                } else {
+                    4
+                };
                 let tiling_surf = TilingSurface::new_2d(
                     self.width as u32,
                     self.height as u32,
-                    Format::R8G8B8A8Unorm,
-                    Layout::BlockLinear { height_log2, depth_log2: 0 },
+                    tiling_fmt,
+                    Layout::BlockLinear {
+                        height_log2,
+                        depth_log2: 0,
+                    },
                 );
-                if let Ok(linear_pixels) = detile(&tiling_surf, &tiled_bytes) {
-                    let copy_len = frame.rgba.len().min(linear_pixels.len());
-                    frame.rgba[..copy_len].copy_from_slice(&linear_pixels[..copy_len]);
-                    Self::force_opaque_alpha(&mut frame.rgba);
-                }
+                detile(&tiling_surf, &tiled_bytes).ok()
+            } else {
+                None
             }
         } else {
             // Layout 0: Linear pitch buffer.
-            if mmu.read_bytes(surface.guest_addr, &mut frame.rgba).is_ok() {
-                Self::force_opaque_alpha(&mut frame.rgba);
+            let row_bytes = self.width * bpp;
+            let stride = (surface.pitch as usize).max(row_bytes);
+            let mut raw = vec![0u8; stride * self.height];
+            if mmu.read_bytes(surface.guest_addr, &mut raw).is_ok() {
+                if stride == row_bytes {
+                    Some(raw)
+                } else {
+                    let mut packed = Vec::with_capacity(row_bytes * self.height);
+                    for y in 0..self.height {
+                        let start = y * stride;
+                        packed.extend_from_slice(&raw[start..start + row_bytes]);
+                    }
+                    Some(packed)
+                }
+            } else {
+                None
+            }
+        };
+
+        if let Some(linear_pixels) = linear_bytes {
+            if is_rgb565 {
+                for (dst, src) in frame
+                    .rgba
+                    .as_chunks_mut::<4>()
+                    .0
+                    .iter_mut()
+                    .zip(linear_pixels.as_chunks::<2>().0)
+                {
+                    let px = u16::from_le_bytes(*src);
+                    let r = ((px >> 11) & 0x1F) as u8;
+                    let g = ((px >> 5) & 0x3F) as u8;
+                    let b = (px & 0x1F) as u8;
+                    dst[0] = (r << 3) | (r >> 2);
+                    dst[1] = (g << 2) | (g >> 4);
+                    dst[2] = (b << 3) | (b >> 2);
+                    dst[3] = 0xFF;
+                }
+            } else {
+                let copy_len = frame.rgba.len().min(linear_pixels.len());
+                frame.rgba[..copy_len].copy_from_slice(&linear_pixels[..copy_len]);
+                if is_bgra8 {
+                    for px in frame.rgba.as_chunks_mut::<4>().0 {
+                        px.swap(0, 2);
+                        px[3] = 0xFF;
+                    }
+                } else {
+                    Self::force_opaque_alpha(&mut frame.rgba);
+                }
             }
         }
 
@@ -635,5 +704,53 @@ mod tests {
         assert!(display.present_frame_3d(&mmu, &dummy_ops));
         assert_eq!(display.swapchain.front_buffer.pixel(0, 0), Some((0x40, 0x40, 0x40, 0xFF)));
         assert_eq!(display.last_framebuffer_hash().as_deref(), Some(expected_hash.as_str()));
+    }
+
+    #[test]
+    fn test_composite_surface_detiles_rgb565_block_linear_and_hashes_pre_hud() {
+        use crate::gpu::tiling::tile;
+
+        let width = 64usize;
+        let height = 32usize;
+        // White in RGB565 (0xFFFF) at (0, 0), pure red (0xF800) at (1, 0), pure green (0x07E0) at (2, 0),
+        // pure blue (0x001F) at (3, 0), rest black.
+        let mut linear_rgb565 = vec![0u8; width * height * 2];
+        for (idx, val) in [0xFFFFu16, 0xF800u16, 0x07E0u16, 0x001Fu16].into_iter().enumerate() {
+            linear_rgb565[idx * 2..idx * 2 + 2].copy_from_slice(&val.to_le_bytes());
+        }
+        let tiling_surf = TilingSurface::new_2d(
+            width as u32,
+            height as u32,
+            Format::R5G6B5Unorm,
+            Layout::BlockLinear { height_log2: 4, depth_log2: 0 },
+        );
+        let tiled = tile(&tiling_surf, &linear_rgb565).expect("tile RGB565 surface");
+
+        let guest_addr = 0x9100_0000u64;
+        let mut mmu = Memory::new();
+        mmu.map_range(guest_addr, tiled.len(), Permission::READ_WRITE);
+        mmu.write_bytes(guest_addr, &tiled).unwrap();
+
+        for color_format in [4u32, 0x0A88_1210u32] {
+            let surf = SubmittedSurface {
+                guest_addr,
+                width: width as u32,
+                height: height as u32,
+                color_format,
+                layout: 1,
+                pitch: (width * 2) as u32,
+                kind: 0xFE,
+                block_height_log2: 4,
+                size: tiled.len() as u64,
+            };
+            let mut display = headless_server(width, height);
+            assert!(display.present_surface_3d(&mmu, Some(&surf), &[]));
+            assert_eq!(display.swapchain.front_buffer.pixel(0, 0), Some((0xFF, 0xFF, 0xFF, 0xFF)));
+            assert_eq!(display.swapchain.front_buffer.pixel(1, 0), Some((0xFF, 0x00, 0x00, 0xFF)));
+            assert_eq!(display.swapchain.front_buffer.pixel(2, 0), Some((0x00, 0xFF, 0x00, 0xFF)));
+            assert_eq!(display.swapchain.front_buffer.pixel(3, 0), Some((0x00, 0x00, 0xFF, 0xFF)));
+            assert_eq!(display.swapchain.front_buffer.pixel(4, 0), Some((0x00, 0x00, 0x00, 0xFF)));
+            assert!(display.last_framebuffer_hash().is_some());
+        }
     }
 }
