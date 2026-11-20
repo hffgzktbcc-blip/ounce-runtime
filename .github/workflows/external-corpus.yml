@@ -27,11 +27,11 @@ jobs:
     env:
       CARGO_TERM_COLOR: never
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
 
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@39008827e6b4319a349e9a42dfc90579dd25f1ca # stable
 
       - name: Validate external corpus preparation tooling
         run: python3 -m unittest discover -s scripts -p 'test_*.py'
@@ -220,7 +220,7 @@ jobs:
 
       - name: Retain diagnostic evidence (no upstream source or NRO binaries)
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: external-corpus-probe
           path: ${{ runner.temp }}/ounce-corpus-evidence/
