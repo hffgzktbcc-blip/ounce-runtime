@@ -44,7 +44,7 @@ writes:
   otherwise `null` (when no frame was presented, or when a host GPU window
   rendered 3D draws outside deterministic mode).
 
-On `main` (not in v0.6.0) it also writes:
+In `v0.7.0` (not in `v0.6.0`) it also writes:
 
 - `lr` and `sp` — the link register (`x30`) and stack pointer at the stop. They
   are set exactly when `pc` is, and `null` otherwise.
