@@ -621,6 +621,7 @@ fn run_vm_internal(
     let mut stop_message: Option<String> = None;
     let mut last_event_pump = Instant::now();
     let mut last_frame_present = Instant::now();
+    let mut trace = run_report::TraceRecorder::from_env();
 
     loop {
         if max_instructions > 0 && instructions_executed >= max_instructions {
@@ -676,7 +677,21 @@ fn run_vm_internal(
         if max_instructions > 0 {
             budget = budget.min(max_instructions - instructions_executed);
         }
+        let capturing_step = trace.as_ref().is_some_and(|t| t.is_capturing());
+        if capturing_step {
+            budget = 1;
+        }
+        let before_step = capturing_step.then(|| {
+            let pc = cpu.regs.pc;
+            let opcode = mmu.read_u32(pc).unwrap_or(0);
+            (pc, opcode, cpu.regs.clone())
+        });
         let (executed, exit) = engine.run_slice(&mut cpu, &mut mmu, budget);
+        if let (1, Some((step_pc, step_opcode, before_regs)), Some(recorder)) =
+            (executed, before_step, trace.as_mut())
+        {
+            recorder.record_step(step_pc, step_opcode, &before_regs, &cpu.regs);
+        }
         instructions_executed += executed;
         match exit {
             cpu::tier2_jit::BlockExit::Svc { svc_id } => {
@@ -945,6 +960,9 @@ fn run_vm_internal(
         audio_hash,
         message: stop_message,
     };
+    if let Some(ref recorder) = trace {
+        recorder.write_if_configured(&report, &cpu.regs);
+    }
 
     VmOutcome {
         stop,

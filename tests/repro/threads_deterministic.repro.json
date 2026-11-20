@@ -1,0 +1,14 @@
+{
+  "schema": "ounce.repro.v1",
+  "program_path": "../fixtures/nro/threads/threads.nro",
+  "guest_args": [],
+  "runtime": {
+    "tier": "tier3"
+  },
+  "core": {
+    "stop_kind": "clean_exit",
+    "exit_code": 0,
+    "frames_presented": 0,
+    "framebuffer_hash": null
+  }
+}
