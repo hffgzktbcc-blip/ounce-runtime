@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 //! Shared reply helpers and routing for the libnx-shaped system services (`applet`, `time`, `set`,
 //! `psm`, `apm`).
 //!
@@ -121,7 +122,8 @@ impl IpcManager {
     /// The applet message event is signaled while the message queue holds a message.
     pub fn service_event_signaled(&self, handle: u32) -> Option<bool> {
         match self.handles.get(&handle) {
-            Some(ServiceType::ServiceEvent("ViBufferQueue" | "ViVsync" | "NifmReq0" | "NifmReq1")) => Some(true),
+            Some(ServiceType::ServiceEvent("ViBufferQueue" | "ViVsync" | "NifmReq0" | "NifmReq1"))
+            | Some(ServiceType::NvEvent { .. }) => Some(true),
             Some(ServiceType::ServiceEvent(_)) => Some(self.applet.message_event == Some(handle) && !self.applet.messages.is_empty()),
             _ => None,
         }

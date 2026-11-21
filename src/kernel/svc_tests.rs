@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 //! Per-SVC ABI tests for the calls libnx makes (registers in, result and outputs out), checked against the
 //! public libnx `svc.h`/`result.h` and Atmosphère's kernel for semantics. Thread tests drive the scheduler at
 //! SVC level: after svcStartThread the new thread is the running one, and its SVCs are dispatched directly.
@@ -534,4 +535,27 @@ fn deterministic_mode_uses_fixed_clock_and_ticks() {
     let posix_secs = ((mmu.read_u32(SCRATCH + 0x24).unwrap() as u64) << 32)
         | (mmu.read_u32(SCRATCH + 0x20).unwrap() as u64);
     assert_eq!(posix_secs, super::time::DETERMINISTIC_UNIX_SECS);
+}
+
+#[test]
+fn nvdrv_event_wait_succeeds_without_spurious_present_and_vi_queue_presents() {
+    let (mut cpu, mut mmu, mut kernel) = setup();
+    let nv_event = kernel
+        .ipc
+        .allocate_handle(crate::kernel::ServiceType::NvEvent { fd: 1, event_id: 0 });
+    mmu.write_u32(SCRATCH, nv_event).unwrap();
+
+    // Waiting on an nvdrv QueryEvent handle must succeed as a normal wait, not trigger a demo PresentFrame.
+    assert_eq!(
+        call(&mut kernel, &mut cpu, &mut mmu, 0x18, &[0, SCRATCH, 1, 1_000_000]),
+        SvcResult::Success
+    );
+    assert_eq!(cpu.regs.read_x(0), 0);
+    assert_eq!(cpu.regs.read_x(1), 0);
+
+    // Pending VI present flag is cleared on read.
+    assert!(!kernel.ipc.take_pending_vi_present());
+    kernel.ipc.vi_binder.pending_present = true;
+    assert!(kernel.ipc.take_pending_vi_present());
+    assert!(!kernel.ipc.take_pending_vi_present());
 }

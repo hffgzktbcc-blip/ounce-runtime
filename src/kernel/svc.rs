@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #![allow(dead_code)]
 
 use super::ipc::{IpcManager, ServiceType};
@@ -866,7 +867,11 @@ impl HorizonKernel {
                     &mut self.vfs,
                 );
                 cpu.regs.write_x(0, res);
-                SvcResult::Success
+                if self.ipc.take_pending_vi_present() {
+                    SvcResult::PresentFrame
+                } else {
+                    SvcResult::Success
+                }
             }
 
             // 0x22: svcSendSyncRequestWithUserBuffer(user_buffer, size, session_handle).
@@ -915,7 +920,11 @@ impl HorizonKernel {
                     &mut self.vfs,
                 );
                 cpu.regs.write_x(0, res);
-                SvcResult::Success
+                if self.ipc.take_pending_vi_present() {
+                    SvcResult::PresentFrame
+                } else {
+                    SvcResult::Success
+                }
             }
 
             // 0x24: svcGetProcessId(&out_process_id, process_handle)
