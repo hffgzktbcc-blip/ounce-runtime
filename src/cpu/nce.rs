@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #![allow(dead_code)]
 
 //! Switch 2 ("Ounce" / Cortex-A78C) Native Code Execution (`NceEngine`) for AArch64 hosts
@@ -480,7 +481,7 @@ mod aarch64_host {
         if !matches!(size, 1 | 2 | 4 | 8) {
             return false;
         }
-        if offset < -4095 || offset > 0xFFFF {
+        if !(-4095..=0xFFFF).contains(&offset) {
             return false;
         }
 
@@ -1020,7 +1021,7 @@ impl NceEngine {
     ) -> (usize, BlockExit) {
         #[cfg(feature = "native-jit")]
         {
-            return self.tier4_fallback.run_slice(cpu, mmu, max_instructions);
+            self.tier4_fallback.run_slice(cpu, mmu, max_instructions)
         }
         #[cfg(not(feature = "native-jit"))]
         {

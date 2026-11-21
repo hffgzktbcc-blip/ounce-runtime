@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #![allow(dead_code)]
 use byteorder::{ByteOrder, LittleEndian};
 use std::collections::HashMap;
@@ -55,7 +56,7 @@ impl NpdmDescriptor {
             return Err(PackageError::InvalidNpdm("File too small (< 128 bytes)".into()));
         }
 
-        if &bytes[0x00..0x04] != &NPDM_MAGIC {
+        if bytes[0x00..0x04] != NPDM_MAGIC {
             return Err(PackageError::InvalidNpdm(format!(
                 "Invalid magic: expected 'META', got {:?}",
                 &bytes[0x00..0x04]
@@ -104,9 +105,9 @@ impl NpdmDescriptor {
             .checked_add(acid_size)
             .and_then(|end| bytes.get(acid_offset..end))
         {
-            if acid_bytes.len() >= 0x304 && &acid_bytes[0x300..0x304] == &ACID_MAGIC {
+            if acid_bytes.len() >= 0x304 && acid_bytes[0x300..0x304] == ACID_MAGIC {
                 rsa_sig_bits = 3072;
-            } else if acid_bytes.len() >= 0x204 && &acid_bytes[0x200..0x204] == &ACID_MAGIC {
+            } else if acid_bytes.len() >= 0x204 && acid_bytes[0x200..0x204] == ACID_MAGIC {
                 rsa_sig_bits = 2048;
             }
         }
@@ -122,7 +123,7 @@ impl NpdmDescriptor {
             .filter(|_| aci0_size >= 0x40)
         {
             // ACI0: 0x10 program ID, 0x20 FAC offset/size, 0x28 SAC offset/size, 0x30 KAC offset/size.
-            if &aci0_bytes[0x00..0x04] == &ACI0_MAGIC {
+            if aci0_bytes[0x00..0x04] == ACI0_MAGIC {
                 title_id = Some(LittleEndian::read_u64(&aci0_bytes[0x10..0x18]));
 
                 let sac_offset = LittleEndian::read_u32(&aci0_bytes[0x28..0x2C]) as usize;
@@ -206,7 +207,7 @@ impl NpdmDescriptor {
                     {
                         let mut mask_acc = 0u64;
                         let mut saw_syscall_cap = false;
-                        for chunk in kac_data.chunks_exact(4) {
+                        for chunk in kac_data.as_chunks::<4>().0 {
                             let cap = LittleEndian::read_u32(chunk);
                             // Syscall mask descriptor: 4 low bits == 0b0111 (`0x07`)
                             if (cap & 0x1F) == 0x0F {
@@ -603,7 +604,7 @@ impl LoosePackageLoader {
         // Find _ZN2nn4init5Start in sdk (0x83D40000)
         let sdk_base = 0x83D40000u64;
         let mut sdk_buf = vec![0u8; 0x100_0000];
-        if let Ok(_) = mmu.read_bytes(sdk_base, &mut sdk_buf) {
+        if mmu.read_bytes(sdk_base, &mut sdk_buf).is_ok() {
             for (offset, window) in sdk_buf.windows(b"_ZN2nn4init5Start".len()).enumerate() {
                 if window == b"_ZN2nn4init5Start" {
                     eprintln!("[Found in sdk] _ZN2nn4init5Start string at 0x{:X}", sdk_base + offset as u64);
@@ -623,13 +624,11 @@ impl LoosePackageLoader {
         };
 
         for (mod_name, mod_path, mod_base, _) in &loaded_headers {
-            if let Some(elf_path) = check_elf(mod_name, mod_path) {
-                if let Ok(bytes) = fs::read(&elf_path) {
-                    if let Some(tmpl) = NroLoader::parse_pt_tls(&bytes) {
+            if let Some(elf_path) = check_elf(mod_name, mod_path)
+                && let Ok(bytes) = fs::read(&elf_path)
+                    && let Some(tmpl) = NroLoader::parse_pt_tls(&bytes) {
                         templates.insert(*mod_base, tmpl);
                     }
-                }
-            }
         }
 
         let mut tls = NroLoader::build_tls_layout_with_templates(&module_bases, mmu, &templates);
@@ -711,11 +710,10 @@ impl LoosePackageLoader {
             // Relocate runtime CRT & GOT pointer tables in main with main_base:
             let main_base = 0x80020000u64;
             for slot in (0x83370348u64..0x833BBA60u64).step_by(8) {
-                if let Ok(val) = mmu.read_u64(slot) {
-                    if val > 0 && val < 0x0500_0000 {
+                if let Ok(val) = mmu.read_u64(slot)
+                    && val > 0 && val < 0x0500_0000 {
                         let _ = mmu.write_u64(slot, val + main_base);
                     }
-                }
             }
             // Set __init_array_start == __init_array_end to complete CRT initialization:
             let _ = mmu.write_u64(0x83370370, 0x831228B8);
@@ -728,7 +726,7 @@ impl LoosePackageLoader {
             eprintln!("[Main Entry Disassembly]");
             let mut insn_bytes = [0u8; 4];
             for addr in (0x80020000u64..0x80020190u64).step_by(4) {
-                if let Ok(_) = mmu.read_bytes(addr, &mut insn_bytes) {
+                if mmu.read_bytes(addr, &mut insn_bytes).is_ok() {
                     let w = u32::from_le_bytes(insn_bytes);
                     eprintln!("  0x{:X}: 0x{:08X}", addr, w);
                 }

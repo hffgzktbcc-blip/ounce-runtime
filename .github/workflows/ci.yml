@@ -111,6 +111,8 @@ jobs:
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@39008827e6b4319a349e9a42dfc90579dd25f1ca # stable
+        with:
+          components: clippy
 
       - name: Install Linux system dependencies
         if: runner.os == 'Linux'
@@ -120,6 +122,10 @@ jobs:
 
       - name: Cache Cargo build artifacts
         uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2
+
+      - name: Run Clippy (zero warnings)
+        if: matrix.os == 'ubuntu-latest'
+        run: cargo clippy --workspace --all-targets --locked -- -D warnings
 
       - name: Run unit tests
         run: cargo test --release

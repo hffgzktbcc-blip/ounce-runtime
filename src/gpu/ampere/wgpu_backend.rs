@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 //! Hardware `wgpu` (Metal on Apple Silicon, Vulkan on Linux/Windows) backend for Switch 2 (`GA10F`):
 //! - Executes `AMPERE_COMPUTE_B` (`0xC7C0`) QMD dispatches via cached `wgpu::ComputePipeline`s,
 //! - Executes `AMPERE_B` (`0xC797`) 3D draws via cached `wgpu::RenderPipeline`s (MRT `Rgba32Float` +
@@ -389,7 +390,7 @@ impl WgpuAmpereAccelerator {
         bd_log2: u8,
         sector_layout: SectorLayout,
     ) -> Option<Vec<u8>> {
-        if width_bytes % 4 != 0 || src_bytes.is_empty() || out_byte_len == 0 {
+        if !width_bytes.is_multiple_of(4) || src_bytes.is_empty() || out_byte_len == 0 {
             return None;
         }
         let _ = bd_log2;
@@ -801,11 +802,9 @@ impl WgpuAmpereAccelerator {
         // Note: Rgba8Unorm supports filtering, blending, and RENDER_ATTACHMENT universally across all
         // Metal/Vulkan tiers; for float32 render targets (`Rf32Gf32Bf32Af32`), defer to software if needed,
         // or check format compatibility:
-        for opt in &staged_cts {
-            if let Some((ct, _, _, _)) = opt {
-                if matches!(ct.format, ColorFormat::Rf32Gf32Bf32Af32 | ColorFormat::R16G16B16A16) {
-                    return Ok(false);
-                }
+        for (ct, _, _, _) in staged_cts.iter().flatten() {
+            if matches!(ct.format, ColorFormat::Rf32Gf32Bf32Af32 | ColorFormat::R16G16B16A16) {
+                return Ok(false);
             }
         }
 
@@ -1571,7 +1570,7 @@ fn read_graphics_shader_bytes(
 
 fn find_ampere_exit_end(code: &[u8]) -> Option<usize> {
     let mut last_unpred_exit = None;
-    for (idx, chunk) in code.chunks_exact(16).enumerate() {
+    for (idx, chunk) in code.as_chunks::<16>().0.iter().enumerate() {
         let lo = u64::from_le_bytes(chunk[0..8].try_into().unwrap());
         let opcode = lo & 0xfff;
         let pred = (lo >> 12) & 0xf;

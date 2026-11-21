@@ -1,12 +1,13 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #![allow(dead_code)]
 
 use crate::gpu::upscaler::UpscaleEngine;
 use crate::mmu::Memory;
 
-/// Tegra NVGPU Channel / Pushbuffer & 3D Rasterizer Engine.
-///
-/// Models the Nvidia Tegra (Maxwell GM20B / Ampere T239) command submission interface
-/// used by Horizon OS to feed draw calls, surface clears, and vertex arrays to the GPU.
+// Tegra NVGPU Channel / Pushbuffer & 3D Rasterizer Engine.
+//
+// Models the Nvidia Tegra (Maxwell GM20B / Ampere T239) command submission interface
+// used by Horizon OS to feed draw calls, surface clears, and vertex arrays to the GPU.
 
 pub const NVGPU_IOCTL_CHANNEL_SUBMIT_GPFIFO: u32 = 0xC0104808;
 pub const NVHOST_IOCTL_CTRL_SYNCPT_INCR: u32 = 0x40040003;
@@ -89,7 +90,7 @@ impl Gpu3DVertex {
     }
 
     /// Endian-safe, pure safe Rust serialization (zero unsafe).
-    pub fn to_bytes(&self) -> [u8; 32] {
+    pub fn to_bytes(self) -> [u8; 32] {
         let mut b = [0u8; 32];
         b[0..4].copy_from_slice(&self.position[0].to_le_bytes());
         b[4..8].copy_from_slice(&self.position[1].to_le_bytes());
@@ -565,14 +566,14 @@ impl NvgpuChannel {
             METHOD_SET_INDEX_ARRAY_ADDR => {
                 if let Some(&addr) = cmd.args.first() {
                     self.state.index_array_addr = addr as u64;
-                    self.state.is_index_32 = cmd.args.get(1).map_or(false, |&val| val == 1);
+                    self.state.is_index_32 = cmd.args.get(1).is_some_and(|&val| val == 1);
                 }
             }
             // 0x05F4: Draw Indexed Elements (Args: [index_count, textured])
             METHOD_DRAW_INDEXED => {
                 self.state.total_draw_calls += 1;
                 let raw_index_count = cmd.args.first().copied().unwrap_or(0) as usize;
-                let textured = cmd.args.get(1).map_or(false, |&val| val == 1);
+                let textured = cmd.args.get(1).is_some_and(|&val| val == 1);
 
                 if self.hardware_acceleration_enabled {
                     let index_count = raw_index_count.min(MAX_INDEX_COUNT_PER_DRAW);
@@ -720,15 +721,14 @@ impl NvgpuChannel {
             }
             // 0x0900: Dispatch 2x upscaler model (bilinear + sharpen, not DLSS)
             // Args: [src_addr, src_w, src_h, dst_addr]
-            METHOD_DISPATCH_UPSCALE_2X => {
-                if cmd.args.len() >= 4 {
+            METHOD_DISPATCH_UPSCALE_2X
+                if cmd.args.len() >= 4 => {
                     let src_addr = cmd.args[0] as u64;
                     let src_w = cmd.args[1];
                     let src_h = cmd.args[2];
                     let dst_addr = cmd.args[3] as u64;
                     self.upscaler.upscale_2x(mmu, src_addr, src_w, src_h, dst_addr);
                 }
-            }
             _ => {}
         }
     }
@@ -818,7 +818,7 @@ impl NvgpuChannel {
         let stride_bytes = if textured { 32 } else { 24 };
         let num_tris = vertex_count / 3;
         for t in 0..num_tris {
-            let v0 = self.fetch_vertex(mmu, t * 3 + 0, stride_bytes, textured);
+            let v0 = self.fetch_vertex(mmu, t * 3, stride_bytes, textured);
             let v1 = self.fetch_vertex(mmu, t * 3 + 1, stride_bytes, textured);
             let v2 = self.fetch_vertex(mmu, t * 3 + 2, stride_bytes, textured);
 

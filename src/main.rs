@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 // Safety lint: every unsafe operation inside an `unsafe fn` requires an explicit `unsafe {}` block.
 // Allows controlled host-OS primitives (Apple Silicon fastmem `mmap`, JIT/NCE, Metal) in `ounce-nx2`.
 #![deny(unsafe_op_in_unsafe_fn)]
@@ -43,11 +44,10 @@ static SDMC_HOST_DIR: std::sync::OnceLock<std::path::PathBuf> = std::sync::OnceL
 mod ounce_e2e_test;
 
 fn main() {
-    if let Ok(path) = std::env::var("OUNCE_REPORT_JSON") {
-        if !path.is_empty() {
+    if let Ok(path) = std::env::var("OUNCE_REPORT_JSON")
+        && !path.is_empty() {
             run_report::set_report_path(std::path::PathBuf::from(path));
         }
-    }
     if std::env::var("OUNCE_AUDIO").as_deref() == Ok("null") {
         run_report::set_audio_null(true);
     }
@@ -340,7 +340,7 @@ fn print_box_bottom(s: &Styler) {
 fn print_row(s: &Styler, label: &str, val: &str) {
     let used = visible_width(label) + visible_width(val);
     let max_inner = BOX_WIDTH - 6;
-    let pad = if max_inner > used { max_inner - used } else { 0 };
+    let pad = max_inner.saturating_sub(used);
     println!(
         "{}│  {}{}{}{}{}{}  │{}",
         s.blue, s.bold, label, s.reset, val, " ".repeat(pad), s.blue, s.reset
@@ -351,7 +351,7 @@ fn print_usage() {
     let s = Styler::new();
     let header_text = format!("  🚀  {}OUNCE-NX2 v0.4.0{} — COMMAND-LINE INTERFACE (CLI) & WORKFLOW GUIDE", s.bold, s.reset);
     let header_width = visible_width(&header_text);
-    let pad = if BOX_WIDTH - 2 > header_width { (BOX_WIDTH - 2) - header_width } else { 0 };
+    let pad = (BOX_WIDTH - 2).saturating_sub(header_width);
 
     println!("{}╭{}╮{}", s.cyan, "─".repeat(BOX_WIDTH - 2), s.reset);
     println!("{}│{}{}{}│{}", s.cyan, header_text, " ".repeat(pad), s.cyan, s.reset);
@@ -397,7 +397,7 @@ fn print_specs() {
 
     let header_text = format!("  🎮  {}OUNCE-NX2 v0.4.0{} — TEGRA T239 (GA10F) HARDWARE & RUNTIME PROFILE", s.bold, s.reset);
     let header_width = visible_width(&header_text);
-    let pad = if BOX_WIDTH - 2 > header_width { (BOX_WIDTH - 2) - header_width } else { 0 };
+    let pad = (BOX_WIDTH - 2).saturating_sub(header_width);
 
     println!("{}╭{}╮{}", s.cyan, "─".repeat(BOX_WIDTH - 2), s.reset);
     println!("{}│{}{}{}│{}", s.cyan, header_text, " ".repeat(pad), s.cyan, s.reset);
@@ -494,6 +494,7 @@ enum VmStop {
     /// The guest called an SVC the kernel model does not handle.
     UnhandledSvc,
     /// The CPU halted on an undecodable or unsupported instruction.
+    #[allow(dead_code)]
     Halt,
     /// The CPU or MMU returned an error.
     Fault,
@@ -591,11 +592,10 @@ fn run_vm_internal(
 ) -> VmOutcome {
     // Some run callers leave backend creation lazy. Resolve it before deciding
     // whether host devices are needed (and before selecting GPU acceleration).
-    if let Some(disp) = display.as_deref_mut() {
-        if let Err(error) = disp.init_window() {
+    if let Some(disp) = display.as_deref_mut()
+        && let Err(error) = disp.init_window() {
             eprintln!("[Display Error] {error}");
         }
-    }
     let deterministic = run_report::is_deterministic();
     let is_gpu = !deterministic && display.as_ref().is_some_and(|d| d.is_gpu_accelerated());
     kernel.nvgpu.set_hardware_acceleration(is_gpu);
@@ -638,8 +638,8 @@ fn run_vm_internal(
                     stop = VmStop::WindowClosed;
                     break;
                 }
-                if !deterministic {
-                    if let Some(ref mut h) = hid {
+                if !deterministic
+                    && let Some(ref mut h) = hid {
                         h.poll_keyboard(&disp.get_active_keys());
                         if let Some(mgr) = gamepad_mgr.as_mut() {
                             mgr.poll(h);
@@ -649,7 +649,6 @@ fn run_vm_internal(
                             kernel.ipc.hid.input = kernel::hid::NpadInput::from_controller(&h.state);
                         }
                     }
-                }
             }
         }
 
@@ -699,18 +698,17 @@ fn run_vm_internal(
                     SvcResult::Success => {
                         // libnx audio renderer output plays as it is mixed (homebrew may never present a
                         // frame), and the host device's playback clock paces the guest.
-                        if kernel.ipc.audio_renderer.is_some() {
-                            if let Some(sink) = host_audio.as_ref() {
+                        if kernel.ipc.audio_renderer.is_some()
+                            && let Some(sink) = host_audio.as_ref() {
                                 stream_audio_to_host(&mut kernel, sink);
                             }
-                        }
                     }
                     SvcResult::PresentFrame => {
                         frames_presented += 1;
 
                         // 1. Poll host keyboard and physical gamepad input
-                        if !deterministic {
-                            if let Some(ref mut h) = hid {
+                        if !deterministic
+                            && let Some(ref mut h) = hid {
                                 if let Some(ref mut disp) = display {
                                     let active_keys = disp.get_active_keys();
                                     h.poll_keyboard(&active_keys);
@@ -720,21 +718,18 @@ fn run_vm_internal(
                                 }
                                 let _ = h.update_shared_memory(&mut mmu);
                             }
-                        }
 
                         // 2. Stream audio to host output sink (48 kHz stereo)
                         let audio_samples = kernel.audio.drain_samples();
-                        if !audio_samples.is_empty() {
-                            if let Some(sink) = host_audio.as_ref() {
+                        if !audio_samples.is_empty()
+                            && let Some(sink) = host_audio.as_ref() {
                                 sink.push_samples(&audio_samples);
                             }
-                        }
                         let audren_samples = kernel.audren.drain_samples();
-                        if !audren_samples.is_empty() {
-                            if let Some(sink) = host_audio.as_ref() {
+                        if !audren_samples.is_empty()
+                            && let Some(sink) = host_audio.as_ref() {
                                 sink.push_samples(&audren_samples);
                             }
-                        }
 
                         // 3. Present video frame to host window
                         let draw_ops = kernel.nvgpu.drain_draw_ops();
@@ -1303,8 +1298,8 @@ fn run_built_in_demo() {
     mmu.write_bytes(DEFAULT_BASE_ADDR, &main_bytes).unwrap();
 
     // Run VM and inspect shader + scheduler state
-    let mut display_none: Option<&mut DisplayServer> = None;
-    let outcome = run_vm_internal(cpu, mmu, kernel, display_none.as_mut().map(|x| &mut **x), None, 10_000, 0);
+    let display_none: Option<&mut DisplayServer> = None;
+    let outcome = run_vm_internal(cpu, mmu, kernel, display_none, None, 10_000, 0);
     gate.expect_exit(6, &outcome, 0x1E61);
     println!();
 
@@ -3960,53 +3955,6 @@ fn build_and_boot_showcase_nsp(out_path: &str) {
     run_file(out_path, &[], false);
 }
 
-#[cfg(test)]
-mod harness_gate_tests {
-    use super::*;
-
-    fn outcome(stop: VmStop, x0: u64) -> VmOutcome {
-        VmOutcome {
-            stop,
-            x0,
-            d0: 0.0,
-            report: run_report::RunReport {
-                tier: "tier3",
-                silent_fallback: false,
-                stop_kind: "clean_exit",
-                exit_code: 0,
-                pc: None,
-                lr: None,
-                sp: None,
-                opcode: None,
-                fault_addr: None,
-                svc_id: None,
-                break_result: None,
-                insns_executed: 0,
-                frames_presented: 0,
-                framebuffer_hash: None,
-                audio_frames_mixed: 0,
-                audio_hash: None,
-                message: None,
-            },
-        }
-    }
-
-    #[test]
-    fn test_stage_gate_requires_exit_process_and_expected_x0() {
-        let mut gate = StageGate::default();
-        assert!(gate.expect_exit(1, &outcome(VmStop::ExitProcess, 0xEEE), 0xEEE));
-        // Right exit path, wrong value.
-        assert!(!gate.expect_exit(2, &outcome(VmStop::ExitProcess, 0xBAD), 0xEEE));
-        // Right value, but the guest never reached svcExitProcess.
-        assert!(!gate.expect_exit(3, &outcome(VmStop::Budget, 0xEEE), 0xEEE));
-        assert!(!gate.expect_exit(4, &outcome(VmStop::Halt, 0xEEE), 0xEEE));
-        assert!(gate.expect(5, "host check", true));
-        assert!(!gate.expect(6, "host check", false));
-        assert_eq!(gate.passed, 2);
-        assert_eq!(gate.failures.len(), 4);
-    }
-}
-
 /// Checks that this host can run natively generated code (Tier-4, feature `native-jit`).
 fn run_jit_selftest() {
     #[cfg(feature = "native-jit")]
@@ -4056,11 +4004,11 @@ fn fuzz_replay(args: &[String]) -> i32 {
         guest.regs.pc = 0x1000;
         guest.regs.fpsr = 0;
         guest.regs.pstate.from_bits((hex(2)? as u32) << 28);
-        for i in 0..31 {
-            guest.regs.x[i] = hex(3 + i)? as u64;
+        for (i, reg) in guest.regs.x.iter_mut().enumerate().take(31) {
+            *reg = hex(3 + i)? as u64;
         }
-        for i in 0..32 {
-            guest.regs.v[i] = hex(34 + i)?;
+        for (i, reg) in guest.regs.v.iter_mut().enumerate().take(32) {
+            *reg = hex(34 + i)?;
         }
         let mut mem = Memory::new();
         mem.map_range(0x1000, 4096, Permission::READ_WRITE_EXECUTE);
@@ -4077,13 +4025,13 @@ fn fuzz_replay(args: &[String]) -> i32 {
         matched &= (guest.regs.pstate.to_bits() >> 28) == hex(67)? as u32;
         matched &= (guest.regs.fpsr & cpu::registers::FPSR_QC)
             == ((hex(68)? as u32) & cpu::registers::FPSR_QC);
-        for i in 0..31 {
+        for (i, &reg) in guest.regs.x.iter().enumerate().take(31) {
             if i != 18 {
-                matched &= guest.regs.x[i] == hex(69 + i)? as u64;
+                matched &= reg == hex(69 + i)? as u64;
             }
         }
-        for i in 0..32 {
-            matched &= guest.regs.v[i] == hex(100 + i)?;
+        for (i, &reg) in guest.regs.v.iter().enumerate().take(32) {
+            matched &= reg == hex(100 + i)?;
         }
         Ok(ReplayOutcome {
             executed: n,
@@ -4122,4 +4070,51 @@ fn fuzz_replay(args: &[String]) -> i32 {
         println!("{label}: {value}");
     }
     if exact_match == 1 { 0 } else { 1 }
+}
+
+#[cfg(test)]
+mod harness_gate_tests {
+    use super::*;
+
+    fn outcome(stop: VmStop, x0: u64) -> VmOutcome {
+        VmOutcome {
+            stop,
+            x0,
+            d0: 0.0,
+            report: run_report::RunReport {
+                tier: "tier3",
+                silent_fallback: false,
+                stop_kind: "clean_exit",
+                exit_code: 0,
+                pc: None,
+                lr: None,
+                sp: None,
+                opcode: None,
+                fault_addr: None,
+                svc_id: None,
+                break_result: None,
+                insns_executed: 0,
+                frames_presented: 0,
+                framebuffer_hash: None,
+                audio_frames_mixed: 0,
+                audio_hash: None,
+                message: None,
+            },
+        }
+    }
+
+    #[test]
+    fn test_stage_gate_requires_exit_process_and_expected_x0() {
+        let mut gate = StageGate::default();
+        assert!(gate.expect_exit(1, &outcome(VmStop::ExitProcess, 0xEEE), 0xEEE));
+        // Right exit path, wrong value.
+        assert!(!gate.expect_exit(2, &outcome(VmStop::ExitProcess, 0xBAD), 0xEEE));
+        // Right value, but the guest never reached svcExitProcess.
+        assert!(!gate.expect_exit(3, &outcome(VmStop::Budget, 0xEEE), 0xEEE));
+        assert!(!gate.expect_exit(4, &outcome(VmStop::Halt, 0xEEE), 0xEEE));
+        assert!(gate.expect(5, "host check", true));
+        assert!(!gate.expect(6, "host check", false));
+        assert_eq!(gate.passed, 2);
+        assert_eq!(gate.failures.len(), 4);
+    }
 }

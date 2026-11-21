@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #![allow(dead_code)]
 
 //! `nvdrv` device model for libnx-shaped requests: device files opened by path, and ioctls whose
@@ -260,8 +261,8 @@ impl NvDrv {
             return true;
         }
         let words: Vec<u32> = raw
-            .chunks_exact(4)
-            .map(|c| u32::from_le_bytes(c.try_into().unwrap()))
+            .as_chunks::<4>().0.iter()
+            .map(|c| u32::from_le_bytes(*c))
             .collect();
         if let Some(entry) = self.channels.get_mut(&fd).and_then(|c| c.fences.iter_mut().find(|f| f.0 > 0)) {
             entry.0 -= 1;
@@ -577,11 +578,10 @@ impl NvDrv {
                     GpuPersona::Gm20b => 0x03,
                     GpuPersona::Ga10f => 0x3F,
                 };
-                if let Some(out) = extra.outbuf {
-                    if out.len() >= 4 {
+                if let Some(out) = extra.outbuf
+                    && out.len() >= 4 {
                         out[..4].copy_from_slice(&tpc_mask.to_le_bytes());
                     }
-                }
                 if data.len() >= 0x1C {
                     wr32(data, 0x18, tpc_mask);
                 }
@@ -678,7 +678,7 @@ impl NvDrv {
             0x08 => {
                 wr32(data, 8, 0x30);
                 // Small pages (4 KiB) and big pages (128 KiB), each { u64 offset; u32 page_size; u32 pad; u64 pages; }
-                for (i, (offset, page, pages)) in [(GPU_VA_BASE, 0x1000u32, 0x3FFF_Fu64), (0x10_0000_0000, 0x2_0000, 0x7_FFFF)].iter().enumerate() {
+                for (i, (offset, page, pages)) in [(GPU_VA_BASE, 0x1000u32, 0x0003_FFFF_u64), (0x10_0000_0000, 0x2_0000, 0x7_FFFF)].iter().enumerate() {
                     let at = 16 + i * 24;
                     wr64(data, at, *offset);
                     wr32(data, at + 8, *page);

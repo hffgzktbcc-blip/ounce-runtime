@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 use super::vectors::SETS;
 use super::*;
 
@@ -74,7 +75,7 @@ fn texel(components: u32, ty: NumType, bytes: &[u8]) -> [f32; 4] {
 #[test]
 fn packed_formats_place_r_in_the_low_bits() {
     // A1B5G5R5: R 4:0, G 9:5, B 14:10, A 15.
-    let v: u16 = 31 | (0 << 5) | (16 << 10) | (1 << 15);
+    let v: u16 = 31 | (16 << 10) | (1 << 15);
     assert_eq!(texel(0x14, NumType::Unorm, &v.to_le_bytes()), [1.0, 0.0, 16.0 / 31.0, 1.0]);
     // A4B4G4R4.
     assert_eq!(texel(0x12, NumType::Unorm, &[0x0f, 0xf0]), [1.0, 0.0, 0.0, 1.0]);

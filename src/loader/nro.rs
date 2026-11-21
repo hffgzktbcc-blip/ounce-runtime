@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #![allow(dead_code)]
 
 use crate::mmu::{Memory, MemoryError, Permission};
@@ -447,8 +448,8 @@ impl NroLoader {
         // Ensure MOD0 header is present at the expected location (read from offset 4 in .text).
         // Official commercial NSOs occasionally place uncompressed MOD0 headers right at the
         // text/rodata boundary that may get truncated if a segment decompressor terminates early.
-        if let Ok(mod0_rel) = mmu.read_u32(base_addr + 4) {
-            if mod0_rel > 0 {
+        if let Ok(mod0_rel) = mmu.read_u32(base_addr + 4)
+            && mod0_rel > 0 {
                 let mod0_addr = base_addr.wrapping_add(mod0_rel as u64);
                 let mut current_magic = [0u8; 4];
                 if mmu.read_bytes(mod0_addr, &mut current_magic).is_err() || &current_magic != b"MOD0" {
@@ -470,34 +471,32 @@ impl NroLoader {
                     let mut found_dyn_start = None;
                     let mut probe = search_start;
                     while probe + 16 <= search_end {
-                        if let Ok(tag) = mmu.read_u64(probe) {
-                            if tag == DT_GNU_HASH as u64 {
+                        if let Ok(tag) = mmu.read_u64(probe)
+                            && tag == DT_GNU_HASH as u64 {
                                 let mut start = probe;
                                 while start >= search_start + 16 {
                                     let prev = start - 16;
-                                    if let Ok(prev_tag) = mmu.read_u64(prev) {
-                                        if (1..=40).contains(&prev_tag)
+                                    if let Ok(prev_tag) = mmu.read_u64(prev)
+                                        && ((1..=40).contains(&prev_tag)
                                             || prev_tag == DT_GNU_HASH as u64
                                             || prev_tag == 0x6ffffffb
                                             || prev_tag == 0x6ffffffa
-                                            || prev_tag == 0x6ffffff9
+                                            || prev_tag == 0x6ffffff9)
                                         {
                                             start = prev;
                                             continue;
                                         }
-                                    }
                                     break;
                                 }
                                 found_dyn_start = Some(start);
                                 break;
                             }
-                        }
                         probe += 1;
                     }
 
                     if let Some(real_start) = found_dyn_start {
                         eprintln!("[MOD0 Fixup] Found dynamic table at 0x{:X}, expected 0x{:X}", real_start, cur_dyn_addr);
-                        if cur_dyn_addr != real_start && cur_dyn_addr % 8 == 0 && cur_dyn_addr >= search_start && cur_dyn_addr + 1024 <= search_end + (bss_size as u64) {
+                        if cur_dyn_addr != real_start && cur_dyn_addr.is_multiple_of(8) && cur_dyn_addr >= search_start && cur_dyn_addr + 1024 <= search_end + (bss_size as u64) {
                             let mut dyn_buf = [0u8; 1024];
                             if mmu.read_bytes(real_start, &mut dyn_buf).is_ok() {
                                 let _ = mmu.write_bytes(cur_dyn_addr, &dyn_buf);
@@ -530,7 +529,7 @@ impl NroLoader {
                             let expected_relr_addr = base_addr + relr_val;
                             let ro_start = base_addr + ro_mem_off;
                             let ro_end = ro_start + (ro_size as u64);
-                            let target_offset = (data_mem_off as u64).to_le_bytes();
+                            let target_offset = data_mem_off.to_le_bytes();
 
                             // Search rodata for the first RELR address entry pointing to data segment.
                             // Step by 1 byte to find the table even if rodata has an unaligned byte offset:
@@ -672,7 +671,6 @@ impl NroLoader {
                     }
                 }
             }
-        }
 
         Ok(NroHeader {
             version: LittleEndian::read_u32(&bytes[0x04..0x08]),
@@ -1279,11 +1277,10 @@ impl NroLoader {
         };
         let mut applied = 0;
         let mut add_base = |mmu: &mut Memory, addr: u64| {
-            if let Ok(v) = mmu.read_u64(addr) {
-                if mmu.write_u64(addr, v.wrapping_add(base_addr)).is_ok() {
+            if let Ok(v) = mmu.read_u64(addr)
+                && mmu.write_u64(addr, v.wrapping_add(base_addr)).is_ok() {
                     applied += 1;
                 }
-            }
         };
         let mut next = 0u64;
         for i in 0..info.relr_size / 8 {
@@ -1670,6 +1667,77 @@ pub(crate) fn elf_with_pt_tls(tls: TlsTemplate) -> Vec<u8> {
     LittleEndian::write_u64(&mut elf[ph + 0x28..ph + 0x30], tls.memsz);
     LittleEndian::write_u64(&mut elf[ph + 0x30..ph + 0x38], tls.align);
     elf
+}
+
+/// Permissive Nintendo Horizon OS LZ4 block decompressor that accommodates sparse/zero-filled
+/// matches (offset 0) and omit MFLIMIT restrictions found in official Switch 1 & 2 NSO binaries.
+pub fn decompress_nintendo_lz4(src: &[u8], decomp_sz: usize) -> Result<Vec<u8>, String> {
+    if decomp_sz == 0 {
+        return Ok(Vec::new());
+    }
+    let mut pos = 0;
+    let src_len = src.len();
+    let mut dst = Vec::with_capacity(decomp_sz);
+
+    while pos < src_len && dst.len() < decomp_sz {
+        let token = src[pos];
+        pos += 1;
+
+        let mut lit_len = (token >> 4) as usize;
+        if lit_len == 15 {
+            while pos < src_len {
+                let s = src[pos] as usize;
+                pos += 1;
+                lit_len = lit_len.saturating_add(s);
+                if s != 255 {
+                    break;
+                }
+            }
+        }
+
+        let take_lit = lit_len
+            .min(decomp_sz.saturating_sub(dst.len()))
+            .min(src_len.saturating_sub(pos));
+        dst.extend_from_slice(&src[pos..pos + take_lit]);
+        pos = pos.saturating_add(lit_len);
+
+        if dst.len() >= decomp_sz || pos >= src_len {
+            break;
+        }
+
+        if pos + 2 > src_len {
+            break;
+        }
+        let offset = u16::from_le_bytes([src[pos], src[pos + 1]]) as usize;
+        pos += 2;
+
+        let mut match_len = ((token & 0x0f) as usize) + 4;
+        if (token & 0x0f) == 15 {
+            while pos < src_len {
+                let s = src[pos] as usize;
+                pos += 1;
+                match_len = match_len.saturating_add(s);
+                if s != 255 {
+                    break;
+                }
+            }
+        }
+
+        if offset == 0 || offset > dst.len() {
+            continue;
+        }
+
+        let to_copy = match_len.min(decomp_sz.saturating_sub(dst.len()));
+        for _ in 0..to_copy {
+            let b = dst[dst.len() - offset];
+            dst.push(b);
+        }
+    }
+
+    if dst.len() < decomp_sz {
+        dst.resize(decomp_sz, 0);
+    }
+    Ok(dst)
 }
 
 #[cfg(test)]
@@ -2103,76 +2171,5 @@ mod tests {
         assert_eq!((t_start, t_end, t_state, t_perm), (base, base + 0x3000, crate::mmu::MEM_STATE_CODE_STATIC, 0x05));
     }
 
-}
-
-/// Permissive Nintendo Horizon OS LZ4 block decompressor that accommodates sparse/zero-filled
-/// matches (offset 0) and omit MFLIMIT restrictions found in official Switch 1 & 2 NSO binaries.
-pub fn decompress_nintendo_lz4(src: &[u8], decomp_sz: usize) -> Result<Vec<u8>, String> {
-    if decomp_sz == 0 {
-        return Ok(Vec::new());
-    }
-    let mut pos = 0;
-    let src_len = src.len();
-    let mut dst = Vec::with_capacity(decomp_sz);
-
-    while pos < src_len && dst.len() < decomp_sz {
-        let token = src[pos];
-        pos += 1;
-
-        let mut lit_len = (token >> 4) as usize;
-        if lit_len == 15 {
-            while pos < src_len {
-                let s = src[pos] as usize;
-                pos += 1;
-                lit_len = lit_len.saturating_add(s);
-                if s != 255 {
-                    break;
-                }
-            }
-        }
-
-        let take_lit = lit_len
-            .min(decomp_sz.saturating_sub(dst.len()))
-            .min(src_len.saturating_sub(pos));
-        dst.extend_from_slice(&src[pos..pos + take_lit]);
-        pos = pos.saturating_add(lit_len);
-
-        if dst.len() >= decomp_sz || pos >= src_len {
-            break;
-        }
-
-        if pos + 2 > src_len {
-            break;
-        }
-        let offset = u16::from_le_bytes([src[pos], src[pos + 1]]) as usize;
-        pos += 2;
-
-        let mut match_len = ((token & 0x0f) as usize) + 4;
-        if (token & 0x0f) == 15 {
-            while pos < src_len {
-                let s = src[pos] as usize;
-                pos += 1;
-                match_len = match_len.saturating_add(s);
-                if s != 255 {
-                    break;
-                }
-            }
-        }
-
-        if offset == 0 || offset > dst.len() {
-            continue;
-        }
-
-        let to_copy = match_len.min(decomp_sz.saturating_sub(dst.len()));
-        for _ in 0..to_copy {
-            let b = dst[dst.len() - offset];
-            dst.push(b);
-        }
-    }
-
-    if dst.len() < decomp_sz {
-        dst.resize(decomp_sz, 0);
-    }
-    Ok(dst)
 }
 

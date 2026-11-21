@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 //! End-to-end Switch 2 ("Ounce" / NVIDIA Tegra T239 / `GA10F`) integration test:
 //! Exercising the full unified stack across all 4 roadmap milestones:
 //!
@@ -418,8 +419,8 @@ fn test_switch2_ounce_e2e_full_stack() {
         Layout::BlockLinearOrin { height_log2: 3, depth_log2: 0, gob_kind: GobKind::Color2d },
     );
     let detiled_rt = tiling::detile(&orin_surf, &raw_rt).unwrap();
-    for p in detiled_rt.chunks_exact(4) {
-        assert_eq!(p, [0, 0, 255, 255], "Pixel must be opaque blue");
+    for p in detiled_rt.as_chunks::<4>().0 {
+        assert_eq!(*p, [0, 0, 255, 255], "Pixel must be opaque blue");
     }
 
     //  3. Channel fence signaled

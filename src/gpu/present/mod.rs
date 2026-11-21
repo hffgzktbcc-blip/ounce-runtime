@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 //! Host presentation backends.
 //!
 //! The guest framebuffer is composited on the CPU into a [`Frame`] and handed to a
@@ -249,11 +250,10 @@ pub fn open_backend(kind: BackendKind, config: &BackendConfig) -> Box<dyn Presen
         return Box::new(headless::HeadlessBackend::new(config));
     }
 
-    if matches!(kind, BackendKind::Auto | BackendKind::Gpu) {
-        if let Some(backend) = open_gpu_backend(kind, config) {
+    if matches!(kind, BackendKind::Auto | BackendKind::Gpu)
+        && let Some(backend) = open_gpu_backend(kind, config) {
             return backend;
         }
-    }
 
     match minifb_window::MinifbBackend::new(config) {
         Ok(backend) => Box::new(backend),

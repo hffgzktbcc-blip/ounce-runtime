@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 //! AMPERE_B / MAXWELL_B 3D method state and the records a draw, clear or semaphore release produces.
 //!
 //! The engine keeps a shadow of every class register (the last value written to each method), and
@@ -465,6 +466,7 @@ impl Ampere3d {
     /// Creates a Switch 2 (`GA10F` / Tegra T239) channel engine with Orin/T239 **Sector Layout 1**
     /// and attempts to attach the Metal/Vulkan `wgpu` hardware accelerator.
     pub fn new_orin_t239_accelerated() -> Self {
+        #[allow(unused_mut)]
         let mut s = Self::new_orin_t239();
         #[cfg(feature = "gpu-present")]
         {
@@ -580,12 +582,11 @@ impl Ampere3d {
             if !self.continues_macro(call) {
                 self.run_macro(mem);
             }
-            if let Some(wait) = self.acquire_for(call) {
-                if wait.satisfied(mem) == Some(false) {
+            if let Some(wait) = self.acquire_for(call)
+                && wait.satisfied(mem) == Some(false) {
                     self.blocked = Some(wait);
                     return;
                 }
-            }
             self.pending.pop_front();
             self.execute(call, mem);
         }
@@ -719,7 +720,7 @@ impl Ampere3d {
             m::LOAD_MME_INSTRUCTION_RAM => self.mme.load_code(call.data),
             m::LOAD_MME_START_ADDRESS_RAM_POINTER => self.mme.set_start_pointer(call.data),
             m::LOAD_MME_START_ADDRESS_RAM => self.mme.load_start(call.data),
-            m::CALL_MME_MACRO.. if (method - m::CALL_MME_MACRO) % m::CALL_MME_STRIDE == 0 => {
+            m::CALL_MME_MACRO.. if (method - m::CALL_MME_MACRO).is_multiple_of(m::CALL_MME_STRIDE) => {
                 let index = (method - m::CALL_MME_MACRO) / m::CALL_MME_STRIDE;
                 if class == m::MAXWELL_B {
                     self.macro_call = Some(MacroCall { subchannel: call.subchannel, index, params: vec![call.data] });
@@ -793,7 +794,7 @@ impl Ampere3d {
             }
             _ if (m::BIND_GROUP_CONSTANT_BUFFER..m::BIND_GROUP_CONSTANT_BUFFER + m::BIND_GROUP_COUNT as u32 * m::BIND_GROUP_STRIDE)
                 .contains(&method)
-                && (method - m::BIND_GROUP_CONSTANT_BUFFER) % m::BIND_GROUP_STRIDE == 0 =>
+                && (method - m::BIND_GROUP_CONSTANT_BUFFER).is_multiple_of(m::BIND_GROUP_STRIDE) =>
             {
                 let group = ((method - m::BIND_GROUP_CONSTANT_BUFFER) / m::BIND_GROUP_STRIDE) as usize;
                 let slot = ((call.data >> 4) & 0x1f) as usize;
@@ -1020,7 +1021,7 @@ impl Ampere3d {
             .filter_map(|i| {
                 let a = self.reg(m::SET_VERTEX_ATTRIBUTE_A + 4 * i);
                 // SOURCE 6:6 = INACTIVE, and an all-zero word is a never-programmed slot.
-                (a != 0 && (a >> 6) & 1 == 0).then(|| VertexAttribute {
+                (a != 0 && (a >> 6) & 1 == 0).then_some(VertexAttribute {
                     index: i as u8,
                     stream: (a & 0x1f) as u8,
                     offset: (a >> 7) & 0x3fff,

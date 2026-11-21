@@ -89,7 +89,7 @@ impl<'a> Parcel<'a> {
             return Err(INVALID_SIZE);
         }
         let region = |off: usize, size: usize| -> Result<std::ops::Range<usize>, u32> {
-            if off < 16 || off % 4 != 0 {
+            if off < 16 || !off.is_multiple_of(4) {
                 return Err(INVALID_SIZE);
             }
             let end = off.checked_add(size).ok_or(INVALID_SIZE)?;
@@ -110,9 +110,9 @@ impl<'a> Parcel<'a> {
         // Object-table entries are byte offsets in the payload. Their concrete
         // flattened types remain unsupported, but even their first word must fit.
         let mut previous = None;
-        for entry in bytes[objects.clone()].chunks_exact(4) {
-            let offset = u32::from_le_bytes(entry.try_into().unwrap()) as usize;
-            if offset % 4 != 0
+        for entry in bytes[objects.clone()].as_chunks::<4>().0 {
+            let offset = u32::from_le_bytes(*entry) as usize;
+            if !offset.is_multiple_of(4)
                 || offset.checked_add(4).is_none_or(|end| end > payload_size)
                 || previous.is_some_and(|last| offset <= last)
             {
@@ -275,7 +275,7 @@ impl BinderObjects {
                 // GraphicBuffer flattening layout:
                 // Standard libnx native_handle places (offset, kind, block_height_log2) at
                 // (0xD8, 0xDC, 0xE0), while compact test mocks place them at (0xD4, 0xD8, 0xDC).
-                let (pitch, offset, kind, block_height_log2) = if word(0xE0).map_or(false, |b| b <= 5) && word(0xDC).map_or(false, |k| k > 5) {
+                let (pitch, offset, kind, block_height_log2) = if word(0xE0).is_ok_and(|b| b <= 5) && word(0xDC).is_ok_and(|k| k > 5) {
                     (word(0xD0).unwrap_or_else(|_| word(0xCC).unwrap_or(0)),
                      word(0xD8).unwrap_or_else(|_| word(0xD4).unwrap_or(0)),
                      word(0xDC).unwrap_or(0),

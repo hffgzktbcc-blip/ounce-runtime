@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #![allow(dead_code)]
 
 use super::decoder::decode;
@@ -160,7 +161,7 @@ impl Tier2Block {
                             (res, !borrow, v)
                         } else {
                             let (res, carry) = op1.overflowing_add(imm);
-                            let v = (!((op1 ^ imm)) & (op1 ^ res) & (1 << 63)) != 0;
+                            let v = (!(op1 ^ imm) & (op1 ^ res) & (1 << 63)) != 0;
                             (res, carry, v)
                         };
                         if set_flags {
@@ -180,7 +181,7 @@ impl Tier2Block {
                             (res, !borrow, v)
                         } else {
                             let (res, carry) = op1_32.overflowing_add(imm_32);
-                            let v = (!((op1_32 ^ imm_32)) & (op1_32 ^ res) & (1 << 31)) != 0;
+                            let v = (!(op1_32 ^ imm_32) & (op1_32 ^ res) & (1 << 31)) != 0;
                             (res, carry, v)
                         };
                         if set_flags {
@@ -247,7 +248,7 @@ impl Tier2Block {
                             (res, !borrow, v)
                         } else {
                             let (res, carry) = op1.overflowing_add(op2);
-                            let v = (!((op1 ^ op2)) & (op1 ^ res) & (1 << 63)) != 0;
+                            let v = (!(op1 ^ op2) & (op1 ^ res) & (1 << 63)) != 0;
                             (res, carry, v)
                         };
                         if rd != 31 || set_flags {
@@ -265,7 +266,7 @@ impl Tier2Block {
                             (res, !borrow, v)
                         } else {
                             let (res, carry) = op1_32.overflowing_add(op2_32);
-                            let v = (!((op1_32 ^ op2_32)) & (op1_32 ^ res) & (1 << 31)) != 0;
+                            let v = (!(op1_32 ^ op2_32) & (op1_32 ^ res) & (1 << 31)) != 0;
                             (res, carry, v)
                         };
                         if rd != 31 || set_flags {

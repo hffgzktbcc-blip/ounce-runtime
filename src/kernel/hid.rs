@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #![allow(dead_code)]
 
 //! HID shared memory in the layout libnx reads (`HidSharedMemory` in libnx `services/hid.h`), the
@@ -324,11 +325,10 @@ impl InputFeed {
 
     fn slot(id: u32, style: Option<NpadStyle>) -> Result<usize, InputError> {
         let index = npad_index(id).ok_or(InputError::BadNpadId(id))?;
-        if let Some(style) = style {
-            if (id == NPAD_ID_HANDHELD) != (style == NpadStyle::Handheld) {
+        if let Some(style) = style
+            && (id == NPAD_ID_HANDHELD) != (style == NpadStyle::Handheld) {
                 return Err(InputError::StyleNotAllowed { id, style });
             }
-        }
         Ok(index)
     }
 
@@ -447,13 +447,13 @@ impl HidSharedMemory {
         ] {
             lifo_reset(mmu, header);
         }
-        for index in 0..NPAD_COUNT {
+        for (index, written_style) in self.written_style.iter_mut().enumerate().take(NPAD_COUNT) {
             let npad = Self::npad_base(addr, index);
             for style in [NpadStyle::FullKey, NpadStyle::Handheld, NpadStyle::JoyDual, NpadStyle::JoyLeft, NpadStyle::JoyRight] {
                 lifo_reset(mmu, npad + style.lifo_offset());
             }
             Self::write_npad_header(mmu, npad, None);
-            self.written_style[index] = 0;
+            *written_style = 0;
         }
         self.sync(mmu);
     }
@@ -624,7 +624,7 @@ impl IpcManager {
                     Some(&(_, buf)) => {
                         let mut bytes = vec![0u8; buf.size.min(0x100) as usize];
                         let _ = mmu.read_bytes(buf.addr, &mut bytes);
-                        bytes.chunks_exact(4).map(|w| u32::from_le_bytes([w[0], w[1], w[2], w[3]])).collect()
+                        bytes.as_chunks::<4>().0.iter().map(|w| u32::from_le_bytes([w[0], w[1], w[2], w[3]])).collect()
                     }
                     None => Vec::new(),
                 };

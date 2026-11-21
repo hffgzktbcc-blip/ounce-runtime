@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 //! Phase 4 (`GA10F` / Switch 2 Tegra T239) unit & Metal/Vulkan `wgpu` verification tests:
 //! 1. `0xC7B5` (`AMPERE_DMA_COPY_B`) Orin/T239 Sector Layout 1 Pitch <-> BlockLinear round-trip,
 //!    component `REMAP` constant fill, and completion semaphore signaling.
@@ -345,11 +346,11 @@ fn compute_c7c0_qmd_v03_sm86_metal_and_cpu_parity() {
     //   STG.E [R2 + 0], R4
     //   EXIT
     let op = |full: u16| (full as u128) | (7 << 12);
-    let s2r_ctaid = op(0x919) | (0u128 << 16) | ((SR_CTAID_X as u128) << 72);
+    let s2r_ctaid = op(0x919) | ((SR_CTAID_X as u128) << 72);
     let s2r_tid = op(0x919) | (1u128 << 16) | ((SR_TID_X as u128) << 72);
-    let imad_gid = op(0x824) | (0u128 << 16) | (0u128 << 24) | (32u128 << 32) | (1u128 << 64);
-    let uldc_base = op(0xab9) | (0u128 << 16) | (0u128 << 38);
-    let lea_elem = op(0xc11) | (2u128 << 16) | (0u128 << 24) | (0u128 << 32) | (2u128 << 75);
+    let imad_gid = op(0x824) | (32u128 << 32) | (1u128 << 64);
+    let uldc_base = op(0xab9);
+    let lea_elem = (op(0xc11) | (2u128 << 16)) | (2u128 << 75);
     let ldg_val = op(0x381) | (4u128 << 16) | (2u128 << 24);
     let iadd_100 = op(0x810)
         | (4u128 << 16)
@@ -530,7 +531,7 @@ fn ampere_c797_metal_3d_orin_layout1_bindless_bc1_and_astc_draw() {
         t[5] = (h_px - 1) | (1 << 31); // normalized_coords = true
         t
     };
-    mem.put(TIC_VA + 1 * 32, &words_to_bytes(&make_tic(DXT1, BC1_TEX_VA, 8, 8)));
+    mem.put(TIC_VA + 32, &words_to_bytes(&make_tic(DXT1, BC1_TEX_VA, 8, 8)));
     mem.put(TIC_VA + 2 * 32, &words_to_bytes(&make_tic(ASTC_4X4_CODE, ASTC_TEX_VA, 8, 8)));
 
     // TSC[0] = ClampToEdge + Point filter.
@@ -557,8 +558,8 @@ fn ampere_c797_metal_3d_orin_layout1_bindless_bc1_and_astc_draw() {
             | ((RZ as u128) << 64)
             | (((comps - 1) as u128) << 74)
     };
-    let uldc_ur2 = op(0xab9) | (2u128 << 16) | (0u128 << 38) | (1u128 << 54);
-    let ffma_r0_ur2 = op(0xc23) | (0u128 << 16) | (0u128 << 24) | (2u128 << 32) | ((RZ as u128) << 64);
+    let uldc_ur2 = (op(0xab9) | (2u128 << 16)) | (1u128 << 54);
+    let ffma_r0_ur2 = op(0xc23) | (2u128 << 32) | ((RZ as u128) << 64);
 
     let mut vs_h = SphBuilder::vertex();
     for a in (0x80..0xa0).step_by(4) {
@@ -592,14 +593,12 @@ fn ampere_c797_metal_3d_orin_layout1_bindless_bc1_and_astc_draw() {
             | ((freq as u128) << 78)
     };
     let mufu_rcp = |d: u8, s: u8| op(0x308) | ((d as u128) << 16) | ((s as u128) << 32) | (4 << 74);
-    let ldc_r28 = op(0xb82)
+    let ldc_r28 = (op(0xb82)
         | (28u128 << 16)
-        | ((RZ as u128) << 24)
-        | (0u128 << 38)
+        | ((RZ as u128) << 24))
         | (1u128 << 54)
         | (4 << 73);
     let tex_b = op(0x361)
-        | (0u128 << 16)
         | (4u128 << 24)
         | (28u128 << 32)
         | (1u128 << 61)

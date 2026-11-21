@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 //! `AMPERE_DMA_COPY_B` (`0xC7B5`) and `MAXWELL_DMA_COPY_A` (`0xB0B5`) copy engine model.
 //!
 //! Method offsets and bitfields come from NVIDIA's public class headers
@@ -259,7 +260,7 @@ impl AmpereDmaCopy {
 
         // Stage linear rows (`line_count * src_row_bytes`) from either Pitch or BlockLinear source.
         let mut linear_rows = vec![0u8; src_row_bytes.saturating_mul(line_count as usize)];
-        let needs_src_read = remap_cfg.map_or(true, |rc| rc.reads_source());
+        let needs_src_read = remap_cfg.is_none_or(|rc| rc.reads_source());
 
         if needs_src_read {
             if src_pitch_layout || !multi_line {
@@ -290,10 +291,10 @@ impl AmpereDmaCopy {
                 }
                 for y in 0..line_count {
                     let row = &mut linear_rows[y as usize * src_row_bytes..(y as usize + 1) * src_row_bytes];
-                    for xb in 0..src_row_bytes {
+                    for (xb, dst) in row.iter_mut().enumerate() {
                         let off = bl.offset(origin_x_bytes + xb as u32, origin_y + y, origin_z);
                         if let Some(&b) = tiled.get(off) {
-                            row[xb] = b;
+                            *dst = b;
                         }
                     }
                 }

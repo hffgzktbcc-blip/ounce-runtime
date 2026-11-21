@@ -1,7 +1,8 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #![allow(dead_code)]
 
-/// Nvidia Ampere (`SM86` / Tegra T239 "Drake") SASS Shader Decompiler,
-/// GLSL 450 Transpiler, & Binary Vulkan SPIR-V 1.5 (`0x07230203`) Bytecode Emitter.
+//! Nvidia Ampere (`SM86` / Tegra T239 "Drake") SASS Shader Decompiler,
+//! GLSL 450 Transpiler, & Binary Vulkan SPIR-V 1.5 (`0x07230203`) Bytecode Emitter.
 
 use crate::gpu::tensor::HmmaShape;
 
@@ -32,7 +33,7 @@ impl CmpOp {
         }
     }
 
-    pub fn to_glsl_symbol(&self) -> &'static str {
+    pub fn to_glsl_symbol(self) -> &'static str {
         match self {
             CmpOp::Eq => "==",
             CmpOp::Ne => "!=",
@@ -68,7 +69,7 @@ impl MufuFunc {
         }
     }
 
-    pub fn to_glsl_func(&self) -> &'static str {
+    pub fn to_glsl_func(self) -> &'static str {
         match self {
             MufuFunc::Cos => "cos",
             MufuFunc::Sin => "sin",

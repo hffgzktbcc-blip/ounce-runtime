@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #![allow(dead_code)]
 
 use byteorder::{ByteOrder, LittleEndian, ReadBytesExt, WriteBytesExt};
@@ -554,11 +555,10 @@ impl BootLoader {
                 if fallback.is_none() {
                     fallback = Some((name, bytes));
                 }
-                if let Ok(hdr) = NcaImage::plain_header(bytes) {
-                    if hdr[0x205] == 0x00 {
+                if let Ok(hdr) = NcaImage::plain_header(bytes)
+                    && hdr[0x205] == 0x00 {
                         return Some((name, bytes));
                     }
-                }
             }
             fallback
         }
@@ -639,7 +639,7 @@ impl BootLoader {
             && !(raw.len() >= 0x100 && &raw[0x00..0x04] == b"NSO0")
             && NcaImage::plain_header(raw).is_ok();
         if is_plain_nca || is_xts_nca {
-            return Self::load_nca_bytes_with_key(raw, base_addr, section_key, mmu, vfs.as_deref_mut());
+            return Self::load_nca_bytes_with_key(raw, base_addr, section_key, mmu, vfs);
         }
 
         // 3. Otherwise treat as NRO0 or raw AArch64 executable
@@ -657,11 +657,10 @@ impl BootLoader {
         let title_id = decrypted.title_id;
 
         // If Section 1 (RomFS) is present and a VFS was provided, automatically parse and mount it!
-        if let (Some(romfs_bytes), Some(vfs_ref)) = (&decrypted.decrypted_romfs, vfs) {
-            if let Ok(archive) = crate::fs::RomFsArchive::parse(romfs_bytes) {
+        if let (Some(romfs_bytes), Some(vfs_ref)) = (&decrypted.decrypted_romfs, vfs)
+            && let Ok(archive) = crate::fs::RomFsArchive::parse(romfs_bytes) {
                 vfs_ref.mount_romfs_archive(&archive);
             }
-        }
 
         // Check if decrypted Section 0 is an ExeFS (PFS0) archive
         if decrypted.decrypted_payload.len() >= 16 && (&decrypted.decrypted_payload[0..4] == b"PFS0")

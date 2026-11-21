@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 //! Software window presentation through `minifb`.
 //!
 //! This is the behaviour the runtime had before presentation backends existed: the
@@ -59,9 +60,11 @@ pub struct MinifbBackend {
 
 impl MinifbBackend {
     pub fn new(config: &BackendConfig) -> Result<Self, String> {
-        let mut opts = WindowOptions::default();
-        opts.scale = minifb_scale(config.scale);
-        opts.resize = true;
+        let opts = WindowOptions {
+            scale: minifb_scale(config.scale),
+            resize: true,
+            ..WindowOptions::default()
+        };
 
         let mut window = Window::new(
             &format!("{} [{} FPS Target]", config.title, config.target_fps),
@@ -100,7 +103,7 @@ impl PresentBackend for MinifbBackend {
             self.blit.resize(frame.pixel_count(), 0);
         }
 
-        for (dst, src) in self.blit.iter_mut().zip(frame.rgba.chunks_exact(4)) {
+        for (dst, src) in self.blit.iter_mut().zip(frame.rgba.as_chunks::<4>().0) {
             *dst = ((src[0] as u32) << 16) | ((src[1] as u32) << 8) | src[2] as u32;
         }
 

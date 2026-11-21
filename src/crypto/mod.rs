@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #![allow(dead_code)]
 
 //! FIPS-197 AES-128 primitives (ECB and CTR) used by the synthetic test containers.
@@ -72,11 +73,11 @@ impl Aes128 {
         let mut s = *input;
         add_round_key(&mut s, &self.round_keys[0]);
 
-        for r in 1..10 {
+        for round_key in &self.round_keys[1..10] {
             sub_bytes(&mut s);
             shift_rows(&mut s);
             mix_columns(&mut s);
-            add_round_key(&mut s, &self.round_keys[r]);
+            add_round_key(&mut s, round_key);
         }
 
         sub_bytes(&mut s);
@@ -90,10 +91,10 @@ impl Aes128 {
         let mut s = *input;
         add_round_key(&mut s, &self.round_keys[10]);
 
-        for r in (1..10).rev() {
+        for round_key in self.round_keys[1..10].iter().rev() {
             inv_shift_rows(&mut s);
             inv_sub_bytes(&mut s);
-            add_round_key(&mut s, &self.round_keys[r]);
+            add_round_key(&mut s, round_key);
             inv_mix_columns(&mut s);
         }
 
@@ -105,19 +106,17 @@ impl Aes128 {
 
     /// AES-128-ECB in-place decryption (used for NCA `key_area` and `titlekek`).
     pub fn decrypt_ecb(&self, data: &mut [u8]) {
-        for chunk in data.chunks_exact_mut(16) {
-            let block: [u8; 16] = chunk.try_into().unwrap();
-            let plain = self.decrypt_block(&block);
-            chunk.copy_from_slice(&plain);
+        for chunk in data.as_chunks_mut::<16>().0 {
+            let plain = self.decrypt_block(chunk);
+            *chunk = plain;
         }
     }
 
     /// AES-128-ECB in-place encryption.
     pub fn encrypt_ecb(&self, data: &mut [u8]) {
-        for chunk in data.chunks_exact_mut(16) {
-            let block: [u8; 16] = chunk.try_into().unwrap();
-            let enc = self.encrypt_block(&block);
-            chunk.copy_from_slice(&enc);
+        for chunk in data.as_chunks_mut::<16>().0 {
+            let enc = self.encrypt_block(chunk);
+            *chunk = enc;
         }
     }
 

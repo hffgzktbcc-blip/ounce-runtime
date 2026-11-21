@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #![allow(dead_code)]
 
 //! Sparse host virtual memory arena (`FastmemArena`) for Switch 2 (`Ounce` / Tegra T239)
@@ -10,7 +11,7 @@
 //! - Guest virtual addresses below `direct_limit` (`0..direct_limit`) map 1:1 to `base + guest_va`,
 //!   keeping contiguous Switch 2 code, VRAM (`0x9000_0000`), and 12 GiB Ounce heap regions
 //!   contiguous in host virtual memory for NCE (`base + va`) and zero-copy DMA/GPU uploads.
-//! - High guest virtual addresses (`>= direct_limit`, e.g. Horizon stack `0x7F_FFFF_E000` and TLS
+//! - High guest virtual addresses (`>= direct_limit`, e.g. Horizon stack `0x007F_FFFF_E000` and TLS
 //!   `0x7F_FB00_0000`) receive 4 KiB slots from a dedicated high-VA bump slab inside the same arena,
 //!   so every guest page shares a single `Arc<FastmemArena>` across multi-core worker threads.
 
@@ -183,11 +184,10 @@ impl FastmemArena {
     /// Releases a previously claimed direct-mapped 4 KiB slot so a subsequent `map_range` at the
     /// same guest VA reuses the canonical 1:1 `base + va` offset.
     pub fn release_offset(&self, offset: usize) {
-        if offset < self.direct_limit {
-            if let Ok(mut guard) = self.state.lock() {
+        if offset < self.direct_limit
+            && let Ok(mut guard) = self.state.lock() {
                 guard.claimed_direct_pages.remove(&(offset >> 12));
             }
-        }
     }
 
     /// Host pointer to a 4 KiB slot previously returned by [`Self::alloc_guest_page`].
@@ -316,7 +316,7 @@ mod tests {
         assert!(arena.committed_bytes() >= PAGE_SIZE);
 
         // High VA (Horizon stack 0x7FFF_FFE000) maps into the high-VA bump slab.
-        let high_off = arena.alloc_guest_page(0x7FFF_FFE0_00 >> 12).expect("slab slot");
+        let high_off = arena.alloc_guest_page(0x007F_FFFF_E000 >> 12).expect("slab slot");
         assert!(high_off >= arena.direct_limit());
 
         unsafe {

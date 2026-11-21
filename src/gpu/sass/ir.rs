@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 //! Small SSA IR for shaders, and the lowering from decoded SASS.
 //!
 //! The IR is straight-line: every instruction result is a fresh [`Value`], a register map
@@ -164,7 +165,7 @@ pub enum AttrSlot {
 }
 
 pub fn attr_slot(addr: u16) -> Option<AttrSlot> {
-    if addr % 4 != 0 {
+    if !addr.is_multiple_of(4) {
         return None;
     }
     match addr {

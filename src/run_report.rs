@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 //! Machine-readable run report (`ounce.run.v1`) emitted when `--report-json=<path>` is passed,
 //! and bounded instruction trace summary (`ounce.trace.v1`) emitted when `OUNCE_TRACE_SUMMARY=<path>` is set.
 
@@ -98,16 +99,14 @@ pub fn write_if_configured(report: &RunReport) {
         "guest_exit_status": serde_json::Value::Null,
         "message": report.message,
     });
-    if let Some(parent) = path.parent() {
-        if !parent.as_os_str().is_empty() {
+    if let Some(parent) = path.parent()
+        && !parent.as_os_str().is_empty() {
             let _ = std::fs::create_dir_all(parent);
         }
-    }
-    if let Ok(bytes) = serde_json::to_vec_pretty(&payload) {
-        if let Err(err) = std::fs::write(path, bytes) {
+    if let Ok(bytes) = serde_json::to_vec_pretty(&payload)
+        && let Err(err) = std::fs::write(path, bytes) {
             eprintln!("[Report] Failed to write {}: {err}", path.display());
         }
-    }
 }
 
 /// Parses `OUNCE_TRACE_STEPS`: default 1024, clamped to `1..=65536`; non-positive or invalid values

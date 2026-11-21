@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #![allow(dead_code)]
 
 use super::instructions::{
@@ -159,7 +160,7 @@ impl Cpu {
                         } else {
                             self.regs.read_w(rd) as u64
                         };
-                        let mask = !((0xFFFF as u64) << shift);
+                        let mask = !(0xFFFF_u64 << shift);
                         (cur & mask) | shifted
                     }
                 };
@@ -197,7 +198,7 @@ impl Cpu {
                         (res, !borrow, v)
                     } else {
                         let (res, carry) = op1.overflowing_add(op2);
-                        let v = (!((op1 ^ op2)) & (op1 ^ res) & (1 << 63)) != 0;
+                        let v = (!(op1 ^ op2) & (op1 ^ res) & (1 << 63)) != 0;
                         (res, carry, v)
                     };
 
@@ -220,7 +221,7 @@ impl Cpu {
                         (res, !borrow, v)
                     } else {
                         let (res, carry) = op1_32.overflowing_add(op2_32);
-                        let v = (!((op1_32 ^ op2_32)) & (op1_32 ^ res) & (1 << 31)) != 0;
+                        let v = (!(op1_32 ^ op2_32) & (op1_32 ^ res) & (1 << 31)) != 0;
                         (res, carry, v)
                     };
 
@@ -298,7 +299,7 @@ impl Cpu {
                         (res, !borrow, v)
                     } else {
                         let (res, carry) = op1.overflowing_add(op2);
-                        let v = (!((op1 ^ op2)) & (op1 ^ res) & (1 << 63)) != 0;
+                        let v = (!(op1 ^ op2) & (op1 ^ res) & (1 << 63)) != 0;
                         (res, carry, v)
                     };
 
@@ -324,7 +325,7 @@ impl Cpu {
                         (res, !borrow, v)
                     } else {
                         let (res, carry) = op1_32.overflowing_add(op2_32);
-                        let v = (!((op1_32 ^ op2_32)) & (op1_32 ^ res) & (1 << 31)) != 0;
+                        let v = (!(op1_32 ^ op2_32) & (op1_32 ^ res) & (1 << 31)) != 0;
                         (res, carry, v)
                     };
 
@@ -601,7 +602,7 @@ impl Cpu {
                             (r, !borrow, v)
                         } else {
                             let (r, carry) = op1.overflowing_add(op2);
-                            let v = (!((op1 ^ op2)) & (op1 ^ r) & (1 << 63)) != 0;
+                            let v = (!(op1 ^ op2) & (op1 ^ r) & (1 << 63)) != 0;
                             (r, carry, v)
                         };
                         self.regs.pstate.n = (res as i64) < 0;
@@ -617,7 +618,7 @@ impl Cpu {
                             (r, !borrow, v)
                         } else {
                             let (r, carry) = op1_32.overflowing_add(op2_32);
-                            let v = (!((op1_32 ^ op2_32)) & (op1_32 ^ r) & (1 << 31)) != 0;
+                            let v = (!(op1_32 ^ op2_32) & (op1_32 ^ r) & (1 << 31)) != 0;
                             (r, carry, v)
                         };
                         self.regs.pstate.n = (res as i32) < 0;
@@ -1267,7 +1268,7 @@ impl Cpu {
                     self.regs.write_x(rd, res);
                 } else {
                     let n = self.regs.read_w(rn);
-                    let shift = (self.regs.read_w(rm) & 31) as u32;
+                    let shift = self.regs.read_w(rm) & 31;
                     let res = match shift_type {
                         ShiftType::Lsl => n.wrapping_shl(shift),
                         ShiftType::Lsr => n.wrapping_shr(shift),

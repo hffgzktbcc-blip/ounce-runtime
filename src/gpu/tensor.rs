@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #![allow(dead_code)]
 
 //! Warp-level matrix multiply-accumulate (tensor core) modelling for the
@@ -399,9 +400,9 @@ impl WarpFragments {
         let d = mma_f16_f32(self.shape, &a, &b, &c)?;
 
         let mut d_frags = [[0.0f32; CD_REGS]; WARP_LANES];
-        for lane in 0..WARP_LANES {
+        for (lane, frag) in d_frags.iter_mut().enumerate() {
             for (reg, (row, col)) in lane_cd_coords(lane).into_iter().enumerate() {
-                d_frags[lane][reg] = d[row * n + col];
+                frag[reg] = d[row * n + col];
             }
         }
         Ok(d_frags)
@@ -412,9 +413,9 @@ impl WarpFragments {
 pub fn collect_d(shape: HmmaShape, d_frags: &[[f32; CD_REGS]; WARP_LANES]) -> Vec<f32> {
     let n = shape.n();
     let mut d = vec![0.0f32; shape.m() * n];
-    for lane in 0..WARP_LANES {
+    for (lane, frag) in d_frags.iter().enumerate() {
         for (reg, (row, col)) in lane_cd_coords(lane).into_iter().enumerate() {
-            d[row * n + col] = d_frags[lane][reg];
+            d[row * n + col] = frag[reg];
         }
     }
     d
@@ -488,15 +489,15 @@ mod tests {
         assert_eq!(f32_to_f16(2.0), 0x4000);
         assert_eq!(f32_to_f16(65504.0), 0x7BFF); // largest finite half
         assert_eq!(f32_to_f16(65536.0), 0x7C00); // overflow -> +inf
-        assert_eq!(f32_to_f16(6.103515625e-5), 0x0400); // smallest normal
-        assert_eq!(f32_to_f16(5.960464477539063e-8), 0x0001); // smallest subnormal
+        assert_eq!(f32_to_f16(6.103_515_6e-5), 0x0400); // smallest normal
+        assert_eq!(f32_to_f16(5.960_464_5e-8), 0x0001); // smallest subnormal
 
         assert_eq!(f16_to_f32(0x3C00), 1.0);
         assert_eq!(f16_to_f32(0xC000), -2.0);
         assert_eq!(f16_to_f32(0x3800), 0.5);
         assert_eq!(f16_to_f32(0x7BFF), 65504.0);
-        assert_eq!(f16_to_f32(0x0400), 6.103515625e-5);
-        assert_eq!(f16_to_f32(0x0001), 5.960464477539063e-8);
+        assert_eq!(f16_to_f32(0x0400), 6.103_515_6e-5);
+        assert_eq!(f16_to_f32(0x0001), 5.960_464_5e-8);
         assert!(f16_to_f32(0x7C00).is_infinite());
         assert!(f16_to_f32(0xFE00).is_nan());
 
@@ -505,10 +506,10 @@ mod tests {
         assert_eq!(f32_to_f16(1.0 + 0.000_488_281_25), 0x3C00);
         // 1.0 + 3 * 2^-12 is three quarters of the way to the next half and
         // rounds up to 0x3C01.
-        assert_eq!(f32_to_f16(1.0 + 0.000_732_421_875), 0x3C01);
+        assert_eq!(f32_to_f16(1.0 + 0.000_732_421_9), 0x3C01);
         // 1.0 + 3 * 2^-11 is halfway between 0x3C01 and 0x3C02; the even
         // neighbour is 0x3C02.
-        assert_eq!(f32_to_f16(1.0 + 0.001_464_843_75), 0x3C02);
+        assert_eq!(f32_to_f16(1.0 + 0.001_464_843_8), 0x3C02);
 
         // Every representable half must survive a round trip.
         for bits in 0..=u16::MAX {
