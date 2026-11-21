@@ -447,13 +447,13 @@ impl HidSharedMemory {
         ] {
             lifo_reset(mmu, header);
         }
-        for index in 0..NPAD_COUNT {
+        for (index, written_style) in self.written_style.iter_mut().enumerate().take(NPAD_COUNT) {
             let npad = Self::npad_base(addr, index);
             for style in [NpadStyle::FullKey, NpadStyle::Handheld, NpadStyle::JoyDual, NpadStyle::JoyLeft, NpadStyle::JoyRight] {
                 lifo_reset(mmu, npad + style.lifo_offset());
             }
             Self::write_npad_header(mmu, npad, None);
-            self.written_style[index] = 0;
+            *written_style = 0;
         }
         self.sync(mmu);
     }

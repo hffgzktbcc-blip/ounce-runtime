@@ -4004,11 +4004,11 @@ fn fuzz_replay(args: &[String]) -> i32 {
         guest.regs.pc = 0x1000;
         guest.regs.fpsr = 0;
         guest.regs.pstate.from_bits((hex(2)? as u32) << 28);
-        for i in 0..31 {
-            guest.regs.x[i] = hex(3 + i)? as u64;
+        for (i, reg) in guest.regs.x.iter_mut().enumerate().take(31) {
+            *reg = hex(3 + i)? as u64;
         }
-        for i in 0..32 {
-            guest.regs.v[i] = hex(34 + i)?;
+        for (i, reg) in guest.regs.v.iter_mut().enumerate().take(32) {
+            *reg = hex(34 + i)?;
         }
         let mut mem = Memory::new();
         mem.map_range(0x1000, 4096, Permission::READ_WRITE_EXECUTE);
@@ -4025,13 +4025,13 @@ fn fuzz_replay(args: &[String]) -> i32 {
         matched &= (guest.regs.pstate.to_bits() >> 28) == hex(67)? as u32;
         matched &= (guest.regs.fpsr & cpu::registers::FPSR_QC)
             == ((hex(68)? as u32) & cpu::registers::FPSR_QC);
-        for i in 0..31 {
+        for (i, &reg) in guest.regs.x.iter().enumerate().take(31) {
             if i != 18 {
-                matched &= guest.regs.x[i] == hex(69 + i)? as u64;
+                matched &= reg == hex(69 + i)? as u64;
             }
         }
-        for i in 0..32 {
-            matched &= guest.regs.v[i] == hex(100 + i)?;
+        for (i, &reg) in guest.regs.v.iter().enumerate().take(32) {
+            matched &= reg == hex(100 + i)?;
         }
         Ok(ReplayOutcome {
             executed: n,

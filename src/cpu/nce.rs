@@ -1021,7 +1021,7 @@ impl NceEngine {
     ) -> (usize, BlockExit) {
         #[cfg(feature = "native-jit")]
         {
-            return self.tier4_fallback.run_slice(cpu, mmu, max_instructions);
+            self.tier4_fallback.run_slice(cpu, mmu, max_instructions)
         }
         #[cfg(not(feature = "native-jit"))]
         {

@@ -73,11 +73,11 @@ impl Aes128 {
         let mut s = *input;
         add_round_key(&mut s, &self.round_keys[0]);
 
-        for r in 1..10 {
+        for round_key in &self.round_keys[1..10] {
             sub_bytes(&mut s);
             shift_rows(&mut s);
             mix_columns(&mut s);
-            add_round_key(&mut s, &self.round_keys[r]);
+            add_round_key(&mut s, round_key);
         }
 
         sub_bytes(&mut s);
@@ -91,10 +91,10 @@ impl Aes128 {
         let mut s = *input;
         add_round_key(&mut s, &self.round_keys[10]);
 
-        for r in (1..10).rev() {
+        for round_key in self.round_keys[1..10].iter().rev() {
             inv_shift_rows(&mut s);
             inv_sub_bytes(&mut s);
-            add_round_key(&mut s, &self.round_keys[r]);
+            add_round_key(&mut s, round_key);
             inv_mix_columns(&mut s);
         }
 
