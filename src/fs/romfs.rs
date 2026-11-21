@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #![allow(dead_code)]
 
 use std::collections::{HashMap, HashSet};
@@ -245,8 +246,8 @@ impl VirtualFileSystem {
                 let path = entry.path();
                 if path.is_dir() {
                     scan_dir(&path, root, prefix, files, count)?;
-                } else if path.is_file() {
-                    if let Ok(rel) = path.strip_prefix(root) {
+                } else if path.is_file()
+                    && let Ok(rel) = path.strip_prefix(root) {
                         let rel_str = rel.to_string_lossy().replace('\\', "/");
                         let vfs_path = format!("{}:/{}", prefix, rel_str);
                         if let Ok(data) = std::fs::read(&path) {
@@ -254,7 +255,6 @@ impl VirtualFileSystem {
                             *count += 1;
                         }
                     }
-                }
             }
             Ok(())
         }
@@ -362,11 +362,10 @@ impl VirtualFileSystem {
         if let Some(data) = self.files.get(&norm) {
             return Some(VfsEntryKind::File(data.len() as u64));
         }
-        if let Ok(Some(p)) = self.host_path(&norm) {
-            if let Ok(meta) = std::fs::metadata(&p) {
+        if let Ok(Some(p)) = self.host_path(&norm)
+            && let Ok(meta) = std::fs::metadata(&p) {
                 return Some(if meta.is_dir() { VfsEntryKind::Directory } else { VfsEntryKind::File(meta.len()) });
             }
-        }
         let clean = norm.trim_end_matches('/');
         let prefix = format!("{clean}/");
         let is_dir = clean.ends_with(':')
@@ -498,11 +497,10 @@ impl VirtualFileSystem {
             return Err(VfsError::AlreadyExists(to));
         }
         self.check_parent(&to)?;
-        if let (Some(a), Some(b)) = (host_from, host_to) {
-            if std::fs::symlink_metadata(&a).is_ok() {
+        if let (Some(a), Some(b)) = (host_from, host_to)
+            && std::fs::symlink_metadata(&a).is_ok() {
                 std::fs::rename(a, b)?;
             }
-        }
         let moved = |k: &str| -> Option<String> {
             if k == from {
                 Some(to.clone())
@@ -561,16 +559,14 @@ impl VirtualFileSystem {
     /// Lazy `romfs:/` host files are validated on disk without reading their contents into RAM.
     pub fn open_file(&mut self, path: &str) -> Result<u32, VfsError> {
         let norm = normalize_vfs_path(path);
-        if norm.starts_with("romfs:/") && !self.files.contains_key(&norm) && !self.files.contains_key(path) {
-            if let Some(disk_path) = self.host_path(&norm)? {
-                if std::fs::metadata(&disk_path).is_ok_and(|m| m.is_file()) {
+        if norm.starts_with("romfs:/") && !self.files.contains_key(&norm) && !self.files.contains_key(path)
+            && let Some(disk_path) = self.host_path(&norm)?
+                && std::fs::metadata(&disk_path).is_ok_and(|m| m.is_file()) {
                     let handle = self.next_handle;
                     self.next_handle += 1;
                     self.open_handles.insert(handle, norm);
                     return Ok(handle);
                 }
-            }
-        }
         if !self.ensure_loaded(&norm)? && !self.files.contains_key(path) {
             return Err(VfsError::NotFound(path.to_string()));
         }
@@ -752,8 +748,8 @@ impl VirtualFileSystem {
         }
 
         // 3. Host folder behind save:/ and sdmc:/
-        if let Ok(Some(disk_dir)) = self.host_path(&norm) {
-            if disk_dir.is_dir() {
+        if let Ok(Some(disk_dir)) = self.host_path(&norm)
+            && disk_dir.is_dir() {
                 dir_found = true;
                 if let Ok(rd) = std::fs::read_dir(&disk_dir) {
                     for e in rd.flatten() {
@@ -761,7 +757,6 @@ impl VirtualFileSystem {
                     }
                 }
             }
-        }
 
         if !dir_found {
             return Err(VfsError::NotFound(path.to_string()));
@@ -804,12 +799,11 @@ impl VirtualFileSystem {
         let host = self.host_path(&norm)?;
         let cached = self.files.contains_key(&norm);
         let mut disk_removed = false;
-        if let Some(disk_path) = host {
-            if disk_path.is_file() {
+        if let Some(disk_path) = host
+            && disk_path.is_file() {
                 std::fs::remove_file(&disk_path)?;
                 disk_removed = true;
             }
-        }
 
         if !cached && !disk_removed {
             return Err(VfsError::NotFound(path.to_string()));
@@ -840,12 +834,11 @@ impl VirtualFileSystem {
         let subdirs_removed = self.directories.iter().any(|d| d.starts_with(&prefix) || d == &clean);
 
         let mut disk_removed = false;
-        if let Some(disk_path) = host {
-            if disk_path.is_dir() {
+        if let Some(disk_path) = host
+            && disk_path.is_dir() {
                 std::fs::remove_dir_all(&disk_path)?;
                 disk_removed = true;
             }
-        }
 
         if !dir_existed && !subdirs_removed && to_remove.is_empty() && !disk_removed {
             return Err(VfsError::NotFound(path.to_string()));

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 //! BC1-BC7 (Khronos Data Format Specification 1.3, "S3TC", "RGTC" and "BPTC" sections).
 //!
 //! `i` is the texel index inside the 4x4 block, row-major (`y * 4 + x`).
@@ -218,6 +219,7 @@ pub(super) fn bc7(b: &[u8], i: usize) -> [f32; 4] {
     let Some(mode) = (0..8).find(|m| b[0] & (1 << m) != 0) else { return [0.0; 4] };
     // (subsets, partition bits, rotation bits, index selection bit, colour bits, alpha bits,
     //  per-endpoint p-bits, shared p-bits, index bits, second index bits)
+    #[allow(clippy::type_complexity)]
     const MODES: [(u32, u32, u32, u32, u32, u32, u32, u32, u32, u32); 8] = [
         (3, 4, 0, 0, 4, 0, 1, 0, 3, 0),
         (2, 6, 0, 0, 6, 0, 0, 1, 3, 0),
@@ -260,8 +262,8 @@ pub(super) fn bc7(b: &[u8], i: usize) -> [f32; 4] {
             }).collect()
         };
         for (e, p) in ep.iter_mut().take(ne).zip(pbits) {
-            for ch in 0..3 {
-                e[ch] = (e[ch] << 1) | p;
+            for slot in e.iter_mut().take(3) {
+                *slot = (*slot << 1) | p;
             }
             if ab > 0 {
                 e[3] = (e[3] << 1) | p;
@@ -274,8 +276,8 @@ pub(super) fn bc7(b: &[u8], i: usize) -> [f32; 4] {
     }
     let expand = |v: u32, n: u32| (v << (8 - n)) | (v >> (2 * n - 8));
     for e in ep.iter_mut().take(ne) {
-        for ch in 0..3 {
-            e[ch] = expand(e[ch], cbits);
+        for slot in e.iter_mut().take(3) {
+            *slot = expand(*slot, cbits);
         }
         if ab > 0 {
             e[3] = expand(e[3], abits);
@@ -402,7 +404,7 @@ fn sign_extend(v: u32, bits: u32) -> i32 {
 
 /// BC6H, unsigned or signed half floats.
 pub(super) fn bc6h(b: &[u8], i: usize, signed: bool) -> [f32; 4] {
-    let two = (b[0] & 3) as u8;
+    let two = b[0] & 3;
     let five = b[0] & 0x1f;
     let Some(m) = BC6_MODES.iter().find(|m| if m.mode_bits == 2 { m.value == two && two < 2 } else { two >= 2 && m.value == five })
     else {

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #![allow(dead_code)]
 
 use byteorder::{ByteOrder, LittleEndian};
@@ -81,8 +82,8 @@ impl TextureDecompressor {
         let mut dst = vec![0u32; width * height];
         let (bw, bh) = format.block_dims();
         let bsize = format.block_size();
-        let blocks_x = (width + bw - 1) / bw;
-        let blocks_y = (height + bh - 1) / bh;
+        let blocks_x = width.div_ceil(bw);
+        let blocks_y = height.div_ceil(bh);
 
         let mut block_idx = 0;
         let mut decoded_block = [0u32; 64]; // supports up to 8x8 blocks
@@ -113,9 +114,7 @@ impl TextureDecompressor {
                         }
                         _ => {
                             // Fallback raw unpack
-                            for i in 0..16 {
-                                decoded_block[i] = 0xFFFFFFFF;
-                            }
+                            decoded_block.fill(0xFFFFFFFF);
                         }
                     }
 
@@ -180,9 +179,9 @@ impl TextureDecompressor {
             ]
         };
 
-        for i in 0..16 {
+        for (i, dst) in out.iter_mut().enumerate() {
             let code = ((indices >> (i * 2)) & 0x03) as usize;
-            out[i] = colors[code];
+            *dst = colors[code];
         }
     }
 
@@ -207,13 +206,13 @@ impl TextureDecompressor {
             let b1 = ((bytes[7] as u32) & 0x7F) << 1;
             let a1 = ((bytes[8] as u32) & 0x7F) << 1;
 
-            for i in 0..16 {
+            for (i, dst) in out.iter_mut().enumerate() {
                 let weight = (i as u32 * 64) / 15;
                 let r = (r0 * (64 - weight) + r1 * weight + 32) / 64;
                 let g = (g0 * (64 - weight) + g1 * weight + 32) / 64;
                 let b = (b0 * (64 - weight) + b1 * weight + 32) / 64;
                 let a = (a0 * (64 - weight) + a1 * weight + 32) / 64;
-                out[i] = (a.min(255) << 24) | (r.min(255) << 16) | (g.min(255) << 8) | b.min(255);
+                *dst = (a.min(255) << 24) | (r.min(255) << 16) | (g.min(255) << 8) | b.min(255);
             }
         } else {
             // General BC7 fallback: Decode primary endpoints from bytes 0..8
@@ -227,12 +226,12 @@ impl TextureDecompressor {
             let b1 = bytes[6] as u32;
             let _a1 = 255u32;
 
-            for i in 0..16 {
+            for (i, dst) in out.iter_mut().enumerate() {
                 let weight = (i as u32 * 64) / 15;
                 let r = (r0 * (64 - weight) + r1 * weight + 32) / 64;
                 let g = (g0 * (64 - weight) + g1 * weight + 32) / 64;
                 let b = (b0 * (64 - weight) + b1 * weight + 32) / 64;
-                out[i] = (a0 << 24) | (r.min(255) << 16) | (g.min(255) << 8) | b.min(255);
+                *dst = (a0 << 24) | (r.min(255) << 16) | (g.min(255) << 8) | b.min(255);
             }
         }
     }
@@ -270,7 +269,7 @@ impl TextureDecompressor {
         let a1 = bytes[9] as u32;
 
         // Apply 4-bit per-texel weights from bytes 10..16
-        for i in 0..16 {
+        for (i, dst) in out.iter_mut().enumerate() {
             let byte_idx = 10 + (i / 2);
             let shift = (i % 2) * 4;
             let weight_4bit = if byte_idx < bytes.len() {
@@ -289,7 +288,7 @@ impl TextureDecompressor {
                 (a0 * (64 - w) + a1 * w + 32) / 64
             };
 
-            out[i] = (a.min(255) << 24) | (r.min(255) << 16) | (g.min(255) << 8) | b.min(255);
+            *dst = (a.min(255) << 24) | (r.min(255) << 16) | (g.min(255) << 8) | b.min(255);
         }
     }
 
@@ -776,12 +775,12 @@ impl NvnDriver {
                     idx += 4;
                     cb.clear_color(r, g, b, a);
                 }
-                NVN_CMD_SET_DEPTH_TEST if idx + 1 <= max_words => {
+                NVN_CMD_SET_DEPTH_TEST if idx < max_words => {
                     let en = mmu.read_u32(cmd_stream_addr + (idx * 4) as u64).unwrap_or(0) != 0;
                     idx += 1;
                     cb.set_depth_test(en);
                 }
-                NVN_CMD_BIND_PROGRAM if idx + 1 <= max_words => {
+                NVN_CMD_BIND_PROGRAM if idx < max_words => {
                     let addr = mmu.read_u32(cmd_stream_addr + (idx * 4) as u64).unwrap_or(0);
                     idx += 1;
                     cb.bind_program(addr);
@@ -793,22 +792,22 @@ impl NvnDriver {
                     idx += 3;
                     cb.bind_texture(addr, w, h);
                 }
-                NVN_CMD_BIND_TEXTURE_DESCRIPTOR if idx + 1 <= max_words => {
+                NVN_CMD_BIND_TEXTURE_DESCRIPTOR if idx < max_words => {
                     let id = mmu.read_u32(cmd_stream_addr + (idx * 4) as u64).unwrap_or(0);
                     idx += 1;
                     cb.bind_texture_descriptor(id);
                 }
-                NVN_CMD_BIND_VERTEX_BUFFER if idx + 1 <= max_words => {
+                NVN_CMD_BIND_VERTEX_BUFFER if idx < max_words => {
                     let addr = mmu.read_u32(cmd_stream_addr + (idx * 4) as u64).unwrap_or(0);
                     idx += 1;
                     cb.bind_vertex_buffer(addr);
                 }
-                NVN_CMD_DRAW_ARRAYS if idx + 1 <= max_words => {
+                NVN_CMD_DRAW_ARRAYS if idx < max_words => {
                     let count = mmu.read_u32(cmd_stream_addr + (idx * 4) as u64).unwrap_or(0);
                     idx += 1;
                     cb.draw_arrays(count);
                 }
-                NVN_CMD_DRAW_TEXTURED if idx + 1 <= max_words => {
+                NVN_CMD_DRAW_TEXTURED if idx < max_words => {
                     let count = mmu.read_u32(cmd_stream_addr + (idx * 4) as u64).unwrap_or(0);
                     idx += 1;
                     cb.draw_textured(count);
@@ -821,7 +820,7 @@ impl NvnDriver {
                     idx += 4;
                     cb.dispatch_upscale_2x(src, w, h, dst);
                 }
-                NVN_CMD_BUFFER_CYCLE if idx + 1 <= max_words => {
+                NVN_CMD_BUFFER_CYCLE if idx < max_words => {
                     let buf_id = mmu.read_u32(cmd_stream_addr + (idx * 4) as u64).unwrap_or(0);
                     idx += 1;
                     cb.cycle_buffer(buf_id);

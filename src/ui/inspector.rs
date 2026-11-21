@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #![allow(dead_code)]
 
 use crate::fs::RomFsArchive;
@@ -46,7 +47,7 @@ impl PackageInspector {
         let mut has_bti = false;
 
         // Scan 32-bit words for Switch 2 architectural security extensions
-        for chunk in raw.chunks_exact(4) {
+        for chunk in raw.as_chunks::<4>().0 {
             let inst = u32::from_le_bytes([chunk[0], chunk[1], chunk[2], chunk[3]]);
             match inst {
                 0xD503237F | 0xD503233F | 0xD50323FF | 0xD65F0FFF | 0xD65F0BFF => {
@@ -75,21 +76,18 @@ impl PackageInspector {
 
             if let Ok(secure) = xci.open_secure_partition() {
                 for nca_name in secure.list_files() {
-                    if nca_name.ends_with(".nca") && !nca_name.ends_with(".cnmt.nca") {
-                        if let Some(nca_raw) = secure.extract_file(nca_name) {
-                            if let Ok(nca) = NcaImage::parse_with_key(nca_raw, key) {
+                    if nca_name.ends_with(".nca") && !nca_name.ends_with(".cnmt.nca")
+                        && let Some(nca_raw) = secure.extract_file(nca_name)
+                            && let Ok(nca) = NcaImage::parse_with_key(nca_raw, key) {
                                 title_id = nca.title_id;
                                 code_size = nca.section_size;
-                                if let Some(ref r_bytes) = nca.decrypted_romfs {
-                                    if let Ok(archive) = RomFsArchive::parse(r_bytes) {
+                                if let Some(ref r_bytes) = nca.decrypted_romfs
+                                    && let Ok(archive) = RomFsArchive::parse(r_bytes) {
                                         for entry in archive.entries {
                                             romfs_files.push((entry.path, entry.data.len()));
                                         }
                                     }
-                                }
                             }
-                        }
-                    }
                 }
             }
         } else if raw.len() >= 16 && (&raw[0..4] == b"PFS0") {
@@ -97,21 +95,18 @@ impl PackageInspector {
             format = "NSP (Nintendo Submission Package / PFS0)".to_string();
             let pfs0 = Pfs0Archive::parse(raw.to_vec()).map_err(|_| "Failed to parse PFS0")?;
             for name in pfs0.list_files() {
-                if name.ends_with(".nca") && !name.ends_with(".cnmt.nca") {
-                    if let Some(nca_raw) = pfs0.extract_file(name) {
-                        if let Ok(nca) = NcaImage::parse_with_key(nca_raw, key) {
+                if name.ends_with(".nca") && !name.ends_with(".cnmt.nca")
+                    && let Some(nca_raw) = pfs0.extract_file(name)
+                        && let Ok(nca) = NcaImage::parse_with_key(nca_raw, key) {
                             title_id = nca.title_id;
                             code_size = nca.section_size;
-                            if let Some(ref r_bytes) = nca.decrypted_romfs {
-                                if let Ok(archive) = RomFsArchive::parse(r_bytes) {
+                            if let Some(ref r_bytes) = nca.decrypted_romfs
+                                && let Ok(archive) = RomFsArchive::parse(r_bytes) {
                                     for entry in archive.entries {
                                         romfs_files.push((entry.path, entry.data.len()));
                                     }
                                 }
-                            }
                         }
-                    }
-                }
             }
         } else {
             // Try loading through Unified BootLoader

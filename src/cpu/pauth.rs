@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 //! Pointer authentication (FEAT_PAuth) and branch target identification (FEAT_BTI) for EL0.
 //!
 //! Semantics follow the Arm ARM pseudocode for ARMv8.5-A: `AddPAC`, `Auth` and `Strip` without
@@ -198,14 +199,12 @@ pub fn siphash24(k0: u64, k1: u64, msg: &[u8]) -> u64 {
         round(v);
         v[0] ^= m;
     };
-    let mut chunks = msg.chunks_exact(8);
-    for c in &mut chunks {
-        let mut word = [0u8; 8];
-        word.copy_from_slice(c);
-        compress(&mut v, u64::from_le_bytes(word));
+    let (chunks, remainder) = msg.as_chunks::<8>();
+    for c in chunks {
+        compress(&mut v, u64::from_le_bytes(*c));
     }
     let mut last = (msg.len() as u64) << 56;
-    for (i, b) in chunks.remainder().iter().enumerate() {
+    for (i, b) in remainder.iter().enumerate() {
         last |= (*b as u64) << (8 * i);
     }
     compress(&mut v, last);

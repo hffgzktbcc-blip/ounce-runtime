@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #![allow(dead_code)]
 
 use std::collections::HashMap;
@@ -265,8 +266,8 @@ impl Memory {
         };
         let mut migrated = false;
         for (&page_idx, page) in &mut self.pages {
-            if matches!(page.storage, PageStorage::Heap(_)) {
-                if let Some(offset) = arena.alloc_guest_page(page_idx) {
+            if matches!(page.storage, PageStorage::Heap(_))
+                && let Some(offset) = arena.alloc_guest_page(page_idx) {
                     let mut tmp = [0u8; PAGE_SIZE];
                     tmp.copy_from_slice(page.storage.as_slice());
                     let mut fast_storage = PageStorage::Fastmem {
@@ -278,7 +279,6 @@ impl Memory {
                     page.storage = fast_storage;
                     migrated = true;
                 }
-            }
         }
         if migrated {
             self.tlb_gen = self.tlb_gen.wrapping_add(1);
@@ -348,12 +348,11 @@ impl Memory {
         }
         let mut newly_marked = false;
         for page_idx in (start >> 12)..=((end - 1) >> 12) {
-            if let Some(page) = self.pages.get_mut(&page_idx) {
-                if !page.holds_code {
+            if let Some(page) = self.pages.get_mut(&page_idx)
+                && !page.holds_code {
                     page.holds_code = true;
                     newly_marked = true;
                 }
-            }
         }
         if newly_marked {
             self.tlb_gen = self.tlb_gen.wrapping_add(1);
@@ -383,7 +382,7 @@ impl Memory {
             let va = page_idx << 12;
             if (0x9000_0000..0xA000_0000).contains(&va) {
                 stats.vram_bytes += PAGE_SIZE;
-            } else if va >= 0x7FFF_0000_00 {
+            } else if va >= 0x007F_FF00_0000 {
                 stats.stack_tls_bytes += PAGE_SIZE;
             } else if page.perm.execute {
                 stats.code_bytes += PAGE_SIZE;
@@ -395,15 +394,14 @@ impl Memory {
     }
 
     fn alloc_storage_for_page(&self, page_idx: u64) -> PageStorage {
-        if let Some(arena) = &self.fastmem {
-            if let Some(offset) = arena.alloc_guest_page(page_idx) {
+        if let Some(arena) = &self.fastmem
+            && let Some(offset) = arena.alloc_guest_page(page_idx) {
                 return PageStorage::Fastmem {
                     arena: arena.clone(),
                     offset,
                     owns_slot: true,
                 };
             }
-        }
         PageStorage::Heap(Box::new([0u8; PAGE_SIZE]))
     }
 
@@ -492,8 +490,8 @@ impl Memory {
 
                 // If Fastmem is active and `dst_page_idx` fits in the direct 1:1 window, relocate
                 // the storage to `dst_page_idx`'s canonical direct offset so NCE `base + va` stays 1:1.
-                if let Some(arena) = self.fastmem.clone() {
-                    if ((dst_page_idx as usize) << 12) + PAGE_SIZE <= arena.direct_limit() {
+                if let Some(arena) = self.fastmem.clone()
+                    && ((dst_page_idx as usize) << 12) + PAGE_SIZE <= arena.direct_limit() {
                         let mut bytes = [0u8; PAGE_SIZE];
                         bytes.copy_from_slice(page.storage.as_slice());
                         // Drop old storage before claiming `dst_page_idx`
@@ -510,7 +508,6 @@ impl Memory {
                             page.storage.as_mut_slice().copy_from_slice(&bytes);
                         }
                     }
-                }
 
                 self.pages.insert(dst_page_idx, page);
                 if moved_guarded {

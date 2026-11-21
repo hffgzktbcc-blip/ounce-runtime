@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #![allow(dead_code)]
 
 use super::interpreter::Cpu;
@@ -152,8 +153,8 @@ impl Tier3JitEngine {
         let counter = self.hot_pc_counters.entry(pc).or_insert(0);
         *counter += 1;
 
-        if *counter >= Self::HOT_THRESHOLD {
-            if let Some(sb) = SuperBlock::form_trace(pc, mmu, 4) {
+        if *counter >= Self::HOT_THRESHOLD
+            && let Some(sb) = SuperBlock::form_trace(pc, mmu, 4) {
                 for b in &sb.fused_blocks {
                     mmu.mark_code_range(b.start_pc, b.end_pc);
                 }
@@ -161,7 +162,6 @@ impl Tier3JitEngine {
                 self.super_blocks.insert(pc, Arc::clone(&arc_sb));
                 return Some(arc_sb);
             }
-        }
 
         None
     }

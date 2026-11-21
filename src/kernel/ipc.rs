@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #![allow(dead_code)]
 
 use crate::audio::AudioOutServer;
@@ -128,7 +129,7 @@ pub const SHARED_FONT_SIZE: usize = 0x10_0000; // 1 MB Shared Font Buffer
 /// Reads a null-terminated string from CMIF arguments or a guest pointer.
 fn read_cmif_string(mmu: &Memory, args_base: u64, max_len: usize) -> String {
     let maybe_ptr = mmu.read_u64(args_base).unwrap_or(0);
-    if maybe_ptr >= 0x10000 && maybe_ptr < 0x0001_0000_0000_0000 && mmu.is_mapped(maybe_ptr) {
+    if (0x10000..0x0001_0000_0000_0000).contains(&maybe_ptr) && mmu.is_mapped(maybe_ptr) {
         let mut buf = vec![0u8; max_len];
         if mmu.read_bytes(maybe_ptr, &mut buf).is_ok() {
             let len = buf.iter().position(|&b| b == 0).unwrap_or(max_len);
@@ -674,7 +675,7 @@ impl IpcManager {
 
             ServiceType::Vi => match cmd_id {
                 // Command 0 (`vi:u`) / 1 (`vi:s`) / 2 (`vi:m`): GetDisplayService -> returns IApplicationDisplayService
-                0 | 1 | 2 => {
+                0..=2 => {
                     let disp_h = self.allocate_handle(ServiceType::ApplicationDisplayService);
                     self.write_cmif_response(tls_addr, mmu, 0, &[disp_h], Some(disp_h));
                     0
@@ -852,7 +853,7 @@ impl IpcManager {
                     0
                 }
                 // Command 51 | 52 | 53: OpenSaveDataFileSystem -> returns IFileSystem ("save:/")
-                51 | 52 | 53 => {
+                51..=53 => {
                     let fs_h = self.allocate_handle(ServiceType::FileSystem("save:/".to_string()));
                     self.write_cmif_response(tls_addr, mmu, 0, &[fs_h], Some(fs_h));
                     0
@@ -1314,12 +1315,11 @@ impl IpcManager {
                 // plain store), so syncpoint reads and waits below see current fences.
                 self.nvdrv.poll_3d(mmu);
                 let status = self.nvdrv.ioctl_ex(fd, request, &mut data, extra);
-                if ioctl_has_output(request) {
-                    if let Some(b) = output(0) {
+                if ioctl_has_output(request)
+                    && let Some(b) = output(0) {
                         let n = data.len().min(b.size as usize);
                         let _ = mmu.write_bytes(b.addr, &data[..n]);
                     }
-                }
                 if let Some(b) = out2 {
                     let _ = mmu.write_bytes(b.addr, &outbuf);
                 }

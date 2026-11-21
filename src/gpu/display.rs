@@ -341,12 +341,11 @@ impl DisplayServer {
     ) -> bool {
         let frame_start = Instant::now();
 
-        if self.backend.is_none() {
-            if let Err(e) = self.init_window() {
+        if self.backend.is_none()
+            && let Err(e) = self.init_window() {
                 eprintln!("[Display Error] {}", e);
                 return false;
             }
-        }
 
         let is_gpu = self.is_gpu_accelerated() && !self.deterministic;
         if is_gpu && !draw_ops.is_empty() {
@@ -410,7 +409,7 @@ impl DisplayServer {
     }
 
     pub fn is_window_active(&self) -> bool {
-        self.backend.as_ref().map_or(false, |b| b.is_open())
+        self.backend.as_ref().is_some_and(|b| b.is_open())
     }
 
     pub fn frames_presented_count(&self) -> u64 {
@@ -428,12 +427,11 @@ impl DisplayServer {
     /// Pumps backend window events (keyboard presses, window close, focus) without
     /// waiting for a guest frame presentation.
     pub fn pump_events(&mut self) -> bool {
-        if self.backend.is_none() {
-            if let Err(e) = self.init_window() {
+        if self.backend.is_none()
+            && let Err(e) = self.init_window() {
                 eprintln!("[Display Error] {}", e);
                 return false;
             }
-        }
         let backend = self.backend.as_mut().expect("backend opened above");
         backend.pump_events() != PresentStatus::Closed
     }
@@ -564,7 +562,7 @@ mod tests {
 
         // Create an unswizzled linear frame with a distinctive RGBA pattern
         let mut linear = vec![0u8; width * height * 4];
-        for (i, pixel) in linear.chunks_exact_mut(4).enumerate() {
+        for (i, pixel) in linear.as_chunks_mut::<4>().0.iter_mut().enumerate() {
             pixel[0] = (i & 0xFF) as u8;
             pixel[1] = 0x88;
             pixel[2] = 0x44;

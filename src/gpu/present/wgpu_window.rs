@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 //! GPU swapchain presentation through `wgpu` + `winit` (feature `gpu-present`).
 //!
 //! `wgpu` picks the native API per host: Vulkan on Linux and Windows (DX12 also
@@ -866,8 +867,8 @@ impl Wgpu3DRenderer {
                         draw_op_slots.insert(op_idx, slot);
                     }
                 }
-                Gpu3DDrawOp::DrawIndexed { vertices, indices, .. } => {
-                    if !vertices.is_empty() && !indices.is_empty() {
+                Gpu3DDrawOp::DrawIndexed { vertices, indices, .. }
+                    if !vertices.is_empty() && !indices.is_empty() => {
                         let slot = emit_uniform_slot(
                             &mut uniform_bytes,
                             &mut last_slot_state,
@@ -878,7 +879,6 @@ impl Wgpu3DRenderer {
                         );
                         draw_op_slots.insert(op_idx, slot);
                     }
-                }
                 _ => {}
             }
         }
@@ -1035,8 +1035,8 @@ impl Wgpu3DRenderer {
             pass.set_bind_group(1, texture_bg, &[]);
             let mut last_bound_slot: Option<usize> = None;
 
-            for op_idx in start..end {
-                let op = &ops[op_idx];
+            for (offset, op) in ops[start..end].iter().enumerate() {
+                let op_idx = start + offset;
                 match op {
                     Gpu3DDrawOp::SetViewport { x, y, width, height } => {
                         if *width > 0.0 && *height > 0.0 {
@@ -1145,11 +1145,10 @@ fn emit_uniform_slot(
     has_tex: bool,
     depth_test: bool,
 ) -> usize {
-    if let Some((last_mvp, last_has_tex, last_depth)) = *last_slot_state {
-        if last_mvp == *mvp && last_has_tex == has_tex && last_depth == depth_test && !uniform_bytes.is_empty() {
+    if let Some((last_mvp, last_has_tex, last_depth)) = *last_slot_state
+        && last_mvp == *mvp && last_has_tex == has_tex && last_depth == depth_test && !uniform_bytes.is_empty() {
             return *current_slot_idx;
         }
-    }
 
     if !uniform_bytes.is_empty() {
         *current_slot_idx += 1;
@@ -1216,7 +1215,7 @@ impl SurfaceState {
         if let Some(format) = caps.formats.iter().copied().find(|f| !f.is_srgb()) {
             config.format = format;
         }
-        let vsync_off = std::env::var("OUNCE_VSYNC").map_or(false, |v| v == "0");
+        let vsync_off = std::env::var("OUNCE_VSYNC").is_ok_and(|v| v == "0");
         config.present_mode = if vsync_off {
             wgpu::PresentMode::AutoNoVsync
         } else {
@@ -2182,9 +2181,9 @@ mod tests {
         let slice = readback.slice(..);
         slice.map_async(wgpu::MapMode::Read, |res| res.expect("readback map failed"));
         device.poll(wgpu::PollType::wait_indefinitely()).expect("GPU poll failed");
-        let pixels = slice.get_mapped_range().expect("readback not mapped").to_vec();
+        
 
-            pixels
+            slice.get_mapped_range().expect("readback not mapped").to_vec()
         };
         let draw = || Gpu3DDrawOp::DrawArrays {
             vertices: quad_v(0.5, [1.0, 1.0, 1.0]),

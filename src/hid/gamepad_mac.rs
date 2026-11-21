@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 //! Physical controllers on the Mac: Apple's GameController.framework (src/hid/gc_mac.m) mapped to the Switch 2 layout.
 //!
 //! gc_mac.m reports face buttons by position (a Nintendo pad's labels already turned into positions), so the default
@@ -231,7 +232,7 @@ pub fn synthetic_set(pressed: u32, l: (f32, f32), r: (f32, f32)) {
 
 /// A synthetic pad line: elements joined by `+` (`east`, `south+l1`), sticks as DM_CTL has them (`LUp`, `L0.5/1`),
 /// `~<hold seconds>` (0.15 s by default). Returns (pressed mask, left, right, hold).
-#[allow(dead_code)]
+#[allow(dead_code, clippy::type_complexity)]
 pub fn parse_synthetic_line(line: &str) -> Option<(u32, (f32, f32), (f32, f32), f64)> {
     let line = line.trim();
     if line.is_empty() || line.starts_with('#') || line.contains(' ') {

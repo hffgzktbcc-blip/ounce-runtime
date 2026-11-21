@@ -223,7 +223,7 @@ fn sync_request_with_user_buffer_uses_the_supplied_hipc_area() {
     assert_eq!(cpu.regs.read_x(0), RESULT_INVALID_SIZE);
     call(&mut k, &mut cpu, &mut mmu, 0x22, &[user_buffer, 0x800, session]);
     assert_eq!(cpu.regs.read_x(0), RESULT_INVALID_SIZE);
-    call(&mut k, &mut cpu, &mut mmu, 0x22, &[u64::MAX & !0xFFF, 0x2000, session]);
+    call(&mut k, &mut cpu, &mut mmu, 0x22, &[!0xFFF, 0x2000, session]);
     assert_eq!(cpu.regs.read_x(0), RESULT_INVALID_MEMORY_STATE);
     call(&mut k, &mut cpu, &mut mmu, 0x22, &[0xC000, 0x1000, session]);
     assert_eq!(cpu.regs.read_x(0), RESULT_INVALID_MEMORY_STATE);

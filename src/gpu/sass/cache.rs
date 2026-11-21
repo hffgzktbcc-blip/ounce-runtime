@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 //! Persistent disk + in-memory WGSL translation cache for Switch 2 (`GA10F`) shaders.
 //!
 //! Avoids re-decoding and re-lowering identical Ampere SM86 / Maxwell SASS binaries across
@@ -119,16 +120,14 @@ impl ShaderDiskCache {
 
         if let Some(dir) = &self.dir {
             let path = dir.join(key.filename());
-            if let Ok(raw) = fs::read(&path) {
-                if let Some(loaded) = deserialize_shader(&raw) {
-                    if loaded.stage == stage {
+            if let Ok(raw) = fs::read(&path)
+                && let Some(loaded) = deserialize_shader(&raw)
+                    && loaded.stage == stage {
                         let arc = Arc::new(loaded);
                         self.entries.insert(key, Arc::clone(&arc));
                         self.stats.disk_hits += 1;
                         return Ok((key, arc));
                     }
-                }
-            }
         }
 
         self.stats.misses += 1;

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 //! Tier-4: hot guest blocks translated to host code by `ounce-recompiler` (M4 step 2,
 //! docs/design/m4-native-jit.md). Safe code only; executable memory and raw calls stay in the
 //! recompiler crate.
@@ -816,18 +817,13 @@ impl Lowerer {
                 }
             }
 
-            Instruction::SimdTwoMisc { rd, rn, op, esize: _, q } => {
-                match op {
-                    SimdOp2::Not => {
-                        let n_lo = self.b.get(Reg::VLo(rn));
-                        let n_hi = self.b.get(Reg::VHi(rn));
-                        let lo = self.b.push(Op::Not(Width::W64, n_lo));
-                        let hi = if q { self.b.push(Op::Not(Width::W64, n_hi)) } else { self.k(0) };
-                        self.b.set(Reg::VLo(rd), lo);
-                        self.b.set(Reg::VHi(rd), hi);
-                    }
-                    _ => return Err(()),
-                }
+            Instruction::SimdTwoMisc { rd, rn, op: SimdOp2::Not, esize: _, q } => {
+                let n_lo = self.b.get(Reg::VLo(rn));
+                let n_hi = self.b.get(Reg::VHi(rn));
+                let lo = self.b.push(Op::Not(Width::W64, n_lo));
+                let hi = if q { self.b.push(Op::Not(Width::W64, n_hi)) } else { self.k(0) };
+                self.b.set(Reg::VLo(rd), lo);
+                self.b.set(Reg::VHi(rd), hi);
             }
 
             // Acquire/Release non-exclusive loads/stores (`LDAR`, `LDAPR`, `STLR`) lower cleanly!
@@ -1872,7 +1868,7 @@ mod tests {
                     1 => rng.next() % 64,
                     2 => DATA + 0xFF8 + (rng.next() % 16), // near page boundary
                     3 => DATA + 0x1000 + (rng.next() % 0x100), // unmapped page
-                    _ => DATA + (rng.next() % 0x800) & !7,
+                    _ => (DATA + (rng.next() % 0x800)) & !7,
                 };
                 cpu.regs.write_x(r, v);
             }
@@ -1956,7 +1952,7 @@ mod tests {
                     0 => rng.next(),
                     1 => rng.next() % 64,
                     2 => DATA + 0xFF8 + (rng.next() % 16),
-                    _ => DATA + (rng.next() % 0x800) & !7,
+                    _ => (DATA + (rng.next() % 0x800)) & !7,
                 };
                 cpu.regs.write_x(r, v);
             }

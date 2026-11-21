@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #![allow(dead_code)]
 
 use std::collections::VecDeque;
@@ -13,7 +14,7 @@ use crate::loader::{BootLoader, HomebrewConfig, LoosePackageLoader, ModuleMapEnt
 use crate::mmu::{Memory, Permission};
 
 const TRACE_BASE_ADDR: u64 = 0x8000_0000;
-const TRACE_STACK_TOP: u64 = 0x7FFF_FFE0_00;
+const TRACE_STACK_TOP: u64 = 0x007F_FFFF_E000;
 const TRACE_STACK_SIZE: usize = 0x20_0000; // 2 MiB stack for retail Switch 2 titles
 const MAIN_THREAD_HANDLE: u32 = 0x1000;
 const EXIT_STUB_ADDR: u64 = 0x7FFE_0000;
@@ -250,7 +251,7 @@ pub fn run_boot_trace(target_path: &str, opts: &BootTraceOptions) -> Result<Boot
         match cpu.step(&mut mmu) {
             Ok(StepResult::Continue) => {
                 instructions_executed += 1;
-                if instructions_executed % crate::kernel::scheduler::PREEMPT_INTERVAL == 0 {
+                if instructions_executed.is_multiple_of(crate::kernel::scheduler::PREEMPT_INTERVAL) {
                     kernel.scheduler.preempt(&mut cpu);
                 }
             }

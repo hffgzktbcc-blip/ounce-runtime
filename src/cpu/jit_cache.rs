@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #![allow(dead_code)]
 
 use super::decoder::decode;
@@ -40,12 +41,11 @@ impl JitBlockCache {
     /// On a cache miss, compiles the entire basic block starting at `pc`.
     #[inline]
     pub fn fetch_or_compile(&mut self, pc: u64, raw_word: u32, mmu: &Memory) -> Instruction {
-        if let Some(entry) = self.entries.get(&pc) {
-            if entry.raw == raw_word {
+        if let Some(entry) = self.entries.get(&pc)
+            && entry.raw == raw_word {
                 self.cache_hits += 1;
                 return entry.decoded;
             }
-        }
 
         self.cache_misses += 1;
         self.compile_basic_block(pc, mmu);

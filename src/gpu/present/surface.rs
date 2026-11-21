@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 //! Turns a guest surface (block linear or pitch, as the Ampere engine and a future display
 //! service describe it) into a host-ready [`Frame`]. This is the consumer half of the frame
 //! descriptor agreed in `docs/design/m5-deko3d-triangle.md`; it reuses `gpu::tiling` rather than
@@ -34,7 +35,7 @@ pub fn frame_from_surface(mmu: &Memory, addr: u64, surface: &Surface) -> Result<
     let mut raw = vec![0u8; size];
     mmu.read_bytes(addr, &mut raw).map_err(|_| SurfaceError::Unmapped { addr, len: size })?;
     let mut packed = tiling::detile(surface, &raw)?;
-    for px in packed.chunks_exact_mut(4) {
+    for px in packed.as_chunks_mut::<4>().0 {
         if swap_rb {
             px.swap(0, 2);
         }

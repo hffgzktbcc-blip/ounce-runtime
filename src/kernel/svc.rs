@@ -246,7 +246,7 @@ impl HorizonKernel {
             0x01 => {
                 let requested = cpu.regs.read_x(1);
                 let heap_addr = self.heap_base;
-                if requested % HEAP_SIZE_ALIGN != 0 {
+                if !requested.is_multiple_of(HEAP_SIZE_ALIGN) {
                     cpu.regs.write_x(0, RESULT_INVALID_SIZE);
                     return SvcResult::Success;
                 }
@@ -583,11 +583,10 @@ impl HorizonKernel {
                     })
                 });
                 if let Some(i) = signaled {
-                    if let Some(e) = self.sync.events.get_mut(&handles[i]) {
-                        if e.auto_clear {
+                    if let Some(e) = self.sync.events.get_mut(&handles[i])
+                        && e.auto_clear {
                             e.signaled = false;
                         }
-                    }
                     cpu.regs.write_x(0, 0);
                     cpu.regs.write_x(1, i as u64);
                 } else if timeout == 0 {
@@ -881,11 +880,11 @@ impl HorizonKernel {
                 let user_buffer = cpu.regs.read_x(0);
                 let size = cpu.regs.read_x(1);
                 let session_handle = cpu.regs.read_w(2);
-                if user_buffer % PAGE_SIZE as u64 != 0 {
+                if !user_buffer.is_multiple_of(PAGE_SIZE as u64) {
                     cpu.regs.write_x(0, RESULT_INVALID_ADDRESS);
                     return SvcResult::Success;
                 }
-                if size == 0 || size % PAGE_SIZE as u64 != 0 {
+                if size == 0 || !size.is_multiple_of(PAGE_SIZE as u64) {
                     cpu.regs.write_x(0, RESULT_INVALID_SIZE);
                     return SvcResult::Success;
                 }
@@ -1117,7 +1116,7 @@ impl HorizonKernel {
                 let align = if arb_type == 3 { 8 } else { 4 };
                 let result = if arb_type > 3 {
                     Err(RESULT_INVALID_ENUM_VALUE)
-                } else if addr % align != 0 {
+                } else if !addr.is_multiple_of(align) {
                     Err(RESULT_INVALID_ADDRESS)
                 } else if arb_type == 3 {
                     match mmu.read_u64(addr) {
@@ -1177,7 +1176,7 @@ impl HorizonKernel {
                         return SvcResult::Success;
                     }
                 };
-                if addr % 4 != 0 {
+                if !addr.is_multiple_of(4) {
                     cpu.regs.write_x(0, RESULT_INVALID_ADDRESS);
                     return SvcResult::Success;
                 }
@@ -1207,7 +1206,7 @@ impl HorizonKernel {
             // 0x50: svcCreateSharedMemory(&out_handle, size, local_perm, remote_perm)
             0x50 => {
                 let size = cpu.regs.read_x(1);
-                if size == 0 || size % 0x1000 != 0 {
+                if size == 0 || !size.is_multiple_of(0x1000) {
                     cpu.regs.write_x(0, RESULT_INVALID_SIZE);
                     return SvcResult::Success;
                 }
@@ -1261,7 +1260,7 @@ impl HorizonKernel {
                 SvcResult::Success
             }
 
-            0x73 | 0x74 | 0x75 => {
+            0x73..=0x75 => {
                 if svc_id == 0x74 {
                     let dst_addr = cpu.regs.read_x(0);
                     let size = (cpu.regs.read_x(3) as usize).max(0x1000);

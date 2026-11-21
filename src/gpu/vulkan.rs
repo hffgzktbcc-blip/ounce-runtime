@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #![allow(dead_code)]
 
 use super::shader::{SPIRV_MAGIC, SPIRV_VERSION_1_5};
@@ -19,7 +20,7 @@ impl Default for VulkanDeviceInfo {
         Self {
             device_name: "NVIDIA Tegra T239 (Ampere SM86) Hardware HAL".to_string(),
             api_version: (1, 3, 275),
-            driver_version: 550_00,
+            driver_version: 55_000,
             device_type: "Integrated / Discrete GPU",
             supports_mesh_shaders: true,
             supports_upscale_model: true,
@@ -171,8 +172,8 @@ mod tests {
         assert_eq!(backend.pipelines_created, 1);
         assert_eq!(backend.spirv_modules_loaded, 2);
 
-        let mut mmu = Memory::new();
-        assert!(backend.draw_arrays(&mut mmu, 0x8000_0000, 3).is_ok());
+        let mmu = Memory::new();
+        assert!(backend.draw_arrays(&mmu, 0x8000_0000, 3).is_ok());
         assert_eq!(backend.draw_calls_submitted, 1);
     }
 }

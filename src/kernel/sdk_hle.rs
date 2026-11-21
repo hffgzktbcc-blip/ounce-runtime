@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 #![allow(dead_code)]
 
 use crate::fs::VirtualFileSystem;
@@ -277,12 +278,11 @@ impl NnFsManager {
     ) -> (u32, usize) {
         if let Some(file) = self.open_files.get_mut(&handle) {
             let off = offset.max(0) as u64;
-            if let Some(slice) = vfs.read_range(&file.path, off, size) {
-                if mmu.write_bytes(dest_addr, &slice).is_ok() {
+            if let Some(slice) = vfs.read_range(&file.path, off, size)
+                && mmu.write_bytes(dest_addr, &slice).is_ok() {
                     file.current_offset = (off + slice.len() as u64) as i64;
                     return (RESULT_SUCCESS, slice.len());
                 }
-            }
         }
         (RESULT_FS_PATH_NOT_FOUND, 0)
     }
@@ -388,6 +388,7 @@ impl SdkHleRuntime {
     }
 
     /// Dispatches an SDK call invoked from guest AArch64 code.
+    #[allow(clippy::too_many_arguments)]
     pub fn dispatch_call(
         &mut self,
         function_id: u32,

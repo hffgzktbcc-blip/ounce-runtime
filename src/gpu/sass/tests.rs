@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 use super::decode::{decode, DecodeError, FSrc, Instr, IpaFreq, MufuOp, Src, RZ};
 use super::sph::{PixelImap, SphBuilder};
 use super::*;
@@ -350,7 +351,7 @@ fn sm86_uniform_datapath_uldc_uiadd_ffma_validates() {
         | (7u128 << 81)
         | (7u128 << 84);
     // FFMA R4, R0, UR4, R0 (base 0x023, form 6 -> full 0xc23)
-    let ffma_ur = (0xc23u128 | (7 << 12)) | (4u128 << 16) | (0u128 << 24) | (4u128 << 32) | (0u128 << 64);
+    let ffma_ur = ((0xc23u128 | (7 << 12)) | (4u128 << 16)) | (4u128 << 32);
 
     let code = [
         asm::ald(0, 0x80, 1),
@@ -380,7 +381,6 @@ fn sm86_bindless_tex_b_resolves_cbuf_handle_and_validates() {
     let ldc_r28 = asm::ldc(28, 1, 0x08);
     // TEX.B.2D {R0..R3}, R4, R5, handle=R28 (opcode 0x361, 2D bit 61, mask 0xf, d2=2, lod=0 Auto)
     let tex_b = (0x361u128 | (7 << 12))
-        | (0u128 << 16)
         | (4u128 << 24)
         | (28u128 << 32)
         | (1u128 << 61)
@@ -412,14 +412,12 @@ fn sm86_bindless_tex_b_resolves_cbuf_handle_and_validates() {
 fn sm86_compute_shader_and_disk_cache_roundtrip() {
     use super::decode::SR_TID_X;
     // S2R R0, SR_TID.X (0x919, sr in bits 72..80)
-    let s2r_tidx = (0x919u128 | (7 << 12)) | (0u128 << 16) | ((SR_TID_X as u128) << 72);
+    let s2r_tidx = (0x919u128 | (7 << 12)) | ((SR_TID_X as u128) << 72);
     // ULDC.32 UR0, c[0][0x100] (buffer base VA low 32 bits)
-    let uldc_base = (0xab9u128 | (7 << 12)) | (0u128 << 16) | (0x100u128 << 38);
+    let uldc_base = (0xab9u128 | (7 << 12)) | (0x100u128 << 38);
     // LEA R2, R0, UR0, shift=2  (R2 = (tid.x << 2) + UR0; base 0x011, form 6 -> full 0xc11)
-    let lea_addr = (0xc11u128 | (7 << 12))
-        | (2u128 << 16)
-        | (0u128 << 24)
-        | (0u128 << 32)
+    let lea_addr = ((0xc11u128 | (7 << 12))
+        | (2u128 << 16))
         | (2u128 << 75);
     // LDG.E.32 R3, [R2 + 0] (0x381)
     let ldg_r3 = (0x381u128 | (7 << 12)) | (3u128 << 16) | (2u128 << 24);

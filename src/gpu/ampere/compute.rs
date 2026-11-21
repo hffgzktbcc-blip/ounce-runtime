@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 //! `AMPERE_COMPUTE_B` (`0xC7C0`) and `MAXWELL_COMPUTE_B` (`0xB1C0`) compute engine & QMD v2/v3 dispatcher.
 //!
 //! Method offsets and Queue Meta Data (QMD) field positions follow NVIDIA's public class headers
@@ -273,17 +274,17 @@ impl AmpereCompute {
             }
         }
 
+        #[allow(unused_mut)]
         let mut used_hw = false;
         #[cfg(feature = "gpu-present")]
-        if let Some(accel) = hw {
-            if accel
+        if let Some(accel) = hw
+            && accel
                 .execute_compute_qmd(class, &qmd, &code, &func, &staged_cbufs, mem)
                 .unwrap_or(false)
             {
                 used_hw = true;
                 self.hardware_dispatches += 1;
             }
-        }
         #[cfg(not(feature = "gpu-present"))]
         let _ = &code;
 
@@ -375,21 +376,19 @@ pub(crate) fn discover_compute_storage_region(
     // Check every Cbuf word actually read by the compute shader first (both 64-bit aligned pairs and 32-bit VAs).
     let mut candidates: Vec<u64> = Vec::new();
     for op in &func.values {
-        if let Op::Cbuf { bank, offset } = *op {
-            if let Some(lo) = cbuf_word(bank, offset) {
-                if offset % 8 == 0 {
-                    if let Some(hi) = cbuf_word(bank, offset + 4) {
+        if let Op::Cbuf { bank, offset } = *op
+            && let Some(lo) = cbuf_word(bank, offset) {
+                if offset % 8 == 0
+                    && let Some(hi) = cbuf_word(bank, offset + 4) {
                         let va64 = ((hi as u64) << 32) | (lo as u64);
                         if va64 != 0 {
                             candidates.push(va64);
                         }
                     }
-                }
                 if lo != 0 {
                     candidates.push(lo as u64);
                 }
             }
-        }
     }
 
     let mut found: Option<(u64, usize)> = None;
@@ -466,11 +465,10 @@ fn eval_compute_cpu(
                                 };
                             }
                             for st in &func.global_stores {
-                                if let Some(gv) = st.guard {
-                                    if vals[gv.0 as usize] == 0 {
+                                if let Some(gv) = st.guard
+                                    && vals[gv.0 as usize] == 0 {
                                         continue;
                                     }
-                                }
                                 let lo = vals[st.addr_lo.0 as usize];
                                 let hi = vals[st.addr_hi.0 as usize];
                                 let base = if hi != 0 {

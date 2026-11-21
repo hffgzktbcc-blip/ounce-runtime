@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 //! Boots a real devkitA64 + libnx homebrew NRO (`tests/fixtures/nro/hello`) through its own `crt0`.
 //!
 //! `boot` services the few Horizon SVCs libnx startup makes with a small shim of its own, so the
@@ -504,7 +505,7 @@ fn libnx_audren_fixture_plays_a_tone() {
     assert!(output.ends_with("ounce-audren result=0x00000EEE\n"), "output: {output:?}");
     // The mixed 48 kHz stereo output holds the tone, identical on both sides, then silence.
     let pcm = &kernel.audren.output_ring_buffer;
-    let frames: Vec<(i16, i16)> = pcm.chunks_exact(2).map(|f| (f[0], f[1])).collect();
+    let frames: Vec<(i16, i16)> = pcm.as_chunks::<2>().0.iter().map(|f| (f[0], f[1])).collect();
     let start = frames.iter().position(|f| f.0 != 0).expect("some audio was mixed");
     let tone = &frames[start..start + 2400];
     for (i, &(l, r)) in tone.iter().enumerate() {

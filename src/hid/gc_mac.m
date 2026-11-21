@@ -1,10 +1,11 @@
-// OunceCore's physical controllers on the Mac: Apple's GameController.framework (DualSense, DualShock 4, Xbox, Switch Pro,
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Physical controllers on macOS via Apple's GameController.framework (DualSense, DualShock 4, Xbox, Switch Pro,
 // Joy-Con, MFi), read by HostGamepadManager (src/hid/gamepad_mac.rs).
 //
 // Face buttons are reported by POSITION (south, east, west, north), whatever the pad prints on them. GameController names
-// most pads' face buttons by position (buttonA bottom, buttonB right, buttonX left, buttonY top), but a Nintendo pad's by
-// their printed labels (buttonA is the right button): a Switch Pro Controller and Joy-Con (productCategory), as the host's
-// pad_apple.h has it. The Rust side maps positions to Switch buttons through controls.json.
+// most pads' face buttons by position (buttonA bottom, buttonB right, buttonX left, buttonY top), whereas Nintendo pads
+// (Switch Pro Controller and Joy-Con, identified via productCategory) report face buttons by their printed labels
+// (buttonA is the right button). The Rust side maps positions to Switch buttons through controls.json.
 //
 // Hot-plug: GCControllerDidConnect / DidDisconnect notifications keep the list of pads; the first one connected plays
 // player 1. A synthetic pad (GCController controllerWithExtendedGamepad, for runs with no pad in reach) joins the same

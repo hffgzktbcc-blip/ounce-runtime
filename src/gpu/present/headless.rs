@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
 //! Headless presentation: no host window.
 //!
 //! This is the default for the verification harness, for CI and for hosts without a
@@ -54,7 +55,7 @@ impl HeadlessBackend {
         let file = std::fs::File::create(path)?;
         let mut out = std::io::BufWriter::new(file);
         write!(out, "P6\n{} {}\n255\n", frame.width, frame.height)?;
-        for pixel in frame.rgba.chunks_exact(4) {
+        for pixel in frame.rgba.as_chunks::<4>().0 {
             out.write_all(&pixel[..3])?;
         }
         out.flush()
