@@ -1,3 +1,5 @@
+> **Paused** — active ARM64 execution and differential verification work is consolidated in [`hffgzktbcc-blip/ounce-core`](https://github.com/hffgzktbcc-blip/ounce-core).
+
 <div align="center">
 
 ![ounce-runtime — systems research, built in Rust](docs/assets/banner.svg)
